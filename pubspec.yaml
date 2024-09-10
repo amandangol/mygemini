@@ -1,0 +1,49 @@
+name: ai_assistant
+description: "An AI Assistant (Chatbot, Image Generator & Language Translator) App based on ChatGPT developed by Lucas Maia Dantas"
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+# Dependencies
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  google_generative_ai: ^0.4.3
+  intl:
+
+  animated_text_kit: ^4.2.2
+  shared_preferences: ^2.0.15
+  lottie: ^3.1.2
+  hive: ^4.0.0-dev.2
+  isar_flutter_libs: ^4.0.0-dev.13
+  path_provider: ^2.1.0
+  get: ^4.6.6
+  flutter_animate: ^4.5.0
+  http: ^1.1.0
+  flutter_svg: ^2.0.10+1
+  cached_network_image: ^3.4.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Encourages Good Practices
+  flutter_lints: ^4.0.0
+
+  # For Changing App Icon
+  icons_launcher: ^2.1.7
+
+flutter:
+  # Enables Material Design
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+    - assets/lottie/

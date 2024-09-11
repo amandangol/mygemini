@@ -32,7 +32,7 @@ class EmailController extends GetxController {
     generatedEmail.value = '';
 
     try {
-      String emailContent = await APIs.talkWithGemini(
+      String emailContent = await APIs.geminiAPI(
         'Write a professional email to ${recipientC.text} about ${subjectC.text}. Include the following details: ${bodyC.text}',
       );
       generatedEmail.value = emailContent;

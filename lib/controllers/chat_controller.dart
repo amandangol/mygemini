@@ -3,54 +3,83 @@ import 'package:ai_assistant/data/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
+import 'dart:convert';
+import 'package:ai_assistant/data/models/message.dart';
+
+class ChatHistory {
+  final String title;
+  final List<Message> messages;
+
+  ChatHistory({required this.title, required this.messages});
+
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'messages': messages.map((m) => m.toMap()).toList(),
+      };
+
+  factory ChatHistory.fromJson(Map<String, dynamic> json) {
+    return ChatHistory(
+      title: json['title'],
+      messages: (json['messages'] as List)
+          .map((m) => Message.fromMap(m as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  String encode() => json.encode(toJson());
+
+  static ChatHistory decode(String source) =>
+      ChatHistory.fromJson(json.decode(source) as Map<String, dynamic>);
+}
 
 class ChatController extends GetxController {
-  final textC = TextEditingController();
-
-  final list = <Message>[].obs;
-  var isAskingName = true.obs;
-  var userName = ''.obs;
+  final TextEditingController textC = TextEditingController();
+  final RxList<Message> list = <Message>[].obs;
+  final RxString userName = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    askForName();
+    loadUserName();
   }
 
-  void askForName() {
-    list.add(Message(
-        msg: 'Hello, welcome to AI Assistant Chatbot! How should i call you?',
-        msgType: MessageType.bot));
+  Future<void> loadUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    userName.value = prefs.getString('username') ?? '';
   }
 
-  Future<void> askQuestion() async {
+  void askQuestion() {
     if (textC.text.trim().isNotEmpty) {
-      if (isAskingName.value) {
-        userName.value = textC.text.trim();
-        list.add(Message(msg: userName.value, msgType: MessageType.user));
-        list.add(Message(
-            msg: 'Nice to meet you, ${userName.value}! How can i help you?',
-            msgType: MessageType.bot));
-        isAskingName.value = false;
-      } else {
-        // user
-        list.add(Message(msg: textC.text, msgType: MessageType.user));
-        list.add(
-            Message(msg: 'Generating response...', msgType: MessageType.bot));
+      final userMsg = Message(msg: textC.text, msgType: MessageType.user);
+      list.add(userMsg);
+      textC.clear();
 
-        final response = await APIs.talkWithGemini(textC.text);
+      // Simulate bot response (replace with actual API call)
+      Future.delayed(const Duration(seconds: 1), () async {
+        String response = await APIs.geminiAPI(userMsg.msg);
 
-        // ai bot
-        list.removeLast();
-        list.add(Message(msg: response, msgType: MessageType.bot));
-      }
-      textC.text = '';
+        final botMsg = Message(msg: response, msgType: MessageType.bot);
+        list.add(botMsg);
+      });
     }
   }
 
   Future<void> saveChatHistory() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> chatHistory = list.map((msg) => msg.toJson()).toList();
-    await prefs.setStringList('chatHistory', chatHistory);
+    if (list.isNotEmpty) {
+      String title = "Chat ${DateTime.now().toIso8601String()}";
+      // You can prompt the user for a title here if you want
+
+      ChatHistory chatHistory = ChatHistory(title: title, messages: list);
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      List<String> savedChats = prefs.getStringList('chatHistories') ?? [];
+      savedChats.add(jsonEncode(chatHistory.toJson()));
+      await prefs.setStringList('chatHistories', savedChats);
+
+      // Clear the current chat
+      list.clear();
+    }
   }
 }

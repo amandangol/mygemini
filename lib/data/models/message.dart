@@ -7,6 +7,7 @@ class Message {
   final MessageType msgType;
 
   Message({required this.msg, required this.msgType});
+
   Map<String, dynamic> toMap() {
     return {
       'msg': msg,

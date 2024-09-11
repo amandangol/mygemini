@@ -47,7 +47,7 @@ class TranslatorController extends GetxController {
       ''';
 
       try {
-        final translatedText = await APIs.talkWithGemini(prompt);
+        final translatedText = await APIs.geminiAPI(prompt);
         targetTextC.text = translatedText.trim();
       } catch (e) {
         targetTextC.text = 'Error: Unable to translate. Please try again.';

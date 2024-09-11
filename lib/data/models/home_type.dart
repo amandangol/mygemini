@@ -5,7 +5,15 @@ import 'package:ai_assistant/ui/screens/translation/translator_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-enum HomeType { aiChatBot, aiImage, aiTranslator, aiEmailWriter }
+import '../../ui/screens/AiCodeGenerator/code_generator.dart';
+
+enum HomeType {
+  aiChatBot,
+  aiImage,
+  aiTranslator,
+  aiEmailWriter,
+  aiCodeGenerator
+}
 
 extension MyHomeType on HomeType {
   // title
@@ -14,6 +22,7 @@ extension MyHomeType on HomeType {
         HomeType.aiImage => 'AI Image Creator',
         HomeType.aiTranslator => 'AI Translator',
         HomeType.aiEmailWriter => 'AI Email Writer',
+        HomeType.aiCodeGenerator => 'AI Code Generator',
       };
 
   // lottie
@@ -21,8 +30,8 @@ extension MyHomeType on HomeType {
         HomeType.aiChatBot => 'ai_hand_waving.json',
         HomeType.aiImage => 'ai_play.json',
         HomeType.aiTranslator => 'ai_ask_me.json',
-        HomeType.aiEmailWriter =>
-          'ai_ask_me.json', // Add a new lottie file if needed
+        HomeType.aiEmailWriter => 'ai_ask_me.json',
+        HomeType.aiCodeGenerator => 'ai_ask_me.json',
       };
 
   // for alignment
@@ -31,6 +40,7 @@ extension MyHomeType on HomeType {
         HomeType.aiImage => false,
         HomeType.aiTranslator => true,
         HomeType.aiEmailWriter => false,
+        HomeType.aiCodeGenerator => true,
       };
 
   // for padding
@@ -39,6 +49,7 @@ extension MyHomeType on HomeType {
         HomeType.aiImage => const EdgeInsets.all(20),
         HomeType.aiTranslator => EdgeInsets.zero,
         HomeType.aiEmailWriter => const EdgeInsets.all(20),
+        HomeType.aiCodeGenerator => EdgeInsets.zero,
       };
 
   // for navigation
@@ -47,5 +58,6 @@ extension MyHomeType on HomeType {
         HomeType.aiImage => () => Get.to(() => const ImageFeature()),
         HomeType.aiTranslator => () => Get.to(() => TranslatorFeature()),
         HomeType.aiEmailWriter => () => Get.to(() => EmailWriterFeature()),
+        HomeType.aiCodeGenerator => () => Get.to(() => AiCodeGenerator()),
       };
 }

@@ -6,6 +6,7 @@ import 'package:ai_assistant/widget/home_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final themeController = Get.put(ThemeController());
+  final TextEditingController _usernameController = TextEditingController();
 
   @override
   void initState() {
@@ -23,6 +25,14 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _setStatusBarStyle();
     Pref.showOnboarding = false;
+    var username = "Aman";
+    // _usernameController.text = Pref.username ?? '';
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    super.dispose();
   }
 
   void _setStatusBarStyle() {
@@ -33,53 +43,87 @@ class _HomeScreenState extends State<HomeScreen> {
     ));
   }
 
+  void _saveUsername() {
+    // Pref.username = _usernameController.text;
+    FocusScope.of(context).unfocus();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Username saved: ${_usernameController.text}')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Initialize device size
     mq = MediaQuery.sizeOf(context);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        title: Text(
-          appName,
-          style: TextStyle(
-            color: Theme.of(context).primaryColor,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          Obx(
-            () => IconButton(
-              icon: Icon(
-                themeController.isDarkMode.value
-                    ? Icons.dark_mode
-                    : Icons.light_mode,
-                color: Theme.of(context).primaryColor,
+      backgroundColor: const Color(0xFFF0F4F8),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(
+                  horizontal: mq.width * 0.04,
+                  vertical: mq.height * 0.02,
+                ),
+                itemCount: HomeType.values.length,
+                itemBuilder: (context, index) {
+                  return _buildHomeCard(HomeType.values[index]);
+                },
               ),
-              onPressed: () {
-                themeController.toggleTheme();
-                _setStatusBarStyle();
-              },
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: EdgeInsets.symmetric(
-          horizontal: mq.width * 0.04,
-          vertical: mq.height * 0.02,
-        ),
-        itemCount: HomeType.values.length,
-        itemBuilder: (context, index) {
-          return _buildHomeCard(HomeType.values[index]);
-        },
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                appName,
+                style: const TextStyle(
+                  color: Color(0xFF2C3E50),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _buildThemeToggle(),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms).slideY(begin: -0.1, end: 0);
+  }
+
+  Widget _buildThemeToggle() {
+    return Obx(() => Switch(
+          value: themeController.isDarkMode.value,
+          onChanged: (value) {
+            themeController.toggleTheme();
+            _setStatusBarStyle();
+          },
+          activeColor: const Color(0xFF3498DB),
+        ));
   }
 
   Widget _buildHomeCard(HomeType homeType) {
@@ -87,11 +131,11 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: EdgeInsets.only(bottom: mq.height * 0.02),
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor.withOpacity(0.1),
+              color: Colors.grey.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -99,6 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: HomeCard(homeType: homeType),
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
   }
 }

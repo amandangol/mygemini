@@ -1,32 +1,39 @@
+import 'package:ai_assistant/commonwidgets/custom_inputfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/translator_controller.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class TranslatorFeature extends StatelessWidget {
   TranslatorFeature({Key? key}) : super(key: key);
 
   final TranslatorController controller = Get.put(TranslatorController());
 
-  // Define new color scheme
-  final Color primaryColor = const Color(0xFF6B9080);
-  final Color backgroundColor = const Color(0xFFF6FFF8);
-  final Color accentColor = const Color(0xFFCCE3DE);
+  final Color primaryColor = const Color(0xFF3498DB);
+  final Color backgroundColor = const Color(0xFFF0F4F8);
   final Color textColor = const Color(0xFF2C3E50);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
+      appBar: AppBar(
+        title: const Text('AI Translator',
+            style: TextStyle(
+                color: Color(0xFF2C3E50), fontWeight: FontWeight.w300)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          physics: const BouncingScrollPhysics(),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildHeader(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
               _buildLanguageSelector(),
               const SizedBox(height: 32),
               _buildTranslationFields(),
@@ -39,36 +46,17 @@ class TranslatorFeature extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
-    return Center(
-      child: AnimatedTextKit(
-        animatedTexts: [
-          TypewriterAnimatedText(
-            'AI Translator',
-            textStyle: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: primaryColor,
-            ),
-            speed: const Duration(milliseconds: 25),
-          ),
-        ],
-        totalRepeatCount: 1,
-      ),
-    );
-  }
-
   Widget _buildLanguageSelector() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: accentColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: const Color(0xFF2C3E50).withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -82,7 +70,7 @@ class TranslatorFeature extends StatelessWidget {
               child: Obx(() => _buildLanguageDropdown(controller.targetLang))),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0);
   }
 
   Widget _buildLanguageDropdown(Rx<String> language) {
@@ -109,7 +97,7 @@ class TranslatorFeature extends StatelessWidget {
           }
         },
         icon: Icon(Icons.arrow_drop_down, color: primaryColor),
-        dropdownColor: accentColor,
+        dropdownColor: Colors.white,
         isExpanded: true,
         style: TextStyle(color: textColor),
       ),
@@ -130,7 +118,7 @@ class TranslatorFeature extends StatelessWidget {
       errorWidget: (context, url, error) => Container(
         width: 24,
         height: 24,
-        color: accentColor,
+        color: Colors.white,
         child: Center(
           child: Text(
             language.substring(0, 2).toUpperCase(),
@@ -165,80 +153,73 @@ class TranslatorFeature extends StatelessWidget {
   Widget _buildTranslationFields() {
     return Column(
       children: [
-        _buildTextField(controller.sourceTextC, 'Enter text to translate'),
+        CustomInputField(
+          controller: controller.sourceTextC,
+          label: 'Source Text',
+          hint: 'Enter text to translate',
+          maxLines: 5,
+          readOnly: false,
+        ),
         const SizedBox(height: 16),
         Obx(() => controller.isTranslating.value
             ? LinearProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-                backgroundColor: accentColor,
+                backgroundColor: Colors.white,
               )
-            : _buildTextField(
-                controller.targetTextC, 'Translation will appear here',
-                readOnly: true)),
+            : CustomInputField(
+                controller: controller.targetTextC,
+                label: 'Translation',
+                hint: 'Translation will appear here',
+                maxLines: 5,
+                readOnly: false,
+              )),
       ],
-    );
-  }
-
-  Widget _buildTextField(TextEditingController textController, String hintText,
-      {bool readOnly = false}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: textController,
-        maxLines: 5,
-        readOnly: readOnly,
-        style: TextStyle(color: textColor),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(color: textColor.withOpacity(0.7)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.transparent,
-        ),
-      ),
-    );
+    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0);
   }
 
   Widget _buildTranslateButton() {
-    return Center(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        child: ElevatedButton(
-          onPressed: controller.translate,
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: primaryColor,
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
+    return Container(
+      height: 60,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF3498DB), Color(0xFF2980B9)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF3498DB).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Text('Translate', style: TextStyle(fontSize: 18)),
-              SizedBox(width: 8),
-              Icon(Icons.translate),
-            ],
-          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: controller.translate,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text('Translate',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white)),
+            SizedBox(width: 8),
+            Icon(Icons.translate, color: Colors.white),
+          ],
         ),
       ),
-    );
+    )
+        .animate(target: controller.isTranslating.value ? 1 : 0)
+        .shimmer(duration: 1000.ms, color: Colors.white.withOpacity(0.3))
+        .shake(hz: 4, curve: Curves.easeInOutCubic);
   }
 
   String _getCountryCode(String language) {

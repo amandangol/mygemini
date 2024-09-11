@@ -4,7 +4,7 @@ import 'package:ai_assistant/utils/helper/api_key.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class APIs {
-  static Future<String> talkWithGemini(String msg) async {
+  static Future<String> geminiAPI(String msg) async {
     try {
       final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
       final content = Content.text(msg);

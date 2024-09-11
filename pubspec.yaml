@@ -1,5 +1,5 @@
-name: ai_assistant
-description: "An AI Assistant (Chatbot, Image Generator & Language Translator) App based on ChatGPT developed by Lucas Maia Dantas"
+name: mygemini
+description: "MyGemini is an AI App based on ChatGPT developed by Lucas Maia Dantas"
 
 publish_to: "none"
 
@@ -8,16 +8,12 @@ version: 1.0.0+1
 environment:
   sdk: ">=3.4.0 <4.0.0"
 
-# Dependencies
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
 
   google_generative_ai: ^0.4.3
-  intl:
-
-  animated_text_kit: ^4.2.2
   shared_preferences: ^2.0.15
   lottie: ^3.1.2
   hive: ^4.0.0-dev.2
@@ -30,22 +26,22 @@ dependencies:
   cached_network_image: ^3.4.1
   share_plus: ^10.0.2
   file_selector: ^1.0.3
+  flutter_dotenv: ^5.1.0
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # Encourages Good Practices
   flutter_lints: ^4.0.0
 
-  # For Changing App Icon
   icons_launcher: ^2.1.7
 
 flutter:
-  # Enables Material Design
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
     - assets/lottie/
+    - .env

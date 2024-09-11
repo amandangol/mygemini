@@ -1,25 +1,29 @@
-import 'package:ai_assistant/controllers/chat_controller.dart';
-import 'package:ai_assistant/ui/screens/chatbot/chat_history_page.dart';
-import 'package:ai_assistant/widget/message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/controllers/chat_controller.dart';
+import 'package:mygemini/controllers/chathistory_controller.dart';
+import 'package:mygemini/ui/screens/chatbot/chat_history_page.dart';
+import 'package:mygemini/widget/message_card.dart';
 
-class ChatbotFeature extends StatefulWidget {
-  const ChatbotFeature({super.key});
+class Chatbot extends StatefulWidget {
+  const Chatbot({super.key});
 
   @override
-  State<ChatbotFeature> createState() => _ChatbotFeatureState();
+  State<Chatbot> createState() => _ChatbotState();
 }
 
-class _ChatbotFeatureState extends State<ChatbotFeature> {
-  final ChatController _c = Get.put(ChatController());
+class _ChatbotState extends State<Chatbot> {
+  late final ChatController _c;
+  late final ChathistoryController chathistoryController;
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    // Listen to changes in the chat list
+    _c = Get.put(ChatController());
+    print('Attempting to find ChathistoryController');
+    chathistoryController = Get.find<ChathistoryController>();
     ever(_c.list, (_) => _scrollToBottom());
   }
 
@@ -41,38 +45,12 @@ class _ChatbotFeatureState extends State<ChatbotFeature> {
     });
   }
 
-  void _handleCloseChat() async {
-    bool? saveChat = await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Save Chat'),
-        content: const Text('Do you want to save this chat before closing?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
-    );
-
-    if (saveChat ?? false) {
-      await _c.saveChatHistory();
-    }
-
-    Navigator.of(context).pop();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
       appBar: AppBar(
-        title: const Text('Chat with AI Assistant',
+        title: const Text('Chat with MyGemini',
             style: TextStyle(
                 color: Color(0xFF2C3E50), fontWeight: FontWeight.w300)),
         backgroundColor: Colors.transparent,
@@ -80,19 +58,45 @@ class _ChatbotFeatureState extends State<ChatbotFeature> {
         centerTitle: true,
         actions: [
           IconButton(
+            icon: const Icon(Icons.add, color: Color(0xFF2C3E50)),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Start New Chat'),
+                    content: Text(
+                        'Are you sure you want to start a new chat? This will clear the current conversation.'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                      ),
+                      TextButton(
+                        child: Text('Start New Chat'),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          _c.startNewChat(); // Start a new chat
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.history, color: Color(0xFF2C3E50)),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ChatHistoryPage(),
+                  builder: (context) => ChatHistoryPage(),
                 ),
               );
             },
-          ),
-          IconButton(
-            icon: const Icon(Icons.close, color: Color(0xFF2C3E50)),
-            onPressed: _handleCloseChat,
           ),
         ],
       ),

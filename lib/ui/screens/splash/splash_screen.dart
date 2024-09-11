@@ -1,10 +1,10 @@
-import 'package:ai_assistant/utils/helper/global.dart';
-import 'package:ai_assistant/utils/helper/pref.dart';
-import 'package:ai_assistant/ui/screens/home/home_screen.dart';
-import 'package:ai_assistant/ui/screens/onboarding/onboading_screen.dart';
-import 'package:ai_assistant/widget/custom_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mygemini/ui/screens/home/home_screen.dart';
+import 'package:mygemini/ui/screens/onboarding/onboading_screen.dart';
+import 'package:mygemini/utils/helper/global.dart';
+import 'package:mygemini/utils/helper/pref.dart';
+import 'package:mygemini/widget/custom_loading.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -53,10 +53,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            // for adding some space
             const Spacer(),
             const CustomLoading(),
-            // for adding some space
             const Spacer()
           ],
         ),

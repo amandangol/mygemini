@@ -1,10 +1,12 @@
-import 'package:ai_assistant/commonwidgets/custom_inputfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/commonwidgets/action_button.dart';
+import 'package:mygemini/commonwidgets/custom_button.dart';
+import 'package:mygemini/commonwidgets/custom_inputfield.dart';
+import 'package:mygemini/controllers/codegenerator_controller.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:ai_assistant/controllers/codegenerator_controller.dart';
 
 class AiCodeGenerator extends StatelessWidget {
   AiCodeGenerator({Key? key}) : super(key: key);
@@ -49,7 +51,7 @@ class AiCodeGenerator extends StatelessWidget {
         CustomInputField(
           controller: controller.languageC,
           label: 'Language',
-          hint: 'e.g., Python',
+          hint: 'e.g., Python, Dart',
           readOnly: false,
         ),
         const SizedBox(height: 16),
@@ -57,7 +59,7 @@ class AiCodeGenerator extends StatelessWidget {
           controller: controller.functionalityC,
           label: 'Functionality',
           readOnly: false,
-          hint: 'e.g., Sort an array',
+          hint: 'e.g., Sort an array, Create a login form',
         ),
         const SizedBox(height: 16),
         CustomInputField(
@@ -71,51 +73,24 @@ class AiCodeGenerator extends StatelessWidget {
     ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0);
   }
 
-  Widget _buildDivider() {
-    return Container(
-      height: 1,
-      color: const Color(0xFFE0E0E0),
-    );
-  }
-
   Widget _buildGenerateButton() {
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF3498DB), Color(0xFF2980B9)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF3498DB).withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: controller.isLoading.value ? null : controller.generateCode,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        ),
-        child: controller.isLoading.value
-            ? const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
-            : const Text(
-                'Generate',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white),
-              ),
-      ),
-    )
+    return CustomButton(
+            onPressed: controller.isLoading.value
+                ? null
+                : () async {
+                    controller.generateCode();
+                  },
+            child: controller.isLoading.value
+                ? const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  )
+                : const Text(
+                    'Generate Code',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
+                  ))
         .animate(target: controller.isLoading.value ? 1 : 0)
         .shimmer(duration: 1000.ms, color: Colors.white.withOpacity(0.3))
         .shake(hz: 4, curve: Curves.easeInOutCubic);
@@ -193,12 +168,12 @@ class AiCodeGenerator extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildActionButton(
+                  ActionButton(
                     icon: Icons.copy,
                     label: 'Copy',
                     onPressed: () => _copyToClipboard(message),
                   ),
-                  _buildActionButton(
+                  ActionButton(
                     icon: Icons.share,
                     label: 'Share',
                     onPressed: () => _shareContent(message),
@@ -209,24 +184,6 @@ class AiCodeGenerator extends StatelessWidget {
         ],
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return TextButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, color: const Color(0xFF2C3E50), size: 18),
-      label: Text(
-        label,
-        style: const TextStyle(color: Color(0xFF2C3E50)),
-      ),
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      ),
-    );
   }
 
   void _copyToClipboard(String text) {

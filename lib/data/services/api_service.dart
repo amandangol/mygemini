@@ -1,20 +1,29 @@
 import 'dart:developer';
-
-import 'package:ai_assistant/utils/helper/api_key.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class APIs {
   static Future<String> geminiAPI(String msg) async {
     try {
+      final apiKey = dotenv.env['GEMINI_API_KEY'];
+      if (apiKey == null || apiKey.isEmpty) {
+        throw Exception(
+            'GEMINI_API_KEY is not set in the environment variables.');
+      }
+
       final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
       final content = Content.text(msg);
       final response = await model.generateContent([content]);
 
-      log('response from gemini ai: ${response.text}');
-      return '${response.text}';
-    } catch (e) {
-      log('error comunicating with gemini: $e');
-      return 'Error comunicating with Gemini AI';
+      print('Response from Gemini AI: ${response.text}');
+      return response.text ?? 'No response text';
+    } catch (e, stackTrace) {
+      print('Loaded API Key: ${dotenv.env['GEMINI_API_KEY']}');
+      print('Full response from Gemini AI: $e');
+
+      log('Error communicating with Gemini AI: $e',
+          error: e, stackTrace: stackTrace);
+      return 'Error communicating with Gemini AI';
     }
   }
 }

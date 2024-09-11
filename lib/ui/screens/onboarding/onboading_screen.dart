@@ -1,9 +1,9 @@
-import 'package:ai_assistant/utils/helper/global.dart';
-import 'package:ai_assistant/data/models/onboard.dart';
-import 'package:ai_assistant/ui/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mygemini/data/models/onboard.dart';
+import 'package:mygemini/ui/screens/home/home_screen.dart';
+import 'package:mygemini/utils/helper/global.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});

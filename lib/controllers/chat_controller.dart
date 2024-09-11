@@ -1,43 +1,18 @@
-import 'package:ai_assistant/data/models/message.dart';
-import 'package:ai_assistant/data/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:mygemini/controllers/chathistory_controller.dart';
+import 'package:mygemini/data/models/message.dart';
+import 'package:mygemini/data/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-
-import 'dart:convert';
-import 'package:ai_assistant/data/models/message.dart';
-
-class ChatHistory {
-  final String title;
-  final List<Message> messages;
-
-  ChatHistory({required this.title, required this.messages});
-
-  Map<String, dynamic> toJson() => {
-        'title': title,
-        'messages': messages.map((m) => m.toMap()).toList(),
-      };
-
-  factory ChatHistory.fromJson(Map<String, dynamic> json) {
-    return ChatHistory(
-      title: json['title'],
-      messages: (json['messages'] as List)
-          .map((m) => Message.fromMap(m as Map<String, dynamic>))
-          .toList(),
-    );
-  }
-
-  String encode() => json.encode(toJson());
-
-  static ChatHistory decode(String source) =>
-      ChatHistory.fromJson(json.decode(source) as Map<String, dynamic>);
-}
 
 class ChatController extends GetxController {
   final TextEditingController textC = TextEditingController();
   final RxList<Message> list = <Message>[].obs;
   final RxString userName = ''.obs;
+  final ChathistoryController chatHistoryController =
+      Get.find<ChathistoryController>();
+  String? currentChatId;
 
   @override
   void onInit() {
@@ -50,36 +25,57 @@ class ChatController extends GetxController {
     userName.value = prefs.getString('username') ?? '';
   }
 
-  void askQuestion() {
+  void startNewChat() {
+    list.clear();
+    currentChatId = null;
+  }
+
+  void askQuestion() async {
     if (textC.text.trim().isNotEmpty) {
       final userMsg = Message(msg: textC.text, msgType: MessageType.user);
       list.add(userMsg);
       textC.clear();
 
-      // Simulate bot response (replace with actual API call)
-      Future.delayed(const Duration(seconds: 1), () async {
-        String response = await APIs.geminiAPI(userMsg.msg);
+      // API call
+      String response = await APIs.geminiAPI(userMsg.msg);
 
-        final botMsg = Message(msg: response, msgType: MessageType.bot);
-        list.add(botMsg);
-      });
+      final botMsg = Message(msg: response, msgType: MessageType.bot);
+      list.add(botMsg);
+
+      // Save chat history after each interaction
+      await saveChatHistory();
     }
   }
 
   Future<void> saveChatHistory() async {
     if (list.isNotEmpty) {
-      String title = "Chat ${DateTime.now().toIso8601String()}";
-      // You can prompt the user for a title here if you want
+      if (currentChatId == null) {
+        final now = DateTime.now();
+        final formattedDate = DateFormat('MMM d, yyyy HH:mm').format(now);
+        String title = "Chat on $formattedDate";
 
-      ChatHistory chatHistory = ChatHistory(title: title, messages: list);
+        // Create ChatHistory object
+        ChatHistory chatHistory = ChatHistory(
+          title: title,
+          messages: list.toList(),
+          timestamp: now,
+        );
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      List<String> savedChats = prefs.getStringList('chatHistories') ?? [];
-      savedChats.add(jsonEncode(chatHistory.toJson()));
-      await prefs.setStringList('chatHistories', savedChats);
+        // Update chat history
+        chatHistoryController.updateChatHistory(chatHistory);
 
-      // Clear the current chat
-      list.clear();
+        // Debugging
+        print(
+            'Chat history saved. Total chats: ${chatHistoryController.chatHistories.length}');
+        print('Latest chat: ${chatHistory.title}');
+      }
+    } else {
+      print('No messages to save in chat history.');
     }
+  }
+
+  void loadChat(ChatHistory chatHistory) {
+    list.assignAll(chatHistory.messages);
+    currentChatId = chatHistory.title.replaceAll("Chat on ", "");
   }
 }

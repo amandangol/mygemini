@@ -1,8 +1,10 @@
-import 'package:ai_assistant/commonwidgets/custom_inputfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ai_assistant/controllers/email_controller.dart';
 import 'package:flutter/services.dart';
+import 'package:mygemini/commonwidgets/action_button.dart';
+import 'package:mygemini/commonwidgets/custom_button.dart';
+import 'package:mygemini/commonwidgets/custom_inputfield.dart';
+import 'package:mygemini/controllers/email_controller.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -84,44 +86,25 @@ class EmailWriterFeature extends StatelessWidget {
   }
 
   Widget _buildGenerateButton() {
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF3498DB), Color(0xFF2980B9)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF3498DB).withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Obx(() => ElevatedButton(
-            onPressed:
-                _controller.isLoading.value ? null : _controller.generateEmail,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-            ),
-            child: _controller.isLoading.value
-                ? const CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
-                : const Text(
-                    'Generate Email',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
-                  ),
-          )),
-    )
+    return CustomButton(
+            onPressed: _controller.isLoading.value
+                ? null
+                : () async {
+                    _controller.generateEmail();
+                  },
+            child: Obx(
+              () => _controller.isLoading.value
+                  ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    )
+                  : const Text(
+                      'Generate Email',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                    ),
+            ))
         .animate(target: _controller.isLoading.value ? 1 : 0)
         .shimmer(duration: 1000.ms, color: Colors.white.withOpacity(0.3))
         .shake(hz: 4, curve: Curves.easeInOutCubic);
@@ -174,13 +157,13 @@ class EmailWriterFeature extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildActionButton(
+                    ActionButton(
                       icon: Icons.copy,
                       label: 'Copy',
                       onPressed: () =>
                           _copyToClipboard(_controller.generatedEmail.value),
                     ),
-                    _buildActionButton(
+                    ActionButton(
                       icon: Icons.share,
                       label: 'Share',
                       onPressed: () =>
@@ -192,24 +175,6 @@ class EmailWriterFeature extends StatelessWidget {
             ),
           ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0)
         : const SizedBox.shrink());
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return TextButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, color: const Color(0xFF2C3E50), size: 18),
-      label: Text(
-        label,
-        style: const TextStyle(color: Color(0xFF2C3E50)),
-      ),
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      ),
-    );
   }
 
   void _copyToClipboard(String text) {

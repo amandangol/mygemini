@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ai_assistant/data/services/api_service.dart';
+import 'package:mygemini/data/services/api_service.dart';
 
 class CodeGeneratorController extends GetxController {
   final languageC = TextEditingController();

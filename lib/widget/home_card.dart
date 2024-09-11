@@ -1,8 +1,8 @@
-import 'package:ai_assistant/utils/helper/global.dart';
-import 'package:ai_assistant/data/models/home_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mygemini/data/models/home_type.dart';
+import 'package:mygemini/utils/helper/global.dart';
 
 class HomeCard extends StatelessWidget {
   final HomeType homeType;

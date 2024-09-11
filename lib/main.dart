@@ -1,10 +1,11 @@
-import 'package:ai_assistant/controllers/theme_controller.dart';
-import 'package:ai_assistant/utils/helper/pref.dart';
-import 'package:ai_assistant/ui/screens/splash/splash_screen.dart';
-import 'package:ai_assistant/utils/theme/ThemeData.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:mygemini/controllers/theme_controller.dart';
+import 'package:mygemini/ui/screens/splash/splash_screen.dart';
+import 'package:mygemini/utils/helper/pref.dart';
+import 'package:mygemini/utils/theme/ThemeData.dart';
 
 import 'utils/helper/global.dart';
 
@@ -13,6 +14,7 @@ Future<void> main() async {
 
   Pref.initialize();
 
+  await dotenv.load(fileName: ".env");
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);

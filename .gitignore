@@ -43,4 +43,3 @@ app.*.map.json
 /android/app/release
 
 # API Key
-lib/helper/api_key.dart

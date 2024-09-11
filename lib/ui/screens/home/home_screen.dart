@@ -1,12 +1,12 @@
-import 'package:ai_assistant/controllers/theme_controller.dart';
-import 'package:ai_assistant/utils/helper/global.dart';
-import 'package:ai_assistant/utils/helper/pref.dart';
-import 'package:ai_assistant/data/models/home_type.dart';
-import 'package:ai_assistant/widget/home_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/controllers/theme_controller.dart';
+import 'package:mygemini/data/models/home_type.dart';
+import 'package:mygemini/utils/helper/global.dart';
+import 'package:mygemini/utils/helper/pref.dart';
+import 'package:mygemini/widget/home_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,7 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _setStatusBarStyle();
     Pref.showOnboarding = false;
-    var username = "Aman";
     // _usernameController.text = Pref.username ?? '';
   }
 

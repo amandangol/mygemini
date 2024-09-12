@@ -85,6 +85,10 @@ class AppTheme {
         fontSize: 24,
         fontWeight: FontWeight.w600,
       );
+  static TextStyle get headlineSmall => GoogleFonts.poppins(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      );
 
   static TextStyle get bodyLarge => GoogleFonts.poppins(
         fontSize: 16,
@@ -93,6 +97,10 @@ class AppTheme {
 
   static TextStyle get bodyMedium => GoogleFonts.poppins(
         fontSize: 14,
+        fontWeight: FontWeight.normal,
+      );
+  static TextStyle get bodySmall => GoogleFonts.poppins(
+        fontSize: 12,
         fontWeight: FontWeight.normal,
       );
 

@@ -7,55 +7,96 @@ import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/widget/custom_loading.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({Key? key}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
-    // wait for some time on splash & then move to next screen
-    Future.delayed(const Duration(seconds: 2), () {
-      // Navigator.of(context).pushReplacement(MaterialPageRoute(
-      //     builder: (_) => Pref.showOnboarding
-      //         ? const OnboardingScreen()
-      //         : const HomeScreen()));
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+    );
+
+    _controller.forward();
+
+    Future.delayed(const Duration(seconds: 3), () {
       Get.off(() =>
           Pref.showOnboarding ? const OnboardingScreen() : const HomeScreen());
     });
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Initializing device size
-    size = MediaQuery.sizeOf(context);
+    size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: SizedBox(
-        width: double.maxFinite,
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade100, Colors.blue.shade300],
+          ),
+        ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // for adding some space
             const Spacer(flex: 3),
-            Card(
-              color: const Color.fromARGB(255, 173, 214, 248),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(size.width * .05),
-                child: Image.asset(
-                  'assets/images/logo-chatbot.png',
-                  width: size.width * .45,
-                ),
-              ),
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: Card(
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(size.width * .05),
+                        child: Image.asset(
+                          'assets/images/logo-chatbot.png',
+                          width: size.width * .45,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
             const Spacer(),
-            const CustomLoading(),
-            const Spacer()
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: const CustomLoading(),
+            ),
+            const Spacer(),
           ],
         ),
       ),

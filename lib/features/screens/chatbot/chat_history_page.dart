@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chat_controller.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
+import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:intl/intl.dart';
 
 class ChatHistoryPage extends StatelessWidget {
@@ -19,40 +20,41 @@ class ChatHistoryPage extends StatelessWidget {
         await chatController.saveChatHistory();
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
+        backgroundColor: AppTheme.backgroundColor(context),
         appBar: AppBar(
-          title: const Text('Chat History',
-              style: TextStyle(
-                  color: Color(0xFF2C3E50), fontWeight: FontWeight.bold)),
-          backgroundColor: Colors.white,
+          title: Text('Chat History', style: AppTheme.headlineSmall),
+          backgroundColor: AppTheme.surfaceColor(context),
           elevation: 0,
-          iconTheme: const IconThemeData(color: Color(0xFF2C3E50)),
+          iconTheme: IconThemeData(color: Theme.of(context).iconTheme.color),
         ),
         body: Obx(() => controller.chatHistories.isEmpty
-            ? _buildEmptyState()
+            ? _buildEmptyState(context)
             : _buildChatHistoryList(context)),
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.chat_bubble_outline, size: 100, color: Colors.grey[400]),
+          Icon(Icons.chat_bubble_outline,
+              size: 100, color: Theme.of(context).disabledColor),
           const SizedBox(height: 24),
           Text(
             'No chat history yet',
-            style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500),
+            style: AppTheme.headlineSmall
+                .copyWith(color: Theme.of(context).colorScheme.onBackground),
           ),
           const SizedBox(height: 8),
           Text(
             'Start a new conversation to see it here',
-            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+            style: AppTheme.bodyMedium.copyWith(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onBackground
+                    .withOpacity(0.7)),
           ),
         ],
       ),
@@ -64,10 +66,9 @@ class ChatHistoryPage extends StatelessWidget {
 
   Widget _buildChatHistoryList(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: AppTheme.defaultPadding,
       itemCount: controller.chatHistories.length,
       itemBuilder: (context, index) {
-        // The list is already sorted in the controller, so we can use it directly
         return _buildChatHistoryCard(
             context, controller.chatHistories[index], index);
       },
@@ -76,18 +77,17 @@ class ChatHistoryPage extends StatelessWidget {
 
   Widget _buildChatHistoryCard(
       BuildContext context, ChatHistory chatHistory, int index) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: AppTheme.cardDecoration(context),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         onTap: () {
           chatController.loadChat(chatHistory);
           Get.back();
         },
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: AppTheme.defaultPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -97,17 +97,14 @@ class ChatHistoryPage extends StatelessWidget {
                   Expanded(
                     child: Text(
                       chatHistory.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Color(0xFF2C3E50),
-                      ),
+                      style: AppTheme.headlineSmall,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    icon: Icon(Icons.delete_outline,
+                        color: Theme.of(context).colorScheme.error),
                     onPressed: () => _showDeleteConfirmation(context, index),
                   ),
                 ],
@@ -115,12 +112,20 @@ class ChatHistoryPage extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 '${chatHistory.messages.length} messages',
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                style: AppTheme.bodyMedium.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7)),
               ),
               const SizedBox(height: 4),
               Text(
                 'Last updated: ${_formatDate(chatHistory.timestamp)}',
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                style: AppTheme.bodySmall.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.5)),
               ),
             ],
           ),
@@ -138,16 +143,18 @@ class ChatHistoryPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Chat History'),
-          content:
-              const Text('Are you sure you want to delete this chat history?'),
+          title: Text('Delete Chat History', style: AppTheme.headlineSmall),
+          content: Text('Are you sure you want to delete this chat history?',
+              style: AppTheme.bodyMedium),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text('Cancel', style: AppTheme.bodyMedium),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              child: Text('Delete',
+                  style: AppTheme.bodyMedium
+                      .copyWith(color: Theme.of(context).colorScheme.error)),
               onPressed: () {
                 controller.deleteChatHistory(index);
                 Navigator.of(context).pop();

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
+import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/translator/controller/translator_controller.dart';
 import 'package:mygemini/features/screens/translator/model/translator_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class AiTranslatorBot extends StatelessWidget {
@@ -33,31 +33,11 @@ class AiTranslatorBot extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppTheme.surfaceColor(context),
-      elevation: 0,
-      title: Text('AI Translator', style: AppTheme.headlineMedium),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios,
-            color: Theme.of(context).iconTheme.color),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.refresh, color: Theme.of(context).iconTheme.color),
-          onPressed: () {
-            controller.resetConversation();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Conversation has been reset',
-                    style: AppTheme.bodyMedium),
-                backgroundColor:
-                    Theme.of(context).snackBarTheme.backgroundColor,
-              ),
-            );
-          },
-        ),
-      ],
+    return CustomAppBar(
+      title: 'TranslatorBot Assistant',
+      onResetConversation: () {
+        controller.resetConversation();
+      },
     );
   }
 
@@ -100,7 +80,7 @@ class AiTranslatorBot extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isUserMessage ? 'You' : 'AI Translator',
+              isUserMessage ? 'You' : 'TranslatorBot',
               style: AppTheme.bodyLarge.copyWith(
                 fontWeight: FontWeight.bold,
                 color: textColor,
@@ -113,51 +93,16 @@ class AiTranslatorBot extends StatelessWidget {
             ),
             if (!isUserMessage)
               Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.content_copy,
-                      label: 'Copy',
-                      onPressed: () => _copyToClipboard(context, message.text),
-                    ),
-                    const SizedBox(width: 8),
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.share,
-                      label: 'Share',
-                      onPressed: () => _shareContent(message.text),
-                    ),
-                  ],
-                ),
-              ),
+                  padding: const EdgeInsets.only(top: 12),
+                  child: CustomActionButtons(
+                    text: message.text,
+                    shareSubject:
+                        'Generated translation text from TranslatorBot Assistant',
+                  )),
           ],
         ),
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
-  }
-
-  Widget _buildActionButton({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 16),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      ),
-    );
   }
 
   Widget _buildInputArea(BuildContext context) {
@@ -312,187 +257,172 @@ class AiTranslatorBot extends StatelessWidget {
     );
   }
 
-  void _copyToClipboard(BuildContext context, String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Text copied to clipboard', style: AppTheme.bodyMedium),
-        backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  void _shareContent(String text) {
-    Share.share(text, subject: 'Translated Text from AI Translator');
-  }
-}
-
-String _getCountryCode(String language) {
-  switch (language.toLowerCase()) {
-    case 'afrikaans':
-      return 'za';
-    case 'albanian':
-      return 'al';
-    case 'amharic':
-      return 'et';
-    case 'arabic':
-      return 'sa';
-    case 'armenian':
-      return 'am';
-    case 'azerbaijani':
-      return 'az';
-    case 'basque':
-      return 'es';
-    case 'belarusian':
-      return 'by';
-    case 'bengali':
-      return 'bd';
-    case 'bosnian':
-      return 'ba';
-    case 'bulgarian':
-      return 'bg';
-    case 'burmese':
-      return 'mm';
-    case 'catalan':
-      return 'es';
-    case 'chinese':
-      return 'cn';
-    case 'croatian':
-      return 'hr';
-    case 'czech':
-      return 'cz';
-    case 'danish':
-      return 'dk';
-    case 'dutch':
-      return 'nl';
-    case 'english':
-      return 'gb';
-    case 'estonian':
-      return 'ee';
-    case 'filipino':
-      return 'ph';
-    case 'finnish':
-      return 'fi';
-    case 'french':
-      return 'fr';
-    case 'galician':
-      return 'es';
-    case 'georgian':
-      return 'ge';
-    case 'german':
-      return 'de';
-    case 'greek':
-      return 'gr';
-    case 'gujarati':
-      return 'in';
-    case 'haitian creole':
-      return 'ht';
-    case 'hausa':
-      return 'ng';
-    case 'hebrew':
-      return 'il';
-    case 'hindi':
-      return 'in';
-    case 'hungarian':
-      return 'hu';
-    case 'icelandic':
-      return 'is';
-    case 'igbo':
-      return 'ng';
-    case 'indonesian':
-      return 'id';
-    case 'irish':
-      return 'ie';
-    case 'italian':
-      return 'it';
-    case 'japanese':
-      return 'jp';
-    case 'javanese':
-      return 'id';
-    case 'kannada':
-      return 'in';
-    case 'kazakh':
-      return 'kz';
-    case 'khmer':
-      return 'kh';
-    case 'korean':
-      return 'kr';
-    case 'lao':
-      return 'la';
-    case 'latvian':
-      return 'lv';
-    case 'lithuanian':
-      return 'lt';
-    case 'macedonian':
-      return 'mk';
-    case 'malay':
-      return 'my';
-    case 'malayalam':
-      return 'in';
-    case 'maltese':
-      return 'mt';
-    case 'maori':
-      return 'nz';
-    case 'marathi':
-      return 'in';
-    case 'mongolian':
-      return 'mn';
-    case 'nepali':
-      return 'np';
-    case 'norwegian':
-      return 'no';
-    case 'persian':
-      return 'ir';
-    case 'polish':
-      return 'pl';
-    case 'portuguese':
-      return 'pt';
-    case 'punjabi':
-      return 'in';
-    case 'romanian':
-      return 'ro';
-    case 'russian':
-      return 'ru';
-    case 'serbian':
-      return 'rs';
-    case 'sinhala':
-      return 'lk';
-    case 'slovak':
-      return 'sk';
-    case 'slovenian':
-      return 'si';
-    case 'somali':
-      return 'so';
-    case 'spanish':
-      return 'es';
-    case 'swahili':
-      return 'tz';
-    case 'swedish':
-      return 'se';
-    case 'tamil':
-      return 'in';
-    case 'telugu':
-      return 'in';
-    case 'thai':
-      return 'th';
-    case 'turkish':
-      return 'tr';
-    case 'ukrainian':
-      return 'ua';
-    case 'urdu':
-      return 'pk';
-    case 'uzbek':
-      return 'uz';
-    case 'vietnamese':
-      return 'vn';
-    case 'welsh':
-      return 'gb';
-    case 'yoruba':
-      return 'ng';
-    case 'zulu':
-      return 'za';
-    default:
-      return 'un';
+  String _getCountryCode(String language) {
+    switch (language.toLowerCase()) {
+      case 'afrikaans':
+        return 'za';
+      case 'albanian':
+        return 'al';
+      case 'amharic':
+        return 'et';
+      case 'arabic':
+        return 'sa';
+      case 'armenian':
+        return 'am';
+      case 'azerbaijani':
+        return 'az';
+      case 'basque':
+        return 'es';
+      case 'belarusian':
+        return 'by';
+      case 'bengali':
+        return 'bd';
+      case 'bosnian':
+        return 'ba';
+      case 'bulgarian':
+        return 'bg';
+      case 'burmese':
+        return 'mm';
+      case 'catalan':
+        return 'es';
+      case 'chinese':
+        return 'cn';
+      case 'croatian':
+        return 'hr';
+      case 'czech':
+        return 'cz';
+      case 'danish':
+        return 'dk';
+      case 'dutch':
+        return 'nl';
+      case 'english':
+        return 'gb';
+      case 'estonian':
+        return 'ee';
+      case 'filipino':
+        return 'ph';
+      case 'finnish':
+        return 'fi';
+      case 'french':
+        return 'fr';
+      case 'galician':
+        return 'es';
+      case 'georgian':
+        return 'ge';
+      case 'german':
+        return 'de';
+      case 'greek':
+        return 'gr';
+      case 'gujarati':
+        return 'in';
+      case 'haitian creole':
+        return 'ht';
+      case 'hausa':
+        return 'ng';
+      case 'hebrew':
+        return 'il';
+      case 'hindi':
+        return 'in';
+      case 'hungarian':
+        return 'hu';
+      case 'icelandic':
+        return 'is';
+      case 'igbo':
+        return 'ng';
+      case 'indonesian':
+        return 'id';
+      case 'irish':
+        return 'ie';
+      case 'italian':
+        return 'it';
+      case 'japanese':
+        return 'jp';
+      case 'javanese':
+        return 'id';
+      case 'kannada':
+        return 'in';
+      case 'kazakh':
+        return 'kz';
+      case 'khmer':
+        return 'kh';
+      case 'korean':
+        return 'kr';
+      case 'lao':
+        return 'la';
+      case 'latvian':
+        return 'lv';
+      case 'lithuanian':
+        return 'lt';
+      case 'macedonian':
+        return 'mk';
+      case 'malay':
+        return 'my';
+      case 'malayalam':
+        return 'in';
+      case 'maltese':
+        return 'mt';
+      case 'maori':
+        return 'nz';
+      case 'marathi':
+        return 'in';
+      case 'mongolian':
+        return 'mn';
+      case 'nepali':
+        return 'np';
+      case 'norwegian':
+        return 'no';
+      case 'persian':
+        return 'ir';
+      case 'polish':
+        return 'pl';
+      case 'portuguese':
+        return 'pt';
+      case 'punjabi':
+        return 'in';
+      case 'romanian':
+        return 'ro';
+      case 'russian':
+        return 'ru';
+      case 'serbian':
+        return 'rs';
+      case 'sinhala':
+        return 'lk';
+      case 'slovak':
+        return 'sk';
+      case 'slovenian':
+        return 'si';
+      case 'somali':
+        return 'so';
+      case 'spanish':
+        return 'es';
+      case 'swahili':
+        return 'tz';
+      case 'swedish':
+        return 'se';
+      case 'tamil':
+        return 'in';
+      case 'telugu':
+        return 'in';
+      case 'thai':
+        return 'th';
+      case 'turkish':
+        return 'tr';
+      case 'ukrainian':
+        return 'ua';
+      case 'urdu':
+        return 'pk';
+      case 'uzbek':
+        return 'uz';
+      case 'vietnamese':
+        return 'vn';
+      case 'welsh':
+        return 'gb';
+      case 'yoruba':
+        return 'ng';
+      case 'zulu':
+        return 'za';
+      default:
+        return 'un';
+    }
   }
 }

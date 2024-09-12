@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
+import 'package:mygemini/features/screens/onboarding/onboading_screen.dart';
 import 'package:mygemini/features/screens/splash/splash_screen.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';

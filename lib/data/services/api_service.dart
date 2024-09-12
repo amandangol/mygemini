@@ -27,6 +27,10 @@ class APIs {
     } catch (e, stackTrace) {
       print('Loaded API Key: ${dotenv.env['GEMINI_API_KEY']}');
       print('Full response from Gemini AI: $e');
+      if (e is GenerativeAIException) {
+        print('Content was blocked for safety reasons.');
+        return 'Content was blocked for safety reasons';
+      }
 
       log('Error communicating with Gemini AI: $e',
           error: e, stackTrace: stackTrace);

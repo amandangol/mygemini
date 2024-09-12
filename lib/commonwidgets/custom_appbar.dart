@@ -1,56 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final VoidCallback onBackPressed;
-  final VoidCallback onResetPressed;
+  final VoidCallback onResetConversation;
 
   const CustomAppBar({
     Key? key,
     required this.title,
-    required this.onBackPressed,
-    required this.onResetPressed,
+    required this.onResetConversation,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title,
-          style: const TextStyle(
-              color: Color(0xFF2C3E50), fontWeight: FontWeight.w300)),
+      title: Text(
+        title,
+        style: AppTheme.headlineMedium.copyWith(
+          color: Theme.of(context).colorScheme.onPrimary,
+          fontWeight: FontWeight.w300,
+        ),
+      ),
       backgroundColor: Colors.transparent,
       elevation: 0,
-      centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF2C3E50)),
-        onPressed: onBackPressed,
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon:
-                  const Icon(Icons.refresh_outlined, color: Color(0xFF3498DB)),
-              onPressed: onResetPressed,
-              tooltip: 'Reset all fields',
-              splashColor: const Color(0xFF3498DB).withOpacity(0.3),
-              highlightColor: const Color(0xFF3498DB).withOpacity(0.1),
-            ),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).colorScheme.secondary,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
+      ),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+            color: Colors.white), // Updated back icon
+        onPressed: () => Navigator.of(context).pop(),
+        tooltip: 'Back', // Tooltip for accessibility
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh_rounded,
+              color: Colors.white), // Updated refresh icon
+          onPressed: () {
+            onResetConversation();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Conversation has been reset',
+                  style: AppTheme.bodyMedium.copyWith(color: Colors.white),
+                ),
+                backgroundColor: Colors.black87, // Updated snackbar style
+              ),
+            );
+          },
+          tooltip: 'Reset Conversation', // Tooltip for better UX
+        ),
+        const SizedBox(width: 8), // Adds some padding on the right
       ],
     );
   }

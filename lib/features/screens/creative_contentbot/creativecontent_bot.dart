@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_input_widget.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
-import 'package:mygemini/features/screens/email_gen/controller/email_controller.dart';
-import 'package:mygemini/features/screens/email_gen/model/emailmessage_model.dart';
+import 'package:mygemini/features/screens/creative_contentbot/controller/creativecontent_controller.dart';
+import 'package:mygemini/features/screens/creative_contentbot/model/creativemessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
-class AiEmailBot extends StatelessWidget {
-  AiEmailBot({super.key});
+class CreativeBotView extends StatelessWidget {
+  CreativeBotView({Key? key}) : super(key: key);
 
-  final EmailBotController controller = Get.put(EmailBotController());
-
+  final CreativeBotController controller = Get.put(CreativeBotController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,8 +23,9 @@ class AiEmailBot extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Obx(() => _buildEmailMessages(context)),
+              child: _buildMessages(context),
             ),
+            _buildContentTypeSelection(context),
             _buildInputArea(context),
           ],
         ),
@@ -32,27 +33,51 @@ class AiEmailBot extends StatelessWidget {
     );
   }
 
+  Widget _buildContentTypeSelection(BuildContext context) {
+    return Obx(() {
+      if (!controller.showContentTypeSelection.value) return SizedBox.shrink();
+
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 8,
+          children: ContentType.values.map((type) {
+            return ElevatedButton(
+              onPressed: () => controller.selectContentType(type),
+              child: Text(type.toString().split('.').last),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    });
+  }
+
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return CustomAppBar(
-      title: 'EmailBot Assistant',
+      title: 'CreativeBot Assistant',
       onResetConversation: () {
         controller.resetConversation();
       },
     );
   }
 
-  Widget _buildEmailMessages(BuildContext context) {
-    return ListView.builder(
-      padding: AppTheme.defaultPadding,
-      itemCount: controller.emailMessages.length,
-      itemBuilder: (context, index) {
-        final message = controller.emailMessages[index];
-        return _buildMessageBubble(context, message);
-      },
-    );
+  Widget _buildMessages(BuildContext context) {
+    return Obx(() => ListView.builder(
+          padding: AppTheme.defaultPadding,
+          itemCount: controller.messages.length,
+          itemBuilder: (context, index) {
+            final message = controller.messages[index];
+            return _buildMessageBubble(context, message);
+          },
+        ));
   }
 
-  Widget _buildMessageBubble(BuildContext context, EmailMessage message) {
+  Widget _buildMessageBubble(BuildContext context, CreativeMessage message) {
     final isUserMessage = message.isUser;
     final bubbleColor =
         isUserMessage ? AppTheme.primaryColor : AppTheme.surfaceColor(context);
@@ -80,7 +105,7 @@ class AiEmailBot extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isUserMessage ? 'You' : 'EmailBot',
+              isUserMessage ? 'You' : 'CreativeBot',
               style: AppTheme.bodyLarge.copyWith(
                 fontWeight: FontWeight.bold,
                 color: textColor,
@@ -91,12 +116,13 @@ class AiEmailBot extends StatelessWidget {
               data: message.content,
               textColor: textColor,
             ),
-            if (message.isEmail)
+            if (message.isCreativeContent)
               Padding(
                   padding: const EdgeInsets.only(top: 12),
                   child: CustomActionButtons(
                     text: message.content,
-                    shareSubject: 'Generated mail from EmailBot Assistant',
+                    shareSubject:
+                        'Generated content from CreativeBot Assistant',
                   )),
           ],
         ),

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
+import 'package:mygemini/commonwidgets/custom_appbar.dart';
+import 'package:mygemini/commonwidgets/custom_input_widget.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/code_generator/controller/codebot_controller.dart';
 import 'package:mygemini/features/screens/code_generator/model/codemessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
-import 'package:share_plus/share_plus.dart';
 
 class AiCodeBot extends StatelessWidget {
   AiCodeBot({Key? key}) : super(key: key);
@@ -32,31 +34,11 @@ class AiCodeBot extends StatelessWidget {
   }
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: AppTheme.surfaceColor(context),
-      elevation: 0,
-      title: Text('CodeBot Assistant', style: AppTheme.headlineMedium),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios,
-            color: Theme.of(context).iconTheme.color),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.refresh, color: Theme.of(context).iconTheme.color),
-          onPressed: () {
-            controller.resetConversation();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Conversation has been reset',
-                    style: AppTheme.bodyMedium),
-                backgroundColor:
-                    Theme.of(context).snackBarTheme.backgroundColor,
-              ),
-            );
-          },
-        ),
-      ],
+    return CustomAppBar(
+      title: 'CodeBot Assistant',
+      onResetConversation: () {
+        controller.resetConversation();
+      },
     );
   }
 
@@ -107,133 +89,27 @@ class AiCodeBot extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             SelectableMarkdown(
-              data: message.content, textColor: textColor,
-
-              // You might want to adjust the style of SelectableMarkdown if needed
+              data: message.content,
+              textColor: textColor,
             ),
             if (message.isCode)
               Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.content_copy,
-                      label: 'Copy',
-                      onPressed: () =>
-                          _copyToClipboard(context, message.content),
-                    ),
-                    const SizedBox(width: 8),
-                    _buildActionButton(
-                      context: context,
-                      icon: Icons.share,
-                      label: 'Share',
-                      onPressed: () => _shareContent(message.content),
-                    ),
-                  ],
-                ),
-              ),
+                  padding: const EdgeInsets.only(top: 12),
+                  child: CustomActionButtons(
+                    text: message.content,
+                    shareSubject: 'Generated Code from CodeBot Assistant',
+                  )),
           ],
         ),
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
   }
 
-  Widget _buildActionButton({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon, size: 16),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      ),
-    );
-  }
-
   Widget _buildInputArea(BuildContext context) {
-    return Container(
-      padding: AppTheme.defaultPadding,
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor(context),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 5,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: controller.userInputController,
-              style: AppTheme.bodyMedium,
-              decoration: InputDecoration(
-                hintText: 'Ask CodeBot to generate code...',
-                hintStyle: AppTheme.bodyMedium
-                    .copyWith(color: Theme.of(context).hintColor),
-                border: Theme.of(context).inputDecorationTheme.border,
-                filled: true,
-                fillColor: AppTheme.primaryColorLight(context),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Obx(() => _buildSendButton(context)),
-        ],
-      ),
+    return CustomInputWidget(
+      userInputController: controller.userInputController,
+      isLoading: controller.isLoading,
+      sendMessage: controller.sendMessage,
     );
-  }
-
-  Widget _buildSendButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed:
-          controller.isLoading.value ? null : () => controller.sendMessage(),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        shape: const CircleBorder(),
-        padding: const EdgeInsets.all(16),
-      ),
-      child: controller.isLoading.value
-          ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                strokeWidth: 2,
-              ),
-            )
-          : const Icon(Icons.send, size: 24),
-    );
-  }
-
-  void _copyToClipboard(BuildContext context, String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Code copied to clipboard', style: AppTheme.bodyMedium),
-        backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  void _shareContent(String text) {
-    Share.share(text, subject: 'Generated Code from CodeBot Assistant');
   }
 }

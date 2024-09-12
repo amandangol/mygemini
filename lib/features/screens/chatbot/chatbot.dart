@@ -62,33 +62,50 @@ class _ChatbotState extends State<Chatbot> {
       title: Obx(() => Text(
             _c.chatTitle,
             style: AppTheme.headlineMedium.copyWith(
-              color: Theme.of(context).colorScheme.onSurface,
+              color: Theme.of(context).colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
             ),
           )),
-      backgroundColor: AppTheme.surfaceColor(context),
+      backgroundColor:
+          Colors.transparent, // Transparent background for gradient
       elevation: 0,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Theme.of(context).primaryColor,
+              Theme.of(context).colorScheme.secondary,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ),
       centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(Icons.add_circle_outline,
+              color: Colors.white), // Use outlined icon
           onPressed: () => _showNewChatDialog(context),
+          tooltip: 'Start New Chat', // Add tooltip for better UX
         ),
         IconButton(
-          icon: Icon(Icons.history,
-              color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(Icons.history_edu,
+              color: Colors.white), // Use a different history icon
           onPressed: () => Get.to(() => ChatHistoryPage()),
+          tooltip: 'Chat History', // Add tooltip for better UX
         ),
+        const SizedBox(width: 8), // Add spacing between the icons
       ],
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
-      child: Text(
-        'Start a new conversation!',
-        style: AppTheme.bodyLarge.copyWith(
-            color: Theme.of(context).colorScheme.onBackground.withOpacity(0.6)),
-      ),
+      child: Text('Start a new conversation!',
+          style: AppTheme.bodyLarge.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          )),
     )
         .animate()
         .fade(duration: 300.ms)
@@ -144,6 +161,9 @@ class _ChatbotState extends State<Chatbot> {
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20),
               ),
+              minLines: 1,
+              maxLines: 5, // Maximum number of lines as text grows
+              keyboardType: TextInputType.multiline, // Allows multi-line input
             ),
           ),
           const SizedBox(width: 8),

@@ -50,7 +50,7 @@ class ChatController extends GetxController {
       final userMsg = Message(msg: textC.text, msgType: MessageType.user);
       list.add(userMsg);
 
-      // Add user message to conversation context
+      //  user message to conversation context
       conversationContext.add({"role": "user", "content": userMsg.msg});
 
       textC.clear();

@@ -7,7 +7,6 @@ import 'package:mygemini/controllers/theme_controller.dart';
 import 'package:mygemini/data/models/home_type.dart';
 import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/helper/pref.dart';
-import 'package:mygemini/widget/home_card.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -42,70 +41,151 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
-      appBar: _buildAppBar(),
       body: SafeArea(
-        child: ListView.builder(
-          padding: EdgeInsets.symmetric(
-            horizontal: size.width * 0.04,
-            vertical: size.height * 0.02,
-          ),
-          itemCount: HomeType.values.length,
-          itemBuilder: (context, index) {
-            return _buildHomeCard(HomeType.values[index]);
-          },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAppBar(),
+            _buildWelcomeMessage(),
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.symmetric(
+                  horizontal: size.width * 0.04,
+                  vertical: size.height * 0.02,
+                ),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.2,
+                  crossAxisSpacing: size.width * 0.04,
+                  mainAxisSpacing: size.height * 0.02,
+                ),
+                itemCount: HomeType.values.length,
+                itemBuilder: (context, index) {
+                  return _buildHomeCard(HomeType.values[index]);
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppTheme.surfaceColor(context),
-      elevation: 0,
-      title: Text(appName, style: AppTheme.headlineMedium),
-      actions: [
-        _buildThemeToggle(),
-      ],
-    );
+  Widget _buildAppBar() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor(context),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              const CircleAvatar(
+                backgroundImage: AssetImage('assets/images/logo.png'),
+                radius: 20,
+              ),
+              const SizedBox(width: 12),
+              Text('MyGemini Assistant', style: AppTheme.headlineSmall),
+            ],
+          ),
+          _buildThemeToggle(),
+        ],
+      ),
+    ).animate().fadeIn(duration: 300.ms).slideY(begin: -0.2, end: 0);
+  }
+
+  Widget _buildWelcomeMessage() {
+    return Padding(
+      padding: EdgeInsets.all(size.width * 0.04),
+      child: Text(
+        'What would you like to do today?',
+        style: AppTheme.headlineSmall,
+      ),
+    ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2, end: 0);
   }
 
   Widget _buildThemeToggle() {
-    return Obx(() => Switch(
-          value: themeController.isDarkMode.value,
-          onChanged: (value) {
+    return Obx(() => GestureDetector(
+          onTap: () {
             themeController.toggleTheme();
             _setStatusBarStyle();
           },
-          activeColor: AppTheme.primaryColor,
+          child: Container(
+            width: 60,
+            height: 30,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: themeController.isDarkMode.value
+                  ? AppTheme.primaryColor
+                  : Colors.grey[300],
+            ),
+            child: Stack(
+              children: [
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  left: themeController.isDarkMode.value ? 30 : 0,
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
+                    child: Center(
+                      child: Icon(
+                        themeController.isDarkMode.value
+                            ? Icons.dark_mode
+                            : Icons.light_mode,
+                        size: 20,
+                        color: themeController.isDarkMode.value
+                            ? AppTheme.primaryColor
+                            : Colors.orange,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ));
   }
 
   Widget _buildHomeCard(HomeType homeType) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: size.height * 0.02),
-      child: Card(
-        color: AppTheme.surfaceColor(context),
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(15),
-          onTap: homeType.onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                _buildLottieAnimation(homeType),
-                const SizedBox(width: 16),
-                Expanded(child: _buildTitle(homeType)),
-                Icon(Icons.arrow_forward_ios, color: AppTheme.secondaryColor),
-              ],
-            ),
+    return Card(
+      color: AppTheme.surfaceColor(context),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: homeType.onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildLottieAnimation(homeType),
+              const SizedBox(height: 12),
+              _buildTitle(homeType),
+            ],
           ),
         ),
       ),
-    ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
+    )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1));
   }
 
   Widget _buildLottieAnimation(HomeType homeType) {
@@ -123,9 +203,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTitle(HomeType homeType) {
     return Text(
       homeType.title,
-      style: AppTheme.bodyLarge.copyWith(
+      style: AppTheme.bodyMedium.copyWith(
         fontWeight: FontWeight.w500,
       ),
+      textAlign: TextAlign.center,
     );
   }
 }

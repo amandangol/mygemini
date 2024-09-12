@@ -1,5 +1,3 @@
-// lib/ui/screens/chatbot/chat_detail_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:mygemini/controllers/chathistory_controller.dart';
 import 'package:mygemini/widget/message_card.dart';

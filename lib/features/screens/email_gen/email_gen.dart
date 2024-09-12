@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:mygemini/commonwidgets/action_button.dart';
+import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_button.dart';
 import 'package:mygemini/commonwidgets/custom_inputfield.dart';
+import 'package:mygemini/commonwidgets/error_message_widget.dart';
+import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/controllers/email_controller.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -21,19 +24,15 @@ class EmailWriterFeature extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text('AI Email Writer',
-            style: TextStyle(
-                color: Color(0xFF2C3E50), fontWeight: FontWeight.w300)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF2C3E50)),
-            onPressed: _controller.clearFields,
-          ),
-        ],
+      appBar: CustomAppBar(
+        title: 'AI Email Writer',
+        onBackPressed: () => Navigator.of(context).pop(),
+        onResetPressed: () {
+          _controller.clearFields();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('All fields have been reset')),
+          );
+        },
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -92,6 +91,7 @@ class EmailWriterFeature extends StatelessWidget {
                 : () async {
                     _controller.generateEmail();
                   },
+            iconData: _controller.isLoading.value ? null : Icons.email_outlined,
             child: Obx(
               () => _controller.isLoading.value
                   ? const CircularProgressIndicator(
@@ -111,19 +111,7 @@ class EmailWriterFeature extends StatelessWidget {
   }
 
   Widget _buildErrorMessage() {
-    return Obx(() => _controller.errorMessage.isNotEmpty
-        ? Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFDEDED),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              _controller.errorMessage.value,
-              style: const TextStyle(color: Color(0xFFE74C3C)),
-            ),
-          )
-        : const SizedBox.shrink());
+    return ErrorMessageWidget(errorMessage: _controller.errorMessage);
   }
 
   Widget _buildGeneratedEmail() {
@@ -146,12 +134,8 @@ class EmailWriterFeature extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                SelectableText(
-                  _controller.generatedEmail.value,
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 14,
-                  ),
+                SelectableMarkdown(
+                  data: _controller.generatedEmail.value,
                 ),
                 const SizedBox(height: 20),
                 Row(

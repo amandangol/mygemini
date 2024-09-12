@@ -6,7 +6,7 @@ class CustomInputField extends StatelessWidget {
   final String hint;
   final int maxLines;
   final bool readOnly;
-
+  final Icon? prefixIcon;
   const CustomInputField({
     Key? key,
     required this.controller,
@@ -14,6 +14,7 @@ class CustomInputField extends StatelessWidget {
     required this.hint,
     this.maxLines = 1,
     required this.readOnly,
+    this.prefixIcon,
   }) : super(key: key);
 
   @override
@@ -48,6 +49,7 @@ class CustomInputField extends StatelessWidget {
               readOnly: readOnly,
               controller: controller,
               decoration: InputDecoration(
+                prefixIcon: prefixIcon,
                 hintText: hint,
                 hintStyle:
                     TextStyle(color: const Color(0xFF2C3E50).withOpacity(0.4)),

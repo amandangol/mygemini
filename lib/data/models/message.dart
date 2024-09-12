@@ -1,24 +1,29 @@
-// lib/data/models/message.dart
+import 'dart:convert';
 
 enum MessageType { user, bot }
 
 class Message {
-  final String msg;
+  String msg;
   final MessageType msgType;
 
   Message({required this.msg, required this.msgType});
 
-  Map<String, dynamic> toJson() => {
-        'msg': msg,
-        'msgType': msgType.toString(),
-      };
+  Map<String, dynamic> toMap() {
+    return {
+      'msg': msg,
+      'msgType': msgType.index,
+    };
+  }
 
-  factory Message.fromJson(Map<String, dynamic> json) {
+  factory Message.fromMap(Map<String, dynamic> map) {
     return Message(
-      msg: json['msg'],
-      msgType: json['msgType'] == 'MessageType.user'
-          ? MessageType.user
-          : MessageType.bot,
+      msg: map['msg'],
+      msgType: MessageType.values[map['msgType']],
     );
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory Message.fromJson(String source) =>
+      Message.fromMap(json.decode(source));
 }

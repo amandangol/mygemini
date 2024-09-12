@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_inputfield.dart';
 import 'package:mygemini/controllers/translator_controller.dart';
 
@@ -18,13 +19,15 @@ class TranslatorFeature extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text('AI Translator',
-            style: TextStyle(
-                color: Color(0xFF2C3E50), fontWeight: FontWeight.w300)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: 'AI Translator',
+        onBackPressed: () => Navigator.of(context).pop(),
+        onResetPressed: () {
+          // controller.();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('All fields have been reset')),
+          );
+        },
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -203,9 +206,9 @@ class TranslatorFeature extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         ),
-        child: Row(
+        child: const Row(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             Text('Translate',
                 style: TextStyle(
                     fontSize: 18,

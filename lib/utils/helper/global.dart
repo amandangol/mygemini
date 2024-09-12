@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
 
-const appName = 'AI Assistant';
+const appName = 'MyGemini';
 
-late Size mq;
+late Size size;

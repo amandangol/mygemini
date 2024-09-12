@@ -52,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    mq = MediaQuery.sizeOf(context);
+    size = MediaQuery.sizeOf(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
@@ -63,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.symmetric(
-                  horizontal: mq.width * 0.04,
-                  vertical: mq.height * 0.02,
+                  horizontal: size.width * 0.04,
+                  vertical: size.height * 0.02,
                 ),
                 itemCount: HomeType.values.length,
                 itemBuilder: (context, index) {
@@ -99,10 +99,9 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text(
                 appName,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Color(0xFF2C3E50),
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
               _buildThemeToggle(),
@@ -127,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHomeCard(HomeType homeType) {
     return Padding(
-      padding: EdgeInsets.only(bottom: mq.height * 0.02),
+      padding: EdgeInsets.only(bottom: size.height * 0.02),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

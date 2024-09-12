@@ -40,8 +40,8 @@ class HomeCard extends StatelessWidget {
 
   Widget _buildLottieAnimation() {
     return Container(
-      width: mq.width * 0.15,
-      height: mq.width * 0.15,
+      width: size.width * 0.15,
+      height: size.width * 0.15,
       padding: homeType.padding,
       child: Lottie.asset(
         'assets/lottie/${homeType.lottie}',

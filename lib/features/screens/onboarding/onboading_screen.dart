@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mygemini/data/models/onboard.dart';
-import 'package:mygemini/ui/screens/home/home_screen.dart';
+import 'package:mygemini/features/screens/home/home_screen.dart';
 import 'package:mygemini/utils/helper/global.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -39,7 +39,8 @@ class OnboardingScreen extends StatelessWidget {
             children: [
               // animation
               Lottie.asset('assets/lottie/${list[index].lottie}.json',
-                  height: mq.height * .6, width: isLast ? mq.width * .7 : null),
+                  height: size.height * .6,
+                  width: isLast ? size.width * .7 : null),
 
               // title
               Text(
@@ -52,12 +53,12 @@ class OnboardingScreen extends StatelessWidget {
 
               // add some spacing
               SizedBox(
-                height: mq.height * .015,
+                height: size.height * .015,
               ),
 
               // subtitle
               SizedBox(
-                width: mq.width * .7,
+                width: size.width * .7,
                 child: Text(
                   list[index].subtitle,
                   style: const TextStyle(
@@ -93,7 +94,7 @@ class OnboardingScreen extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
-                    minimumSize: Size(mq.width * .3, 50),
+                    minimumSize: Size(size.width * .3, 50),
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white),
                 onPressed: () {

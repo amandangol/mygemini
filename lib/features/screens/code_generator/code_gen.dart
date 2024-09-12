@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/action_button.dart';
+import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_button.dart';
 import 'package:mygemini/commonwidgets/custom_inputfield.dart';
+import 'package:mygemini/commonwidgets/error_message_widget.dart';
+import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/controllers/codegenerator_controller.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -17,13 +20,15 @@ class AiCodeGenerator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F4F8),
-      appBar: AppBar(
-        title: const Text('AI Code Gen',
-            style: TextStyle(
-                color: Color(0xFF2C3E50), fontWeight: FontWeight.w300)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: 'AI Code Gen',
+        onBackPressed: () => Navigator.of(context).pop(),
+        onResetPressed: () {
+          controller.clearFields();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('All fields have been reset')),
+          );
+        },
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -80,6 +85,7 @@ class AiCodeGenerator extends StatelessWidget {
                 : () async {
                     controller.generateCode();
                   },
+            iconData: controller.isLoading.value ? null : Icons.code_outlined,
             child: controller.isLoading.value
                 ? const CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -98,11 +104,7 @@ class AiCodeGenerator extends StatelessWidget {
 
   Widget _buildOutputSection() {
     if (controller.errorMessage.isNotEmpty) {
-      return _buildMessageBox(
-        message: controller.errorMessage.value,
-        backgroundColor: const Color(0xFFFDEDED),
-        textColor: const Color(0xFFE74C3C),
-      );
+      return ErrorMessageWidget(errorMessage: controller.errorMessage);
     } else if (controller.generatedCode.isNotEmpty) {
       return _buildMessageBox(
         message: controller.generatedCode.value,
@@ -147,13 +149,8 @@ class AiCodeGenerator extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                 ],
-                SelectableText(
-                  message,
-                  style: TextStyle(
-                    color: textColor,
-                    fontFamily: 'Courier',
-                    fontSize: 14,
-                  ),
+                SelectableMarkdown(
+                  data: message,
                 ),
               ],
             ),

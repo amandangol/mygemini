@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mygemini/ui/screens/home/home_screen.dart';
-import 'package:mygemini/ui/screens/onboarding/onboading_screen.dart';
+import 'package:mygemini/features/screens/home/home_screen.dart';
+import 'package:mygemini/features/screens/onboarding/onboading_screen.dart';
 import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/widget/custom_loading.dart';
@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     // Initializing device size
-    mq = MediaQuery.sizeOf(context);
+    size = MediaQuery.sizeOf(context);
 
     return Scaffold(
       body: SizedBox(
@@ -46,10 +46,10 @@ class _SplashScreenState extends State<SplashScreen> {
                 borderRadius: BorderRadius.all(Radius.circular(20)),
               ),
               child: Padding(
-                padding: EdgeInsets.all(mq.width * .05),
+                padding: EdgeInsets.all(size.width * .05),
                 child: Image.asset(
                   'assets/images/logo-chatbot.png',
-                  width: mq.width * .45,
+                  width: size.width * .45,
                 ),
               ),
             ),

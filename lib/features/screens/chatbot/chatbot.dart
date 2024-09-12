@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/controllers/chat_controller.dart';
 import 'package:mygemini/controllers/chathistory_controller.dart';
-import 'package:mygemini/ui/screens/chatbot/chat_history_page.dart';
+import 'package:mygemini/features/screens/chatbot/chat_history_page.dart';
 import 'package:mygemini/widget/message_card.dart';
 
 class Chatbot extends StatefulWidget {

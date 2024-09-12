@@ -3,7 +3,18 @@ import 'package:flutter/material.dart';
 class CustomButton extends StatelessWidget {
   final Widget? child;
   final VoidCallback? onPressed;
-  CustomButton({super.key, this.child, this.onPressed});
+  final IconData? iconData;
+  final double? iconSize;
+  final Color? iconColor;
+
+  CustomButton({
+    super.key,
+    this.child,
+    this.onPressed,
+    this.iconData,
+    this.iconSize = 24.0,
+    this.iconColor = Colors.white,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +36,29 @@ class CustomButton extends StatelessWidget {
         ],
       ),
       child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        ),
-        child: child,
-      ),
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent,
+            shadowColor: Colors.transparent,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              child ?? const SizedBox.shrink(),
+              if (iconData != null) ...[
+                const SizedBox(
+                  width: 8,
+                ),
+                Icon(
+                  iconData,
+                  size: iconSize,
+                  color: iconColor,
+                )
+              ]
+            ],
+          )),
     );
-    // .animate(target: controller.isLoading.value ? 1 : 0)
-    // .shimmer(duration: 1000.ms, color: Colors.white.withOpacity(0.3))
-    // .shake(hz: 4, curve: Curves.easeInOutCubic);
   }
 }

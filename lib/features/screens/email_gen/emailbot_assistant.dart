@@ -3,19 +3,20 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
-import 'package:mygemini/features/screens/document_analyzer/controller/documentanalyzer_controller.dart';
-import 'package:mygemini/features/screens/document_analyzer/model/docbot_model.dart';
+import 'package:mygemini/features/screens/email_gen/controller/email_controller.dart';
+import 'package:mygemini/features/screens/email_gen/model/emailmessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:share_plus/share_plus.dart';
 
-class DocumentAnalyzerFeature extends StatelessWidget {
-  DocumentAnalyzerFeature({Key? key}) : super(key: key);
+class AiEmailBot extends StatelessWidget {
+  AiEmailBot({super.key});
 
-  final DocumentAnalyzerController _controller =
-      Get.put(DocumentAnalyzerController());
+  final EmailBotController controller = Get.put(EmailBotController());
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       appBar: _buildCustomAppBar(context),
@@ -23,7 +24,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Obx(() => _buildAnalyzerMessages(context)),
+              child: Obx(() => _buildEmailMessages(context)),
             ),
             _buildInputArea(context),
           ],
@@ -36,7 +37,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
     return AppBar(
       backgroundColor: AppTheme.surfaceColor(context),
       elevation: 0,
-      title: Text('DocAnalyzer Assistant', style: AppTheme.headlineMedium),
+      title: Text('EmailBot Assistant', style: AppTheme.headlineMedium),
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios,
             color: Theme.of(context).iconTheme.color),
@@ -46,7 +47,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.refresh, color: Theme.of(context).iconTheme.color),
           onPressed: () {
-            _controller.resetConversation();
+            controller.resetConversation();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Conversation has been reset',
@@ -61,18 +62,18 @@ class DocumentAnalyzerFeature extends StatelessWidget {
     );
   }
 
-  Widget _buildAnalyzerMessages(BuildContext context) {
+  Widget _buildEmailMessages(BuildContext context) {
     return ListView.builder(
       padding: AppTheme.defaultPadding,
-      itemCount: _controller.analyzerMessages.length,
+      itemCount: controller.emailMessages.length,
       itemBuilder: (context, index) {
-        final message = _controller.analyzerMessages[index];
+        final message = controller.emailMessages[index];
         return _buildMessageBubble(context, message);
       },
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, AnalyzerMessage message) {
+  Widget _buildMessageBubble(BuildContext context, EmailMessage message) {
     final isUserMessage = message.isUser;
     final bubbleColor =
         isUserMessage ? AppTheme.primaryColor : AppTheme.surfaceColor(context);
@@ -100,7 +101,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isUserMessage ? 'You' : 'DocAnalyzer',
+              isUserMessage ? 'You' : 'EmailBot',
               style: AppTheme.bodyLarge.copyWith(
                 fontWeight: FontWeight.bold,
                 color: textColor,
@@ -111,7 +112,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
               data: message.content,
               textColor: textColor,
             ),
-            if (message.isAnalysis)
+            if (message.isEmail)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: Row(
@@ -174,32 +175,26 @@ class DocumentAnalyzerFeature extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _controller.userInputController,
-                  style: AppTheme.bodyMedium,
-                  decoration: InputDecoration(
-                    hintText: 'Ask DocAnalyzer about the document...',
-                    hintStyle: AppTheme.bodyMedium
-                        .copyWith(color: Theme.of(context).hintColor),
-                    border: Theme.of(context).inputDecorationTheme.border,
-                    filled: true,
-                    fillColor: AppTheme.primaryColorLight(context),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                  ),
-                ),
+          Expanded(
+            child: TextField(
+              controller: controller.userInputController,
+              style: AppTheme.bodyMedium,
+              decoration: InputDecoration(
+                hintText: 'Ask EmailBot to generate an email...',
+                hintStyle: AppTheme.bodyMedium
+                    .copyWith(color: Theme.of(context).hintColor),
+                border: Theme.of(context).inputDecorationTheme.border,
+                filled: true,
+                fillColor: AppTheme.primaryColorLight(context),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               ),
-              const SizedBox(width: 12),
-              Obx(() => _buildSendButton(context)),
-            ],
+            ),
           ),
-          const SizedBox(height: 8),
-          _buildFileUploadButton(context),
+          const SizedBox(width: 12),
+          Obx(() => _buildSendButton(context)),
         ],
       ),
     );
@@ -208,14 +203,14 @@ class DocumentAnalyzerFeature extends StatelessWidget {
   Widget _buildSendButton(BuildContext context) {
     return ElevatedButton(
       onPressed:
-          _controller.isLoading.value ? null : () => _controller.sendMessage(),
+          controller.isLoading.value ? null : () => controller.sendMessage(),
       style: ElevatedButton.styleFrom(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
         shape: const CircleBorder(),
         padding: const EdgeInsets.all(16),
       ),
-      child: _controller.isLoading.value
+      child: controller.isLoading.value
           ? const SizedBox(
               width: 24,
               height: 24,
@@ -228,27 +223,11 @@ class DocumentAnalyzerFeature extends StatelessWidget {
     );
   }
 
-  Widget _buildFileUploadButton(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () => _controller.pickFile(),
-      icon: const Icon(Icons.upload_file),
-      label: const Text('Upload Document'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      ),
-    );
-  }
-
   void _copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Data copied to clipboard', style: AppTheme.bodyMedium),
+        content: Text('Email copied to clipboard', style: AppTheme.bodyMedium),
         backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
         duration: const Duration(seconds: 2),
       ),
@@ -256,6 +235,6 @@ class DocumentAnalyzerFeature extends StatelessWidget {
   }
 
   void _shareContent(String text) {
-    Share.share(text, subject: 'Generated data from DocAnalyzer');
+    Share.share(text, subject: 'Generated Email from EmailBot Assistant');
   }
 }

@@ -34,6 +34,7 @@ dependencies:
   device_info_plus: ^10.1.2
   syncfusion_flutter_pdf: ^26.2.14
   flutter_markdown: ^0.7.3+1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

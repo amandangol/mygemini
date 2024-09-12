@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:mygemini/controllers/chat_controller.dart';
-import 'package:mygemini/controllers/chathistory_controller.dart';
+import 'package:mygemini/features/screens/chatbot/controller/chat_controller.dart';
+import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
 import 'package:intl/intl.dart';
 
 class ChatHistoryPage extends StatelessWidget {
   ChatHistoryPage({Key? key}) : super(key: key);
 
-  final ChathistoryController controller = Get.find<ChathistoryController>();
+  final ChatHistoryController controller = Get.find<ChatHistoryController>();
   final ChatController chatController = Get.find<ChatController>();
 
   @override

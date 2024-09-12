@@ -3,7 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class APIs {
-  static Future<String> geminiAPI(String prompt) async {
+  static Future<String> geminiAPI(
+      List<Map<String, String>> conversationContext) async {
     try {
       final apiKey = dotenv.env['GEMINI_API_KEY'];
       if (apiKey == null || apiKey.isEmpty) {
@@ -12,8 +13,14 @@ class APIs {
       }
 
       final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
-      final content = Content.text(prompt);
-      final response = await model.generateContent([content]);
+
+      // Convert conversation context to Content objects
+      final List<Content> history = conversationContext.map((message) {
+        return Content.text(message['content'] ?? '');
+      }).toList();
+
+      // Generate content with history
+      final response = await model.generateContent(history);
 
       print('Response from Gemini AI: ${response.text}');
       return response.text ?? 'No response text';

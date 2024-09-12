@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mygemini/controllers/chathistory_controller.dart';
+import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
 import 'package:mygemini/features/screens/chatbot/chatbot.dart';
 import 'package:mygemini/features/screens/document_analyzer/document_analyzer.dart';
-import 'package:mygemini/features/screens/email_gen/email_gen.dart';
+import 'package:mygemini/features/screens/email_gen/emailbot_assistant.dart';
 import 'package:mygemini/features/screens/image_captioner/image_captioner.dart';
-import 'package:mygemini/features/screens/translation/translator_screen.dart';
+import 'package:mygemini/features/screens/translator/translator_screen.dart';
 
-import '../../features/screens/code_generator/code_gen.dart';
+import '../../features/screens/code_generator/codebot_assistant.dart';
 
 enum HomeType {
   aiChatBot,
   aiTranslator,
   aiEmailWriter,
-  aiCodeGenerator,
+  aiCodeBot,
   aiImageCaptioner,
   aiDocumentAnalyzer
 }
@@ -23,10 +23,10 @@ extension MyHomeType on HomeType {
   String get title => switch (this) {
         HomeType.aiChatBot => 'AI ChatBot',
         HomeType.aiTranslator => 'AI Translator',
-        HomeType.aiEmailWriter => 'AI Email Writer',
-        HomeType.aiCodeGenerator => 'AI Code Generator',
+        HomeType.aiEmailWriter => 'EmailBot Assistant',
+        HomeType.aiCodeBot => 'CodeBot Assistant',
         HomeType.aiImageCaptioner => 'AI Image Caption',
-        HomeType.aiDocumentAnalyzer => 'AI Document Analyzer',
+        HomeType.aiDocumentAnalyzer => 'DocAnalyzer Assistant',
       };
 
   // lottie
@@ -34,7 +34,7 @@ extension MyHomeType on HomeType {
         HomeType.aiChatBot => 'ai_hand_waving.json',
         HomeType.aiTranslator => 'ai_ask_me.json',
         HomeType.aiEmailWriter => 'ai_ask_me.json',
-        HomeType.aiCodeGenerator => 'ai_ask_me.json',
+        HomeType.aiCodeBot => 'ai_ask_me.json',
         HomeType.aiImageCaptioner => 'ai_ask_me.json',
         HomeType.aiDocumentAnalyzer => 'ai_ask_me.json'
       };
@@ -44,7 +44,7 @@ extension MyHomeType on HomeType {
         HomeType.aiChatBot => true,
         HomeType.aiTranslator => true,
         HomeType.aiEmailWriter => false,
-        HomeType.aiCodeGenerator => true,
+        HomeType.aiCodeBot => true,
         HomeType.aiImageCaptioner => true,
         HomeType.aiDocumentAnalyzer => true,
       };
@@ -54,7 +54,7 @@ extension MyHomeType on HomeType {
         HomeType.aiChatBot => EdgeInsets.zero,
         HomeType.aiTranslator => EdgeInsets.zero,
         HomeType.aiEmailWriter => EdgeInsets.zero,
-        HomeType.aiCodeGenerator => EdgeInsets.zero,
+        HomeType.aiCodeBot => EdgeInsets.zero,
         HomeType.aiImageCaptioner => EdgeInsets.zero,
         HomeType.aiDocumentAnalyzer => EdgeInsets.zero,
       };
@@ -62,14 +62,14 @@ extension MyHomeType on HomeType {
   // for navigation
   VoidCallback get onTap => switch (this) {
         HomeType.aiChatBot => () => Get.to(
-              () => const Chatbot(),
+              () => Chatbot(),
               binding: BindingsBuilder(() {
-                Get.lazyPut(() => ChathistoryController(), fenix: true);
+                Get.lazyPut(() => ChatHistoryController(), fenix: true);
               }),
             ),
-        HomeType.aiTranslator => () => Get.to(() => TranslatorFeature()),
-        HomeType.aiEmailWriter => () => Get.to(() => EmailWriterFeature()),
-        HomeType.aiCodeGenerator => () => Get.to(() => AiCodeGenerator()),
+        HomeType.aiTranslator => () => Get.to(() => AiTranslatorBot()),
+        HomeType.aiEmailWriter => () => Get.to(() => AiEmailBot()),
+        HomeType.aiCodeBot => () => Get.to(() => AiCodeBot()),
         HomeType.aiImageCaptioner => () => Get.to(() => ImageCaptioner()),
         HomeType.aiDocumentAnalyzer => () =>
             Get.to(() => DocumentAnalyzerFeature()),

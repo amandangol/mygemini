@@ -3,16 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
-import 'package:mygemini/features/screens/document_analyzer/controller/documentanalyzer_controller.dart';
-import 'package:mygemini/features/screens/document_analyzer/model/docbot_model.dart';
+import 'package:mygemini/features/screens/code_generator/controller/codebot_controller.dart';
+import 'package:mygemini/features/screens/code_generator/model/codemessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:share_plus/share_plus.dart';
 
-class DocumentAnalyzerFeature extends StatelessWidget {
-  DocumentAnalyzerFeature({Key? key}) : super(key: key);
+class AiCodeBot extends StatelessWidget {
+  AiCodeBot({Key? key}) : super(key: key);
 
-  final DocumentAnalyzerController _controller =
-      Get.put(DocumentAnalyzerController());
+  final CodeBotController controller = Get.put(CodeBotController());
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Obx(() => _buildAnalyzerMessages(context)),
+              child: Obx(() => _buildChatMessages(context)),
             ),
             _buildInputArea(context),
           ],
@@ -36,7 +35,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
     return AppBar(
       backgroundColor: AppTheme.surfaceColor(context),
       elevation: 0,
-      title: Text('DocAnalyzer Assistant', style: AppTheme.headlineMedium),
+      title: Text('CodeBot Assistant', style: AppTheme.headlineMedium),
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios,
             color: Theme.of(context).iconTheme.color),
@@ -46,7 +45,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
         IconButton(
           icon: Icon(Icons.refresh, color: Theme.of(context).iconTheme.color),
           onPressed: () {
-            _controller.resetConversation();
+            controller.resetConversation();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Conversation has been reset',
@@ -61,18 +60,18 @@ class DocumentAnalyzerFeature extends StatelessWidget {
     );
   }
 
-  Widget _buildAnalyzerMessages(BuildContext context) {
+  Widget _buildChatMessages(BuildContext context) {
     return ListView.builder(
       padding: AppTheme.defaultPadding,
-      itemCount: _controller.analyzerMessages.length,
+      itemCount: controller.chatMessages.length,
       itemBuilder: (context, index) {
-        final message = _controller.analyzerMessages[index];
+        final message = controller.chatMessages[index];
         return _buildMessageBubble(context, message);
       },
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, AnalyzerMessage message) {
+  Widget _buildMessageBubble(BuildContext context, ChatMessage message) {
     final isUserMessage = message.isUser;
     final bubbleColor =
         isUserMessage ? AppTheme.primaryColor : AppTheme.surfaceColor(context);
@@ -100,7 +99,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isUserMessage ? 'You' : 'DocAnalyzer',
+              isUserMessage ? 'You' : 'CodeBot',
               style: AppTheme.bodyLarge.copyWith(
                 fontWeight: FontWeight.bold,
                 color: textColor,
@@ -108,10 +107,11 @@ class DocumentAnalyzerFeature extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             SelectableMarkdown(
-              data: message.content,
-              textColor: textColor,
+              data: message.content, textColor: textColor,
+
+              // You might want to adjust the style of SelectableMarkdown if needed
             ),
-            if (message.isAnalysis)
+            if (message.isCode)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: Row(
@@ -174,32 +174,26 @@ class DocumentAnalyzerFeature extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _controller.userInputController,
-                  style: AppTheme.bodyMedium,
-                  decoration: InputDecoration(
-                    hintText: 'Ask DocAnalyzer about the document...',
-                    hintStyle: AppTheme.bodyMedium
-                        .copyWith(color: Theme.of(context).hintColor),
-                    border: Theme.of(context).inputDecorationTheme.border,
-                    filled: true,
-                    fillColor: AppTheme.primaryColorLight(context),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                  ),
-                ),
+          Expanded(
+            child: TextField(
+              controller: controller.userInputController,
+              style: AppTheme.bodyMedium,
+              decoration: InputDecoration(
+                hintText: 'Ask CodeBot to generate code...',
+                hintStyle: AppTheme.bodyMedium
+                    .copyWith(color: Theme.of(context).hintColor),
+                border: Theme.of(context).inputDecorationTheme.border,
+                filled: true,
+                fillColor: AppTheme.primaryColorLight(context),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               ),
-              const SizedBox(width: 12),
-              Obx(() => _buildSendButton(context)),
-            ],
+            ),
           ),
-          const SizedBox(height: 8),
-          _buildFileUploadButton(context),
+          const SizedBox(width: 12),
+          Obx(() => _buildSendButton(context)),
         ],
       ),
     );
@@ -208,14 +202,14 @@ class DocumentAnalyzerFeature extends StatelessWidget {
   Widget _buildSendButton(BuildContext context) {
     return ElevatedButton(
       onPressed:
-          _controller.isLoading.value ? null : () => _controller.sendMessage(),
+          controller.isLoading.value ? null : () => controller.sendMessage(),
       style: ElevatedButton.styleFrom(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,
         shape: const CircleBorder(),
         padding: const EdgeInsets.all(16),
       ),
-      child: _controller.isLoading.value
+      child: controller.isLoading.value
           ? const SizedBox(
               width: 24,
               height: 24,
@@ -228,27 +222,11 @@ class DocumentAnalyzerFeature extends StatelessWidget {
     );
   }
 
-  Widget _buildFileUploadButton(BuildContext context) {
-    return ElevatedButton.icon(
-      onPressed: () => _controller.pickFile(),
-      icon: const Icon(Icons.upload_file),
-      label: const Text('Upload Document'),
-      style: ElevatedButton.styleFrom(
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      ),
-    );
-  }
-
   void _copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Data copied to clipboard', style: AppTheme.bodyMedium),
+        content: Text('Code copied to clipboard', style: AppTheme.bodyMedium),
         backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
         duration: const Duration(seconds: 2),
       ),
@@ -256,6 +234,6 @@ class DocumentAnalyzerFeature extends StatelessWidget {
   }
 
   void _shareContent(String text) {
-    Share.share(text, subject: 'Generated data from DocAnalyzer');
+    Share.share(text, subject: 'Generated Code from CodeBot Assistant');
   }
 }

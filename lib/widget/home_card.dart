@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mygemini/data/models/home_type.dart';
 import 'package:mygemini/utils/helper/global.dart';
+import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeCard extends StatelessWidget {
   final HomeType homeType;
@@ -14,7 +15,7 @@ class HomeCard extends StatelessWidget {
     Animate.restartOnHotReload = true;
 
     return Card(
-      color: Colors.white,
+      color: AppTheme.surfaceColor(context),
       elevation: 0,
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -29,8 +30,8 @@ class HomeCard extends StatelessWidget {
             children: [
               _buildLottieAnimation(),
               const SizedBox(width: 16),
-              Expanded(child: _buildTitle()),
-              const Icon(Icons.arrow_forward_ios, color: Color(0xFF95A5A6)),
+              Expanded(child: _buildTitle(context)),
+              Icon(Icons.arrow_forward_ios, color: AppTheme.secondaryColor),
             ],
           ),
         ),
@@ -50,14 +51,11 @@ class HomeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(BuildContext context) {
     return Text(
       homeType.title,
-      style: const TextStyle(
-        fontSize: 16,
+      style: AppTheme.bodyLarge.copyWith(
         fontWeight: FontWeight.w500,
-        color: Color(0xFF2C3E50),
-        letterSpacing: 0.5,
       ),
     );
   }

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
 import 'package:mygemini/data/models/home_type.dart';
 import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/widget/home_card.dart';
+import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,7 +19,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final themeController = Get.put(ThemeController());
-  final TextEditingController _usernameController = TextEditingController();
 
   @override
   void initState() {
@@ -25,13 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _setStatusBarStyle();
     Pref.showOnboarding = false;
-    // _usernameController.text = Pref.username ?? '';
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    super.dispose();
   }
 
   void _setStatusBarStyle() {
@@ -42,75 +36,37 @@ class _HomeScreenState extends State<HomeScreen> {
     ));
   }
 
-  void _saveUsername() {
-    // Pref.username = _usernameController.text;
-    FocusScope.of(context).unfocus();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Username saved: ${_usernameController.text}')),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.sizeOf(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F4F8),
+      backgroundColor: AppTheme.backgroundColor(context),
+      appBar: _buildAppBar(),
       body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(
-                  horizontal: size.width * 0.04,
-                  vertical: size.height * 0.02,
-                ),
-                itemCount: HomeType.values.length,
-                itemBuilder: (context, index) {
-                  return _buildHomeCard(HomeType.values[index]);
-                },
-              ),
-            ),
-          ],
+        child: ListView.builder(
+          padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.04,
+            vertical: size.height * 0.02,
+          ),
+          itemCount: HomeType.values.length,
+          itemBuilder: (context, index) {
+            return _buildHomeCard(HomeType.values[index]);
+          },
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                appName,
-                style: TextStyle(
-                  color: Color(0xFF2C3E50),
-                  fontSize: 24,
-                ),
-              ),
-              _buildThemeToggle(),
-            ],
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    ).animate().fadeIn(duration: 300.ms).slideY(begin: -0.1, end: 0);
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppTheme.surfaceColor(context),
+      elevation: 0,
+      title: Text(appName, style: AppTheme.headlineMedium),
+      actions: [
+        _buildThemeToggle(),
+      ],
+    );
   }
 
   Widget _buildThemeToggle() {
@@ -120,27 +76,56 @@ class _HomeScreenState extends State<HomeScreen> {
             themeController.toggleTheme();
             _setStatusBarStyle();
           },
-          activeColor: const Color(0xFF3498DB),
+          activeColor: AppTheme.primaryColor,
         ));
   }
 
   Widget _buildHomeCard(HomeType homeType) {
     return Padding(
       padding: EdgeInsets.only(bottom: size.height * 0.02),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
+      child: Card(
+        color: AppTheme.surfaceColor(context),
+        elevation: 2,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
-        child: HomeCard(homeType: homeType),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(15),
+          onTap: homeType.onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                _buildLottieAnimation(homeType),
+                const SizedBox(width: 16),
+                Expanded(child: _buildTitle(homeType)),
+                Icon(Icons.arrow_forward_ios, color: AppTheme.secondaryColor),
+              ],
+            ),
+          ),
+        ),
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  Widget _buildLottieAnimation(HomeType homeType) {
+    return Container(
+      width: size.width * 0.15,
+      height: size.width * 0.15,
+      padding: homeType.padding,
+      child: Lottie.asset(
+        'assets/lottie/${homeType.lottie}',
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+
+  Widget _buildTitle(HomeType homeType) {
+    return Text(
+      homeType.title,
+      style: AppTheme.bodyLarge.copyWith(
+        fontWeight: FontWeight.w500,
+      ),
+    );
   }
 }

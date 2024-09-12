@@ -33,8 +33,8 @@ class MyApp extends StatelessWidget {
       () => GetMaterialApp(
         title: appName,
         debugShowCheckedModeBanner: false,
-        theme: lightTheme, // Light Theme
-        darkTheme: darkTheme, // Dark Theme
+        theme: AppTheme.lightTheme, // Light Theme
+        darkTheme: AppTheme.darkTheme, // Dark Theme
         themeMode: themeController.theme, // Set theme mode
         home: const SplashScreen(),
       ),

@@ -66,8 +66,7 @@ class _ChatbotState extends State<Chatbot> {
               fontWeight: FontWeight.bold,
             ),
           )),
-      backgroundColor:
-          Colors.transparent, // Transparent background for gradient
+      backgroundColor: Colors.transparent,
       elevation: 0,
       flexibleSpace: Container(
         decoration: BoxDecoration(

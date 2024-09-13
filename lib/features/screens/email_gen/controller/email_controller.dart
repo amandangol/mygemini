@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mygemini/data/services/api_service.dart';
 import 'package:mygemini/features/screens/email_gen/model/emailmessage_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EmailBotController extends GetxController {
   final userInputController = TextEditingController();
 
   var emailMessages = <EmailMessage>[].obs;
   var isLoading = false.obs;
+  late SharedPreferences _prefs;
 
   var currentState = EmailState.askingRecipient.obs;
   var recipient = ''.obs;
@@ -15,10 +19,19 @@ class EmailBotController extends GetxController {
   var body = ''.obs;
   var lastGeneratedEmail = ''.obs;
 
+  static const int maxConversationLength = 5;
+  var isMaxLengthReached = false.obs;
+
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    _addBotMessage("Hi! I'm EmailBot. Who would you like to send an email to?");
+    _prefs = await SharedPreferences.getInstance();
+    _loadConversation();
+    if (emailMessages.isEmpty) {
+      _addBotMessage(
+          "Hi! I'm EmailBot. Who would you like to send an email to?");
+    }
+    _checkMaxLength();
   }
 
   @override
@@ -27,8 +40,49 @@ class EmailBotController extends GetxController {
     super.onClose();
   }
 
+  void _loadConversation() {
+    final savedMessages = _prefs.getStringList('emailMessages');
+    if (savedMessages != null) {
+      emailMessages.value = savedMessages
+          .map((e) => EmailMessage.fromJson(json.decode(e)))
+          .toList();
+      // Trim the conversation if it's too long
+      if (emailMessages.length > maxConversationLength) {
+        emailMessages.value =
+            emailMessages.sublist(emailMessages.length - maxConversationLength);
+      }
+      currentState.value =
+          EmailState.values[_prefs.getInt('currentState') ?? 0];
+      recipient.value = _prefs.getString('recipient') ?? '';
+      subject.value = _prefs.getString('subject') ?? '';
+      body.value = _prefs.getString('body') ?? '';
+      lastGeneratedEmail.value = _prefs.getString('lastGeneratedEmail') ?? '';
+    }
+    _checkMaxLength();
+  }
+
+  void _checkMaxLength() {
+    isMaxLengthReached.value = emailMessages.length >= maxConversationLength;
+  }
+
+  Future<void> _saveConversation() async {
+    // Trim the conversation if it's too long before saving
+    if (emailMessages.length > maxConversationLength) {
+      emailMessages.value =
+          emailMessages.sublist(emailMessages.length - maxConversationLength);
+    }
+    await _prefs.setStringList('emailMessages',
+        emailMessages.map((e) => json.encode(e.toJson())).toList());
+    await _prefs.setInt('currentState', currentState.value.index);
+    await _prefs.setString('recipient', recipient.value);
+    await _prefs.setString('subject', subject.value);
+    await _prefs.setString('body', body.value);
+    await _prefs.setString('lastGeneratedEmail', lastGeneratedEmail.value);
+    _checkMaxLength();
+  }
+
   Future<void> sendMessage() async {
-    if (userInputController.text.isEmpty) return;
+    if (userInputController.text.isEmpty || isMaxLengthReached.value) return;
 
     final userMessage = userInputController.text;
     _addUserMessage(userMessage);
@@ -63,6 +117,7 @@ class EmailBotController extends GetxController {
           "I'm sorry, I encountered an error. Can you please try again?");
     } finally {
       isLoading.value = false;
+      await _saveConversation(); // Save after each interaction
     }
   }
 
@@ -116,23 +171,27 @@ class EmailBotController extends GetxController {
     }
   }
 
-  void _addUserMessage(String message) {
-    emailMessages.add(EmailMessage(content: message, isUser: true));
-  }
-
-  void _addBotMessage(String message, {bool isEmail = false}) {
-    emailMessages
-        .add(EmailMessage(content: message, isUser: false, isEmail: isEmail));
-  }
-
-  void resetConversation() {
+  Future<void> resetConversation() async {
     emailMessages.clear();
     currentState.value = EmailState.askingRecipient;
     recipient.value = '';
     subject.value = '';
     body.value = '';
     lastGeneratedEmail.value = '';
+    isMaxLengthReached.value = false;
     _addBotMessage("Let's start over! Who would you like to send an email to?");
+    await _saveConversation(); // Save the reset state
+  }
+
+  void _addUserMessage(String message) {
+    emailMessages.add(EmailMessage(content: message, isUser: true));
+    _saveConversation();
+  }
+
+  void _addBotMessage(String message, {bool isEmail = false}) {
+    emailMessages
+        .add(EmailMessage(content: message, isUser: false, isEmail: isEmail));
+    _saveConversation();
   }
 }
 

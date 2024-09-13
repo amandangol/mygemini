@@ -8,4 +8,21 @@ class EmailMessage {
     required this.isUser,
     this.isEmail = false,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'content': content,
+      'isUser': isUser,
+      'isEmail': isEmail,
+    };
+  }
+
+  // Create a EmailMessage object from a Map
+  factory EmailMessage.fromJson(Map<String, dynamic> json) {
+    return EmailMessage(
+      content: json['content'],
+      isUser: json['isUser'],
+      isEmail: json['isEmail'] ?? false,
+    );
+  }
 }

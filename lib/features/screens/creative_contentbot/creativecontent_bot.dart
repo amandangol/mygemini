@@ -135,6 +135,8 @@ class CreativeBotView extends StatelessWidget {
       userInputController: controller.userInputController,
       isLoading: controller.isLoading,
       sendMessage: controller.sendMessage,
+      isMaxLengthReached: controller.isMaxLengthReached,
+      hintText: 'Ask CreativeBot to generate content...',
     );
   }
 }

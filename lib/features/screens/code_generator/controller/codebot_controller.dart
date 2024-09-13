@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mygemini/data/services/api_service.dart';
 import 'package:mygemini/features/screens/code_generator/model/codemessage_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CodeBotController extends GetxController {
   final userInputController = TextEditingController();
 
-  var chatMessages = <ChatMessage>[].obs;
+  var chatMessages = <CodeBotMessage>[].obs;
   var isLoading = false.obs;
+  late SharedPreferences _prefs;
 
   var currentState = ConversationState.askingLanguage.obs;
   var language = ''.obs;
@@ -15,11 +19,19 @@ class CodeBotController extends GetxController {
   var additionalDetails = ''.obs;
   var lastGeneratedCode = ''.obs;
 
+  static const int maxConversationLength = 50;
+  var isMaxLengthReached = false.obs;
+
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    _addBotMessage(
-        "Hi! I'm CodeBot. What programming language would you like to generate code for?");
+    _prefs = await SharedPreferences.getInstance();
+    _loadConversation();
+    if (chatMessages.isEmpty) {
+      _addBotMessage(
+          "Hi! I'm CodeBot. What programming language would you like to generate code for?");
+    }
+    _checkMaxLength();
   }
 
   @override
@@ -28,8 +40,47 @@ class CodeBotController extends GetxController {
     super.onClose();
   }
 
+  void _loadConversation() {
+    final savedMessages = _prefs.getStringList('chatMessages');
+    if (savedMessages != null) {
+      chatMessages.value = savedMessages
+          .map((e) => CodeBotMessage.fromJson(json.decode(e)))
+          .toList();
+      if (chatMessages.length > maxConversationLength) {
+        chatMessages.value =
+            chatMessages.sublist(chatMessages.length - maxConversationLength);
+      }
+      currentState.value =
+          ConversationState.values[_prefs.getInt('currentState') ?? 0];
+      language.value = _prefs.getString('language') ?? '';
+      functionality.value = _prefs.getString('functionality') ?? '';
+      additionalDetails.value = _prefs.getString('additionalDetails') ?? '';
+      lastGeneratedCode.value = _prefs.getString('lastGeneratedCode') ?? '';
+    }
+    _checkMaxLength();
+  }
+
+  void _checkMaxLength() {
+    isMaxLengthReached.value = chatMessages.length >= maxConversationLength;
+  }
+
+  Future<void> _saveConversation() async {
+    if (chatMessages.length > maxConversationLength) {
+      chatMessages.value =
+          chatMessages.sublist(chatMessages.length - maxConversationLength);
+    }
+    await _prefs.setStringList('chatMessages',
+        chatMessages.map((e) => json.encode(e.toJson())).toList());
+    await _prefs.setInt('currentState', currentState.value.index);
+    await _prefs.setString('language', language.value);
+    await _prefs.setString('functionality', functionality.value);
+    await _prefs.setString('additionalDetails', additionalDetails.value);
+    await _prefs.setString('lastGeneratedCode', lastGeneratedCode.value);
+    _checkMaxLength();
+  }
+
   Future<void> sendMessage() async {
-    if (userInputController.text.isEmpty) return;
+    if (userInputController.text.isEmpty || isMaxLengthReached.value) return;
 
     final userMessage = userInputController.text;
     _addUserMessage(userMessage);
@@ -65,6 +116,7 @@ class CodeBotController extends GetxController {
           "I'm sorry, I encountered an error. Can you please try again?");
     } finally {
       isLoading.value = false;
+      await _saveConversation();
     }
   }
 
@@ -103,8 +155,11 @@ class CodeBotController extends GetxController {
       resetConversation();
     } else {
       List<Map<String, String>> conversationContext = [
-        {"role": "assistant", "content": lastGeneratedCode.value},
-        {"role": "user", "content": userMessage}
+        {
+          "role": "user",
+          "content":
+              'The user asked: "${userMessage}" in response to this code:\n\n${lastGeneratedCode.value}\n\nProvide a helpful response:'
+        }
       ];
       String response = await APIs.geminiAPI(conversationContext);
       _addBotMessage(response);
@@ -114,23 +169,27 @@ class CodeBotController extends GetxController {
   }
 
   void _addUserMessage(String message) {
-    chatMessages.add(ChatMessage(content: message, isUser: true));
+    chatMessages.add(CodeBotMessage(content: message, isUser: true));
+    _saveConversation();
   }
 
   void _addBotMessage(String message, {bool isCode = false}) {
     chatMessages
-        .add(ChatMessage(content: message, isUser: false, isCode: isCode));
+        .add(CodeBotMessage(content: message, isUser: false, isCode: isCode));
+    _saveConversation();
   }
 
-  void resetConversation() {
+  Future<void> resetConversation() async {
     chatMessages.clear();
     currentState.value = ConversationState.askingLanguage;
     language.value = '';
     functionality.value = '';
     additionalDetails.value = '';
     lastGeneratedCode.value = '';
+    isMaxLengthReached.value = false;
     _addBotMessage(
         "Let's start over! What programming language would you like to generate code for?");
+    await _saveConversation();
   }
 }
 

@@ -25,6 +25,7 @@ class AiTranslatorBot extends StatelessWidget {
             Expanded(
               child: Obx(() => _buildTranslationMessages(context)),
             ),
+            _buildMaxLengthWarning(context),
             _buildInputArea(context),
           ],
         ),
@@ -103,6 +104,23 @@ class AiTranslatorBot extends StatelessWidget {
         ),
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  Widget _buildMaxLengthWarning(BuildContext context) {
+    return Obx(() {
+      if (controller.isMaxLengthReached.value) {
+        return Container(
+          padding: const EdgeInsets.all(8),
+          color: Colors.yellow,
+          child: Text(
+            'Maximum conversation length reached. Please reset the conversation to continue.',
+            style: AppTheme.bodyMedium.copyWith(color: Colors.black),
+            textAlign: TextAlign.center,
+          ),
+        );
+      }
+      return const SizedBox.shrink();
+    });
   }
 
   Widget _buildInputArea(BuildContext context) {

@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:mygemini/data/services/api_service.dart';
 import 'package:mygemini/features/screens/translator/model/translator_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TranslatorController extends GetxController {
   final TextEditingController inputController = TextEditingController();
@@ -11,6 +13,11 @@ class TranslatorController extends GetxController {
   var isProcessing = false.obs;
 
   var chatMessages = <TranslationMessage>[].obs;
+
+  late SharedPreferences _prefs;
+
+  static const int maxConversationLength = 50;
+  var isMaxLengthReached = false.obs;
 
   final List<String> supportedLanguages = [
     'Afrikaans',
@@ -97,16 +104,53 @@ class TranslatorController extends GetxController {
   ];
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    addMessage(
-        "Welcome to the AI Translator. Enter text to translate from ${sourceLang.value} to ${targetLang.value} or many other languages and vice versa",
-        isUser: false);
+    _prefs = await SharedPreferences.getInstance();
+    _loadConversation();
+    if (chatMessages.isEmpty) {
+      addMessage(
+          "Welcome to the AI Translator. Enter text to translate from ${sourceLang.value} to ${targetLang.value} or many other languages and vice versa",
+          isUser: false);
+    }
+    _checkMaxLength();
+  }
+
+  void _loadConversation() {
+    final savedMessages = _prefs.getStringList('translatorMessages');
+    if (savedMessages != null) {
+      chatMessages.value = savedMessages
+          .map((e) => TranslationMessage.fromJson(json.decode(e)))
+          .toList();
+      if (chatMessages.length > maxConversationLength) {
+        chatMessages.value =
+            chatMessages.sublist(chatMessages.length - maxConversationLength);
+      }
+    }
+    sourceLang.value = _prefs.getString('sourceLang') ?? 'English';
+    targetLang.value = _prefs.getString('targetLang') ?? 'Spanish';
+    _checkMaxLength();
+  }
+
+  void _checkMaxLength() {
+    isMaxLengthReached.value = chatMessages.length >= maxConversationLength;
+  }
+
+  Future<void> _saveConversation() async {
+    if (chatMessages.length > maxConversationLength) {
+      chatMessages.value =
+          chatMessages.sublist(chatMessages.length - maxConversationLength);
+    }
+    await _prefs.setStringList('translatorMessages',
+        chatMessages.map((e) => json.encode(e.toJson())).toList());
+    await _prefs.setString('sourceLang', sourceLang.value);
+    await _prefs.setString('targetLang', targetLang.value);
+    _checkMaxLength();
   }
 
   Future<void> translate() async {
     final textToTranslate = inputController.text.trim();
-    if (textToTranslate.isEmpty) return;
+    if (textToTranslate.isEmpty || isMaxLengthReached.value) return;
 
     addMessage(textToTranslate, isUser: true);
     inputController.clear();
@@ -120,6 +164,7 @@ class TranslatorController extends GetxController {
           isUser: false);
     } finally {
       isProcessing.value = false;
+      await _saveConversation();
     }
   }
 
@@ -139,23 +184,29 @@ class TranslatorController extends GetxController {
     return translatedText.trim();
   }
 
-  void swapLanguages() {
+  Future<void> swapLanguages() async {
     final temp = sourceLang.value;
     sourceLang.value = targetLang.value;
     targetLang.value = temp;
     addMessage(
         "Languages swapped. Now translating from ${sourceLang.value} to ${targetLang.value}.",
         isUser: false);
+    await _saveConversation();
   }
 
   void addMessage(String message, {required bool isUser}) {
     chatMessages.add(TranslationMessage(text: message, isUser: isUser));
+    _saveConversation();
   }
 
-  void resetConversation() {
+  Future<void> resetConversation() async {
     chatMessages.clear();
+    sourceLang.value = 'English';
+    targetLang.value = 'Spanish';
+    isMaxLengthReached.value = false;
     addMessage(
         "Welcome to the AI Translator. Enter text to translate from ${sourceLang.value} to ${targetLang.value}.",
         isUser: false);
+    await _saveConversation();
   }
 }

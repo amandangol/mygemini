@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
@@ -53,7 +52,7 @@ class AiCodeBot extends StatelessWidget {
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, ChatMessage message) {
+  Widget _buildMessageBubble(BuildContext context, CodeBotMessage message) {
     final isUserMessage = message.isUser;
     final bubbleColor =
         isUserMessage ? AppTheme.primaryColor : AppTheme.surfaceColor(context);
@@ -94,11 +93,12 @@ class AiCodeBot extends StatelessWidget {
             ),
             if (message.isCode)
               Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: CustomActionButtons(
-                    text: message.content,
-                    shareSubject: 'Generated Code from CodeBot Assistant',
-                  )),
+                padding: const EdgeInsets.only(top: 12),
+                child: CustomActionButtons(
+                  text: message.content,
+                  shareSubject: 'Generated Code from CodeBot Assistant',
+                ),
+              ),
           ],
         ),
       ),
@@ -110,6 +110,8 @@ class AiCodeBot extends StatelessWidget {
       userInputController: controller.userInputController,
       isLoading: controller.isLoading,
       sendMessage: controller.sendMessage,
+      isMaxLengthReached: controller.isMaxLengthReached,
+      hintText: 'Ask CodeBot to generate code...',
     );
   }
 }

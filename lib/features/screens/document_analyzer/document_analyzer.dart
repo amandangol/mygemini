@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
@@ -9,7 +8,6 @@ import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/document_analyzer/controller/documentanalyzer_controller.dart';
 import 'package:mygemini/features/screens/document_analyzer/model/docbot_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
-import 'package:share_plus/share_plus.dart';
 
 class DocumentAnalyzerFeature extends StatelessWidget {
   DocumentAnalyzerFeature({Key? key}) : super(key: key);
@@ -116,6 +114,8 @@ class DocumentAnalyzerFeature extends StatelessWidget {
       userInputController: _controller.userInputController,
       isLoading: _controller.isLoading,
       sendMessage: _controller.sendMessage,
+      isMaxLengthReached: _controller.isMaxLengthReached,
+      hintText: 'Ask CreativeBot to generate content...',
     );
   }
 

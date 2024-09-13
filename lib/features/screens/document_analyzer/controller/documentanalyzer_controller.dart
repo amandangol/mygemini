@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,7 @@ import 'package:mygemini/features/screens/document_analyzer/model/docbot_model.d
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DocumentAnalyzerController extends GetxController {
   final userInputController = TextEditingController();
@@ -19,11 +21,21 @@ class DocumentAnalyzerController extends GetxController {
   var analysisType = ''.obs;
   var lastAnalysisResult = ''.obs;
 
+  late SharedPreferences _prefs;
+
+  static const int maxConversationLength = 5;
+  var isMaxLengthReached = false.obs;
+
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    _addBotMessage(
-        "Hi! I'm DocAnalyzer. Please upload a document you'd like me to analyze.");
+    _prefs = await SharedPreferences.getInstance();
+    _loadConversation();
+    if (analyzerMessages.isEmpty) {
+      _addBotMessage(
+          "Hi! I'm DocAnalyzer. Please upload a document you'd like me to analyze.");
+    }
+    _checkMaxLength();
   }
 
   @override
@@ -32,8 +44,43 @@ class DocumentAnalyzerController extends GetxController {
     super.onClose();
   }
 
+  void _loadConversation() {
+    final savedMessages = _prefs.getStringList('analyzerMessages');
+    if (savedMessages != null) {
+      analyzerMessages.value = savedMessages
+          .map((e) => AnalyzerMessage.fromJson(json.decode(e)))
+          .toList();
+      if (analyzerMessages.length > maxConversationLength) {
+        analyzerMessages.value = analyzerMessages
+            .sublist(analyzerMessages.length - maxConversationLength);
+      }
+      currentState.value =
+          AnalyzerState.values[_prefs.getInt('currentState') ?? 0];
+      analysisType.value = _prefs.getString('analysisType') ?? '';
+      lastAnalysisResult.value = _prefs.getString('lastAnalysisResult') ?? '';
+    }
+    _checkMaxLength();
+  }
+
+  void _checkMaxLength() {
+    isMaxLengthReached.value = analyzerMessages.length >= maxConversationLength;
+  }
+
+  Future<void> _saveConversation() async {
+    if (analyzerMessages.length > maxConversationLength) {
+      analyzerMessages.value = analyzerMessages
+          .sublist(analyzerMessages.length - maxConversationLength);
+    }
+    await _prefs.setStringList('analyzerMessages',
+        analyzerMessages.map((e) => json.encode(e.toJson())).toList());
+    await _prefs.setInt('currentState', currentState.value.index);
+    await _prefs.setString('analysisType', analysisType.value);
+    await _prefs.setString('lastAnalysisResult', lastAnalysisResult.value);
+    _checkMaxLength();
+  }
+
   Future<void> sendMessage() async {
-    if (userInputController.text.isEmpty) return;
+    if (userInputController.text.isEmpty || isMaxLengthReached.value) return;
 
     final userMessage = userInputController.text;
     _addUserMessage(userMessage);
@@ -60,10 +107,18 @@ class DocumentAnalyzerController extends GetxController {
           "I'm sorry, I encountered an error. Can you please try again?");
     } finally {
       isLoading.value = false;
+      await _saveConversation();
     }
   }
 
   Future<void> pickFile() async {
+    var permissionGranted = await _storagePermission();
+    if (!permissionGranted) {
+      _addBotMessage(
+          "I'm sorry, but I need storage permission to access files. Please grant the permission and try again.");
+      return;
+    }
+
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf', 'doc', 'docx', 'txt', 'csv', 'md'],
@@ -79,30 +134,7 @@ class DocumentAnalyzerController extends GetxController {
       _addBotMessage(
           "No file was selected. Please try uploading a document again.");
     }
-  }
-
-  Future<void> _handleFileUpload() async {
-    var permissionGranted = await _storagePermission();
-    if (!permissionGranted) {
-      _addBotMessage(
-          "I'm sorry, but I need storage permission to access files. Please grant the permission and try again.");
-      return;
-    }
-
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx', 'txt', 'csv', 'md'],
-    );
-
-    if (result != null) {
-      selectedFile.value = result.files.first;
-      _addBotMessage(
-          "Great! I've received your file: ${selectedFile.value!.name}. What type of analysis would you like me to perform?");
-      currentState.value = AnalyzerState.askingAnalysisType;
-    } else {
-      _addBotMessage(
-          "It seems you didn't select a file. Please try uploading a document again.");
-    }
+    await _saveConversation();
   }
 
   Future<void> _analyzeDocument() async {
@@ -140,7 +172,7 @@ class DocumentAnalyzerController extends GetxController {
       _addBotMessage(
           "Sure, I can perform a different type of analysis. What kind of analysis would you like me to do now?");
     } else if (userMessage.toLowerCase().contains('new document')) {
-      resetConversation();
+      await resetConversation();
     } else {
       List<Map<String, String>> prompt = [
         {
@@ -198,21 +230,25 @@ class DocumentAnalyzerController extends GetxController {
 
   void _addUserMessage(String message) {
     analyzerMessages.add(AnalyzerMessage(content: message, isUser: true));
+    _saveConversation();
   }
 
   void _addBotMessage(String message, {bool isAnalysis = false}) {
     analyzerMessages.add(AnalyzerMessage(
         content: message, isUser: false, isAnalysis: isAnalysis));
+    _saveConversation();
   }
 
-  void resetConversation() {
+  Future<void> resetConversation() async {
     analyzerMessages.clear();
     currentState.value = AnalyzerState.askingForFile;
     selectedFile.value = null;
     analysisType.value = '';
     lastAnalysisResult.value = '';
+    isMaxLengthReached.value = false;
     _addBotMessage(
         "Let's start over! Please upload a document you'd like me to analyze.");
+    await _saveConversation();
   }
 }
 

@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mygemini/data/services/api_service.dart';
 import 'package:mygemini/features/screens/creative_contentbot/model/creativemessage_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreativeBotController extends GetxController {
   final userInputController = TextEditingController();
@@ -10,19 +13,63 @@ class CreativeBotController extends GetxController {
   var isLoading = false.obs;
   var currentContentType = ContentType.story.obs;
   var showContentTypeSelection = false.obs;
+  late SharedPreferences _prefs;
+
+  static const int maxConversationLength = 50;
+  var isMaxLengthReached = false.obs;
 
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
-    _addBotMessage(
-        "Hi! I'm CreativeBot. What type of content would you like to create today?");
-    showContentTypeSelection.value = true;
+    _prefs = await SharedPreferences.getInstance();
+    _loadConversation();
+    if (messages.isEmpty) {
+      _addBotMessage(
+          "Hi! I'm CreativeBot. What type of content would you like to create today?");
+      showContentTypeSelection.value = true;
+    }
+    _checkMaxLength();
   }
 
   @override
   void onClose() {
     userInputController.dispose();
     super.onClose();
+  }
+
+  void _loadConversation() {
+    final savedMessages = _prefs.getStringList('creativeMessages');
+    if (savedMessages != null) {
+      messages.value = savedMessages
+          .map((e) => CreativeMessage.fromJson(json.decode(e)))
+          .toList();
+      if (messages.length > maxConversationLength) {
+        messages.value =
+            messages.sublist(messages.length - maxConversationLength);
+      }
+      currentContentType.value =
+          ContentType.values[_prefs.getInt('currentContentType') ?? 0];
+      showContentTypeSelection.value =
+          _prefs.getBool('showContentTypeSelection') ?? true;
+    }
+    _checkMaxLength();
+  }
+
+  void _checkMaxLength() {
+    isMaxLengthReached.value = messages.length >= maxConversationLength;
+  }
+
+  Future<void> _saveConversation() async {
+    if (messages.length > maxConversationLength) {
+      messages.value =
+          messages.sublist(messages.length - maxConversationLength);
+    }
+    await _prefs.setStringList('creativeMessages',
+        messages.map((e) => json.encode(e.toJson())).toList());
+    await _prefs.setInt('currentContentType', currentContentType.value.index);
+    await _prefs.setBool(
+        'showContentTypeSelection', showContentTypeSelection.value);
+    _checkMaxLength();
   }
 
   void selectContentType(ContentType type) {
@@ -34,7 +81,7 @@ class CreativeBotController extends GetxController {
   }
 
   Future<void> sendMessage() async {
-    if (userInputController.text.isEmpty) return;
+    if (userInputController.text.isEmpty || isMaxLengthReached.value) return;
 
     final userMessage = userInputController.text;
     _addUserMessage(userMessage);
@@ -49,6 +96,7 @@ class CreativeBotController extends GetxController {
           "I'm sorry, I encountered an error. Can you please try again?");
     } finally {
       isLoading.value = false;
+      await _saveConversation();
     }
   }
 
@@ -88,19 +136,24 @@ class CreativeBotController extends GetxController {
 
   void _addUserMessage(String message) {
     messages.add(CreativeMessage(content: message, isUser: true));
+    _saveConversation();
   }
 
   void _addBotMessage(String message, {bool isCreativeContent = false}) {
     messages.add(CreativeMessage(
         content: message, isUser: false, isCreativeContent: isCreativeContent));
+    _saveConversation();
   }
 
-  void resetConversation() {
+  Future<void> resetConversation() async {
     messages.clear();
     currentContentType.value = ContentType.story;
+    showContentTypeSelection.value = true;
+    isMaxLengthReached.value = false;
+
     _addBotMessage(
         "Let's start over! What type of content would you like to create?");
-    showContentTypeSelection.value = true;
+    await _saveConversation();
   }
 }
 

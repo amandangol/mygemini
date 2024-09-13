@@ -109,6 +109,8 @@ class AiEmailBot extends StatelessWidget {
       userInputController: controller.userInputController,
       isLoading: controller.isLoading,
       sendMessage: controller.sendMessage,
+      isMaxLengthReached: controller.isMaxLengthReached,
+      hintText: 'Ask EmailBot to generate email...',
     );
   }
 }

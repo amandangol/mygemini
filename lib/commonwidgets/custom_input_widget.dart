@@ -7,66 +7,91 @@ class CustomInputWidget extends StatelessWidget {
   final RxBool isLoading;
   final Function sendMessage;
   final String? hintText;
+  // final bool? enabled;
+  final RxBool? isMaxLengthReached;
 
   const CustomInputWidget({
     Key? key,
     required this.userInputController,
     required this.isLoading,
     required this.sendMessage,
+    this.isMaxLengthReached,
     this.hintText,
+    // this.enabled,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 5,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              controller: userInputController,
-              onTapOutside: (e) => FocusScope.of(context).unfocus(),
-              decoration: InputDecoration(
-                fillColor: AppTheme.primaryColorLight(context),
-                filled: true,
-                hintText: 'Ask EmailBot to generate an email',
-                hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.5),
-                    ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+    return Column(
+      children: [
+        Obx(() {
+          if (isMaxLengthReached!.value) {
+            return Container(
+              padding: const EdgeInsets.all(8),
+              color: Colors.yellow,
+              child: Text(
+                'Maximum conversation length reached. Please reset the conversation to continue.',
+                style: AppTheme.bodyMedium.copyWith(color: Colors.black),
+                textAlign: TextAlign.center,
               ),
-              minLines: 1,
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-            ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 5,
+                offset: const Offset(0, -3),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Obx(() => _buildSendButton(context)),
-        ],
-      ),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  // enabled: enabled ?? !isMaxLengthReached!.value,
+                  controller: userInputController,
+                  onTapOutside: (e) => FocusScope.of(context).unfocus(),
+                  decoration: InputDecoration(
+                    fillColor: AppTheme.primaryColorLight(context),
+                    filled: true,
+                    hintText: hintText ?? 'Type your message...',
+                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.5),
+                        ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  minLines: 1,
+                  maxLines: 5,
+                  keyboardType: TextInputType.multiline,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Obx(() => _buildSendButton(context)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildSendButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: isLoading.value ? null : () => sendMessage(),
+      onPressed: isLoading.value || isMaxLengthReached!.value
+          ? null
+          : () => sendMessage(),
       style: ElevatedButton.styleFrom(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,

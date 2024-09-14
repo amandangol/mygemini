@@ -9,10 +9,40 @@ import 'package:mygemini/features/screens/email_gen/controller/email_controller.
 import 'package:mygemini/features/screens/email_gen/model/emailmessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
-class AiEmailBot extends StatelessWidget {
-  AiEmailBot({super.key});
+class AiEmailBot extends StatefulWidget {
+  const AiEmailBot({Key? key}) : super(key: key);
 
+  @override
+  _AiEmailBotState createState() => _AiEmailBotState();
+}
+
+class _AiEmailBotState extends State<AiEmailBot> {
   final EmailBotController controller = Get.put(EmailBotController());
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.emailMessages.listen((_) => _scrollToBottom());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +64,7 @@ class AiEmailBot extends StatelessWidget {
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return CustomAppBar(
-      title: 'EmailBot Assistant',
+      title: 'AI Email Composer',
       onResetConversation: () {
         controller.resetConversation();
       },
@@ -43,6 +73,7 @@ class AiEmailBot extends StatelessWidget {
 
   Widget _buildEmailMessages(BuildContext context) {
     return ListView.builder(
+      controller: _scrollController,
       padding: AppTheme.defaultPadding,
       itemCount: controller.emailMessages.length,
       itemBuilder: (context, index) {
@@ -93,11 +124,12 @@ class AiEmailBot extends StatelessWidget {
             ),
             if (message.isEmail)
               Padding(
-                  padding: const EdgeInsets.only(top: 12),
-                  child: CustomActionButtons(
-                    text: message.content,
-                    shareSubject: 'Generated mail from EmailBot Assistant',
-                  )),
+                padding: const EdgeInsets.only(top: 12),
+                child: CustomActionButtons(
+                  text: message.content,
+                  shareSubject: 'Generated mail from EmailBot Assistant',
+                ),
+              ),
           ],
         ),
       ),
@@ -110,7 +142,7 @@ class AiEmailBot extends StatelessWidget {
       isLoading: controller.isLoading,
       sendMessage: controller.sendMessage,
       isMaxLengthReached: controller.isMaxLengthReached,
-      hintText: 'Ask EmailBot to generate email...',
+      hintText: 'Ask EmailBot to compose email...',
     );
   }
 }

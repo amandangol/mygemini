@@ -35,7 +35,7 @@ class AiTranslatorBot extends StatelessWidget {
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return CustomAppBar(
-      title: 'TranslatorBot Assistant',
+      title: 'AI Translator',
       onResetConversation: () {
         controller.resetConversation();
       },
@@ -156,6 +156,9 @@ class AiTranslatorBot extends StatelessWidget {
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 16),
                   ),
+                  minLines: 1,
+                  maxLines: 5,
+                  keyboardType: TextInputType.multiline,
                 ),
               ),
               const SizedBox(width: 12),

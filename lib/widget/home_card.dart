@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
-import 'package:mygemini/data/models/home_type.dart';
+import 'package:mygemini/data/models/bot_type.dart';
 import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeCard extends StatelessWidget {
-  final HomeType homeType;
+  final BotType botType;
 
-  const HomeCard({super.key, required this.homeType});
+  const HomeCard({super.key, required this.botType});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class HomeCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
-        onTap: homeType.onTap,
+        onTap: botType.onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -43,9 +43,9 @@ class HomeCard extends StatelessWidget {
     return Container(
       width: size.width * 0.15,
       height: size.width * 0.15,
-      padding: homeType.padding,
+      padding: botType.padding,
       child: Lottie.asset(
-        'assets/lottie/${homeType.lottie}',
+        'assets/lottie/${botType.lottie}',
         fit: BoxFit.contain,
       ),
     );
@@ -53,7 +53,7 @@ class HomeCard extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     return Text(
-      homeType.title,
+      botType.title,
       style: AppTheme.bodyLarge.copyWith(
         fontWeight: FontWeight.w500,
       ),

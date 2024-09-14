@@ -1,4 +1,4 @@
-package com.ro77en.ai_assistant
+package com.aman.mygemini
 
 import io.flutter.embedding.android.FlutterActivity
 

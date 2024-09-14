@@ -28,8 +28,8 @@ class APIs {
       print('Loaded API Key: ${dotenv.env['GEMINI_API_KEY']}');
       print('Full response from Gemini AI: $e');
       if (e is GenerativeAIException) {
-        print('Content was blocked for safety reasons.');
-        return 'Content was blocked for safety reasons';
+        print('An internal error has occured');
+        return 'An internal error has occured';
       }
 
       log('Error communicating with Gemini AI: $e',

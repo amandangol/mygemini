@@ -35,11 +35,13 @@ dependencies:
   syncfusion_flutter_pdf: ^26.2.14
   flutter_markdown: ^0.7.3+1
   google_fonts: ^6.2.1
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  hive_generator: ^2.0.1
+  build_runner: ^2.0.0
   flutter_lints: ^4.0.0
   icons_launcher: ^2.1.7
 

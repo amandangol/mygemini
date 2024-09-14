@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
-import 'package:mygemini/data/models/home_type.dart';
+import 'package:mygemini/data/models/bot_type.dart';
 import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
@@ -59,9 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisSpacing: size.width * 0.04,
                   mainAxisSpacing: size.height * 0.02,
                 ),
-                itemCount: HomeType.values.length,
+                itemCount: BotType.values.length,
                 itemBuilder: (context, index) {
-                  return _buildHomeCard(HomeType.values[index]);
+                  return _buildHomeCard(BotType.values[index]);
                 },
               ),
             ),
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 radius: 20,
               ),
               const SizedBox(width: 12),
-              Text('MyGemini Assistant', style: AppTheme.headlineSmall),
+              Text('MyGemini', style: AppTheme.headlineSmall),
             ],
           ),
           _buildThemeToggle(),
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  Widget _buildHomeCard(HomeType homeType) {
+  Widget _buildHomeCard(BotType botType) {
     return Card(
       color: AppTheme.surfaceColor(context),
       elevation: 4,
@@ -169,15 +169,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
-        onTap: homeType.onTap,
+        onTap: botType.onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildLottieAnimation(homeType),
+              _buildLottieAnimation(botType),
               const SizedBox(height: 12),
-              _buildTitle(homeType),
+              _buildTitle(botType),
             ],
           ),
         ),
@@ -188,21 +188,21 @@ class _HomeScreenState extends State<HomeScreen> {
         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1));
   }
 
-  Widget _buildLottieAnimation(HomeType homeType) {
+  Widget _buildLottieAnimation(BotType botType) {
     return Container(
       width: size.width * 0.15,
       height: size.width * 0.15,
-      padding: homeType.padding,
+      padding: botType.padding,
       child: Lottie.asset(
-        'assets/lottie/${homeType.lottie}',
+        'assets/lottie/${botType.lottie}',
         fit: BoxFit.contain,
       ),
     );
   }
 
-  Widget _buildTitle(HomeType homeType) {
+  Widget _buildTitle(BotType botType) {
     return Text(
-      homeType.title,
+      botType.title,
       style: AppTheme.bodyMedium.copyWith(
         fontWeight: FontWeight.w500,
       ),

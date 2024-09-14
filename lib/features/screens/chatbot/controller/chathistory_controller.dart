@@ -1,84 +1,81 @@
-import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:mygemini/data/models/message.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-class ChatHistory {
-  final String title;
-  final List<Message> messages;
-  final DateTime timestamp;
-  final List<Map<String, String>>? context;
-
-  ChatHistory({
-    required this.title,
-    required this.messages,
-    required this.timestamp,
-    this.context,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'title': title,
-        'messages': messages.map((m) => m.toJson()).toList(),
-        'timestamp': timestamp.toIso8601String(),
-        'context': context,
-      };
-
-  factory ChatHistory.fromJson(Map<String, dynamic> json) {
-    return ChatHistory(
-      title: json['title'],
-      messages:
-          (json['messages'] as List).map((m) => Message.fromJson(m)).toList(),
-      timestamp: DateTime.parse(json['timestamp']),
-      context: (json['context'] as List?)?.cast<Map<String, String>>(),
-    );
-  }
-}
+import 'package:hive/hive.dart';
+import 'package:mygemini/data/models/chathistory.dart';
 
 class ChatHistoryController extends GetxController {
   final RxList<ChatHistory> chatHistories = <ChatHistory>[].obs;
+  late Box<ChatHistory> _chatHistoryBox;
 
   @override
   void onInit() {
     super.onInit();
-    loadChatHistories();
+    _initHive();
   }
 
-  Future<void> loadChatHistories() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? savedChats = prefs.getStringList('chatHistories');
+  Future<void> _initHive() async {
+    try {
+      _chatHistoryBox = await Hive.openBox<ChatHistory>('chatHistory');
+      loadChatHistories();
+    } catch (e) {
+      print('Error initializing Hive: $e');
+      Get.snackbar('Error', 'Failed to initialize chat history');
+    }
+  }
 
-    if (savedChats != null && savedChats.isNotEmpty) {
-      chatHistories.value = savedChats
-          .map((json) => ChatHistory.fromJson(jsonDecode(json)))
-          .toList();
+  void loadChatHistories() {
+    try {
+      if (_chatHistoryBox.isNotEmpty) {
+        chatHistories.clear();
+        chatHistories.addAll(_chatHistoryBox.values);
+        _sortChatHistories();
+      }
+    } catch (e) {
+      print('Error loading chat histories: $e');
+      Get.snackbar('Error', 'Failed to load chat histories');
+    }
+  }
+
+  Future<void> saveChatHistory(ChatHistory chatHistory) async {
+    try {
+      int existingIndex =
+          chatHistories.indexWhere((ch) => ch.title == chatHistory.title);
+
+      if (existingIndex != -1) {
+        chatHistories[existingIndex] = chatHistory;
+      } else {
+        chatHistories.insert(0, chatHistory);
+      }
+
+      await _chatHistoryBox.put(chatHistory.title, chatHistory);
       _sortChatHistories();
+    } catch (e) {
+      print('Error saving chat history: $e');
+      Get.snackbar('Error', 'Failed to save chat history');
     }
-  }
-
-  Future<void> saveChatHistories() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _sortChatHistories();
-    List<String> encodedChats =
-        chatHistories.map((ch) => jsonEncode(ch.toJson())).toList();
-    await prefs.setStringList('chatHistories', encodedChats);
-  }
-
-  void deleteChatHistory(int index) {
-    chatHistories.removeAt(index);
-    saveChatHistories();
-  }
-
-  void updateChatHistory(ChatHistory chatHistory) {
-    int index = chatHistories.indexWhere((ch) => ch.title == chatHistory.title);
-    if (index != -1) {
-      chatHistories[index] = chatHistory;
-    } else {
-      chatHistories.add(chatHistory);
-    }
-    saveChatHistories();
   }
 
   void _sortChatHistories() {
     chatHistories.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  }
+
+  Future<void> deleteChatHistory(int index) async {
+    try {
+      if (index >= 0 && index < chatHistories.length) {
+        String titleToDelete = chatHistories[index].title;
+        chatHistories.removeAt(index);
+        await _chatHistoryBox.delete(titleToDelete);
+      } else {
+        throw RangeError('Invalid index for chat history deletion');
+      }
+    } catch (e) {
+      print('Error deleting chat history: $e');
+      Get.snackbar('Error', 'Failed to delete chat history');
+    }
+  }
+
+  @override
+  void onClose() {
+    _chatHistoryBox.close();
+    super.onClose();
   }
 }

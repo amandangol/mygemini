@@ -23,7 +23,7 @@ class DocumentAnalyzerController extends GetxController {
 
   late SharedPreferences _prefs;
 
-  static const int maxConversationLength = 5;
+  static const int maxConversationLength = 50;
   var isMaxLengthReached = false.obs;
 
   @override

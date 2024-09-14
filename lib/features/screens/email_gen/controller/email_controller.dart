@@ -19,7 +19,7 @@ class EmailBotController extends GetxController {
   var body = ''.obs;
   var lastGeneratedEmail = ''.obs;
 
-  static const int maxConversationLength = 5;
+  static const int maxConversationLength = 50;
   var isMaxLengthReached = false.obs;
 
   @override

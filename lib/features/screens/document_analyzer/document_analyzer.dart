@@ -9,11 +9,45 @@ import 'package:mygemini/features/screens/document_analyzer/controller/documenta
 import 'package:mygemini/features/screens/document_analyzer/model/docbot_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
-class DocumentAnalyzerFeature extends StatelessWidget {
+class DocumentAnalyzerFeature extends StatefulWidget {
   DocumentAnalyzerFeature({Key? key}) : super(key: key);
 
+  @override
+  _DocumentAnalyzerFeatureState createState() =>
+      _DocumentAnalyzerFeatureState();
+}
+
+class _DocumentAnalyzerFeatureState extends State<DocumentAnalyzerFeature> {
   final DocumentAnalyzerController _controller =
       Get.put(DocumentAnalyzerController());
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _controller.analyzerMessages.listen((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +73,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return CustomAppBar(
-      title: 'DocAnalyzer Assistant',
+      title: 'AI DocAnalyzer',
       onResetConversation: () {
         _controller.resetConversation();
       },
@@ -48,6 +82,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
 
   Widget _buildAnalyzerMessages(BuildContext context) {
     return ListView.builder(
+      controller: _scrollController,
       padding: AppTheme.defaultPadding,
       itemCount: _controller.analyzerMessages.length,
       itemBuilder: (context, index) {
@@ -115,7 +150,7 @@ class DocumentAnalyzerFeature extends StatelessWidget {
       isLoading: _controller.isLoading,
       sendMessage: _controller.sendMessage,
       isMaxLengthReached: _controller.isMaxLengthReached,
-      hintText: 'Ask CreativeBot to generate content...',
+      hintText: 'Ask DocAnalyzer to extract, summarize...',
     );
   }
 

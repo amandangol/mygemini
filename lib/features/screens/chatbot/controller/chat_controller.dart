@@ -1,69 +1,85 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
+import 'package:flutter/material.dart';
+import 'package:mygemini/data/models/chathistory.dart';
 import 'package:mygemini/data/models/message.dart';
 import 'package:mygemini/data/services/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
 
 class ChatController extends GetxController {
   final TextEditingController textC = TextEditingController();
-  final RxList<Message> list = <Message>[].obs;
-  final RxString userName = ''.obs;
-  final ChatHistoryController chatHistoryController =
-      Get.find<ChatHistoryController>();
+  final RxList<Message> messages = <Message>[].obs;
+  final RxString currentChatTitle = RxString('');
   final RxBool isLoading = false.obs;
-  final RxString currentChatId = RxString('');
 
-  // New: Maintain a conversation context
   final RxList<Map<String, String>> conversationContext =
       <Map<String, String>>[].obs;
+
+  late final ChatHistoryController chatHistoryController;
 
   @override
   void onInit() {
     super.onInit();
-    loadUserName();
-    ever(list, (_) => saveChatHistory());
+    chatHistoryController = Get.find<ChatHistoryController>();
+    loadLastConversation();
   }
 
-  Future<void> loadUserName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    userName.value = prefs.getString('username') ?? '';
-  }
-
-  void startNewChat() {
-    list.clear();
-    currentChatId.value = '';
-    conversationContext.clear(); // Clear the conversation context
-  }
-
-  void addToContext(Map<String, String> message) {
-    conversationContext.add(message);
-    if (conversationContext.length > 10) {
-      // Limit to last 10 messages
-      conversationContext.removeAt(0);
+  void loadLastConversation() {
+    if (chatHistoryController.chatHistories.isNotEmpty) {
+      loadChat(chatHistoryController.chatHistories.first);
+    } else {
+      currentChatTitle.value = "New Chat";
     }
   }
 
+  Future<void> startNewChat() async {
+    await saveChatHistory(); // Save the current chat before starting a new one
+    messages.clear();
+    currentChatTitle.value = 'New Chat';
+    conversationContext.clear();
+
+    // Create and save a new empty chat history
+    ChatHistory newChatHistory = ChatHistory(
+      title: 'New Chat',
+      messages: [],
+      timestamp: DateTime.now(),
+    );
+    await chatHistoryController.saveChatHistory(newChatHistory);
+
+    // Reload chat histories to reflect the new chat
+    chatHistoryController.loadChatHistories();
+  }
+
+  String _generateMeaningfulTitle() {
+    if (messages.isNotEmpty) {
+      String firstMessage = messages.first.msg;
+      return firstMessage.length > 30
+          ? "Chat: ${firstMessage.substring(0, 27)}..."
+          : "Chat: $firstMessage";
+    }
+    return "New Chat";
+  }
+
   Future<void> askQuestion() async {
-    if (textC.text.trim().isNotEmpty) {
-      final userMsg = Message(msg: textC.text, msgType: MessageType.user);
-      list.add(userMsg);
+    final userInput = textC.text.trim();
+    if (userInput.isNotEmpty) {
+      if (currentChatTitle.value == 'New Chat') {
+        currentChatTitle.value = _generateMeaningfulTitle();
+      }
 
-      //  user message to conversation context
+      final userMsg = Message(msg: userInput, msgType: MessageType.user);
+      messages.add(userMsg);
       conversationContext.add({"role": "user", "content": userMsg.msg});
-
       textC.clear();
 
       isLoading.value = true;
       try {
-        // Pass the entire conversation context to the API
         String response = await APIs.geminiAPI(conversationContext);
         final botMsg = Message(msg: response, msgType: MessageType.bot);
-        list.add(botMsg);
-
-        // Add bot response to conversation context
+        messages.add(botMsg);
         conversationContext.add({"role": "assistant", "content": botMsg.msg});
+
+        // Save chat history after each message
+        await saveChatHistory();
       } catch (e) {
         Get.snackbar('Error', 'Failed to get response: $e');
       } finally {
@@ -73,42 +89,36 @@ class ChatController extends GetxController {
   }
 
   Future<void> saveChatHistory() async {
-    if (list.isNotEmpty) {
-      final now = DateTime.now();
-      final formattedDate = DateFormat('MMM d, yyyy HH:mm').format(now);
-      String title = currentChatId.value.isEmpty
-          ? "Chat on $formattedDate"
-          : currentChatId.value;
-
+    if (messages.isNotEmpty || currentChatTitle.value == 'New Chat') {
       ChatHistory chatHistory = ChatHistory(
-        title: title,
-        messages: list.toList(),
-        timestamp: now,
-        context: conversationContext.toList(), // Save the conversation context
+        title: currentChatTitle.value,
+        messages: messages.toList(),
+        timestamp: DateTime.now(),
       );
 
-      chatHistoryController.updateChatHistory(chatHistory);
-      if (currentChatId.value.isEmpty) {
-        currentChatId.value = title;
-      }
+      await chatHistoryController.saveChatHistory(chatHistory);
+      chatHistoryController.loadChatHistories(); // Reload to update the list
     }
   }
 
   void loadChat(ChatHistory chatHistory) {
-    list.assignAll(chatHistory.messages);
-    currentChatId.value = chatHistory.title;
-    conversationContext
-        .assignAll(chatHistory.context ?? []); // Load the conversation context
+    messages.clear();
+    currentChatTitle.value = chatHistory.title;
+    conversationContext.clear();
+
+    for (var message in chatHistory.messages) {
+      messages.add(message);
+      conversationContext.add({
+        "role": message.msgType == MessageType.user ? "user" : "assistant",
+        "content": message.msg
+      });
+    }
   }
 
-  String get chatTitle => currentChatId.value.isEmpty
-      ? "New Chat"
-      : currentChatId.value.replaceAll("Chat on ", "");
-
-  ChatHistory get currentChatHistory => ChatHistory(
-        title: currentChatId.value,
-        messages: list.toList(),
-        timestamp: DateTime.now(),
-        context: conversationContext.toList(),
-      );
+  @override
+  void onClose() {
+    saveChatHistory(); // Save the chat when the controller is closed
+    textC.dispose();
+    super.onClose();
+  }
 }

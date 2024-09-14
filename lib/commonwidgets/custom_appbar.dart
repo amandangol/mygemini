@@ -46,6 +46,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           icon: const Icon(Icons.refresh_rounded, color: Colors.white),
           onPressed: () {
             onResetConversation();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Conversation has been reset',
+                  style: AppTheme.bodyMedium.copyWith(color: Colors.white),
+                ),
+                backgroundColor: Colors.black87,
+              ),
+            );
           },
           tooltip: 'Reset Conversation',
         ),

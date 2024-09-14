@@ -10,7 +10,7 @@ class CustomInputWidget extends StatelessWidget {
   // final bool? enabled;
   final RxBool? isMaxLengthReached;
 
-  const CustomInputWidget({
+  CustomInputWidget({
     Key? key,
     required this.userInputController,
     required this.isLoading,
@@ -19,6 +19,18 @@ class CustomInputWidget extends StatelessWidget {
     this.hintText,
     // this.enabled,
   }) : super(key: key);
+
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +103,10 @@ class CustomInputWidget extends StatelessWidget {
     return ElevatedButton(
       onPressed: isLoading.value || isMaxLengthReached!.value
           ? null
-          : () => sendMessage(),
+          : () {
+              sendMessage();
+              _scrollToBottom();
+            },
       style: ElevatedButton.styleFrom(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.primary,

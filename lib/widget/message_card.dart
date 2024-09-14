@@ -4,8 +4,10 @@ import 'package:mygemini/data/models/message.dart';
 
 class MessageCard extends StatelessWidget {
   final Message message;
+  final bool isDarkMode;
 
-  const MessageCard({Key? key, required this.message}) : super(key: key);
+  const MessageCard({Key? key, required this.message, required this.isDarkMode})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

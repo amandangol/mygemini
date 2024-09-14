@@ -10,10 +10,44 @@ import 'package:mygemini/features/screens/creative_contentbot/controller/creativ
 import 'package:mygemini/features/screens/creative_contentbot/model/creativemessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
-class CreativeBotView extends StatelessWidget {
+class CreativeBotView extends StatefulWidget {
   CreativeBotView({Key? key}) : super(key: key);
 
+  @override
+  _CreativeBotViewState createState() => _CreativeBotViewState();
+}
+
+class _CreativeBotViewState extends State<CreativeBotView> {
   final CreativeBotController controller = Get.put(CreativeBotController());
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    controller.messages.listen((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToBottom();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +93,7 @@ class CreativeBotView extends StatelessWidget {
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return CustomAppBar(
-      title: 'CreativeBot Assistant',
+      title: 'AI Content Creator',
       onResetConversation: () {
         controller.resetConversation();
       },
@@ -68,6 +102,7 @@ class CreativeBotView extends StatelessWidget {
 
   Widget _buildMessages(BuildContext context) {
     return Obx(() => ListView.builder(
+          controller: _scrollController,
           padding: AppTheme.defaultPadding,
           itemCount: controller.messages.length,
           itemBuilder: (context, index) {

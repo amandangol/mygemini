@@ -1,29 +1,23 @@
-import 'dart:convert';
+import 'package:hive/hive.dart';
 
-enum MessageType { user, bot }
+part 'message.g.dart';
 
+@HiveType(typeId: 2) // Message class must have a unique typeId
 class Message {
-  String msg;
+  @HiveField(0)
+  final String msg;
+
+  @HiveField(1)
   final MessageType msgType;
 
+  // Constructor
   Message({required this.msg, required this.msgType});
+}
 
-  Map<String, dynamic> toMap() {
-    return {
-      'msg': msg,
-      'msgType': msgType.index,
-    };
-  }
-
-  factory Message.fromMap(Map<String, dynamic> map) {
-    return Message(
-      msg: map['msg'],
-      msgType: MessageType.values[map['msgType']],
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Message.fromJson(String source) =>
-      Message.fromMap(json.decode(source));
+@HiveType(typeId: 3) // MessageType enum must have a unique typeId
+enum MessageType {
+  @HiveField(0)
+  user,
+  @HiveField(1)
+  bot,
 }

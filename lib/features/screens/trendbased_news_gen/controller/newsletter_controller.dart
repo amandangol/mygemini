@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:mygemini/data/services/api_service.dart';
-import 'package:mygemini/features/screens/image_assistant/model/image_model.dart';
+import 'package:mygemini/features/screens/trendbased_news_gen/model/newsletter_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TrendNewsletterController extends GetxController {

@@ -5,7 +5,7 @@ import 'package:mygemini/features/screens/chatbot/chatbot.dart';
 import 'package:mygemini/features/screens/creative_contentbot/creativecontent_bot.dart';
 import 'package:mygemini/features/screens/document_analyzer/document_analyzer.dart';
 import 'package:mygemini/features/screens/email_gen/emailbot_assistant.dart';
-import 'package:mygemini/features/screens/image_assistant/image_assistant.dart';
+import 'package:mygemini/features/screens/trendbased_news_gen/trendbased_newsletter.dart';
 import 'package:mygemini/features/screens/learning_assistant/learning_assistant.dart';
 import 'package:mygemini/features/screens/translator/translator_screen.dart';
 

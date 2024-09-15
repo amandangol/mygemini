@@ -68,7 +68,7 @@ class _LearningChatbotState extends State<LearningChatbot> {
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return CustomAppBar(
-      title: 'Learning Assistant',
+      title: 'AI Learning Assistant',
       onResetConversation: () {
         controller.resetConversation();
       },

@@ -5,8 +5,8 @@ import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_input_widget.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
-import 'package:mygemini/features/screens/image_assistant/controller/image_controller.dart';
-import 'package:mygemini/features/screens/image_assistant/model/image_model.dart';
+import 'package:mygemini/features/screens/trendbased_news_gen/controller/newsletter_controller.dart';
+import 'package:mygemini/features/screens/trendbased_news_gen/model/newsletter_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class TrendNewsletterGenerator extends StatefulWidget {
@@ -66,7 +66,7 @@ class _TrendNewsletterGeneratorState extends State<TrendNewsletterGenerator> {
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
     return CustomAppBar(
-      title: 'Trend-Based Newsletter Generator',
+      title: 'AI Trend Newsletter',
       onResetConversation: () {
         controller.resetConversation();
       },

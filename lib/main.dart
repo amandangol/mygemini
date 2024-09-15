@@ -10,6 +10,7 @@ import 'package:mygemini/data/models/chathistory.dart';
 import 'package:mygemini/data/models/message.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chat_controller.dart';
+import 'package:mygemini/features/screens/onboarding/onboading_screen.dart';
 import 'package:mygemini/features/screens/splash/splash_screen.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
@@ -31,7 +32,7 @@ Future<void> main() async {
 
   // Open Hive box for ChatHistory and clear it
   var box = await Hive.openBox<ChatHistory>('chatHistory');
-  await box.clear(); // Clear existing data
+  // await box.clear(); // Clear existing data
 
   // Initialize preferences
   await Pref.initialize();

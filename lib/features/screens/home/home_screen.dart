@@ -5,12 +5,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
 import 'package:mygemini/data/models/bot_type.dart';
+import 'package:mygemini/features/screens/home/TrendbasedNewsletterIntroduction.dart';
 import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -37,162 +38,181 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.sizeOf(context);
+    size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
-      body: SafeArea(
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildAppBar(),
             _buildWelcomeMessage(),
-            Expanded(
-              child: GridView.builder(
-                padding: EdgeInsets.symmetric(
-                  horizontal: size.width * 0.04,
-                  vertical: size.height * 0.02,
-                ),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.2,
-                  crossAxisSpacing: size.width * 0.04,
-                  mainAxisSpacing: size.height * 0.02,
-                ),
-                itemCount: BotType.values.length,
-                itemBuilder: (context, index) {
-                  return _buildHomeCard(BotType.values[index]);
-                },
-              ),
-            ),
+            _buildFeaturedCard(),
+            _buildGridView(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAppBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppTheme.surfaceColor(context),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppTheme.surfaceColor(context),
+      elevation: 0,
+      title: Row(
         children: [
-          Row(
-            children: [
-              const CircleAvatar(
-                backgroundImage: AssetImage('assets/images/logo.png'),
-                radius: 20,
-              ),
-              const SizedBox(width: 12),
-              Text('MyGemini', style: AppTheme.headlineSmall),
-            ],
+          Hero(
+            tag: 'app_logo',
+            child: const CircleAvatar(
+              backgroundColor: Colors.transparent,
+              backgroundImage: AssetImage('assets/images/chatbot_logo.png'),
+              radius: 20,
+            ),
           ),
-          _buildThemeToggle(),
+          const SizedBox(width: 12),
+          Text('MyGemini', style: AppTheme.headlineMedium),
         ],
       ),
-    ).animate().fadeIn(duration: 300.ms).slideY(begin: -0.2, end: 0);
+      actions: [
+        _buildThemeToggle(),
+        const SizedBox(width: 16),
+      ],
+    );
   }
 
   Widget _buildWelcomeMessage() {
     return Padding(
-      padding: EdgeInsets.all(size.width * 0.04),
-      child: Text(
-        'What would you like to do today?',
-        style: AppTheme.headlineSmall,
+      padding: EdgeInsets.all(size.width * 0.06),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Hello, User!',
+            style: AppTheme.headlineLarge.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'What would you like to do today?',
+            style: AppTheme.bodyLarge,
+          ),
+        ],
       ),
     ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2, end: 0);
   }
 
-  Widget _buildThemeToggle() {
-    return Obx(() => GestureDetector(
-          onTap: () {
-            themeController.toggleTheme();
-            _setStatusBarStyle();
-          },
-          child: Container(
-            width: 60,
-            height: 30,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: themeController.isDarkMode.value
-                  ? AppTheme.primaryColor
-                  : Colors.grey[300],
-            ),
-            child: Stack(
-              children: [
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  left: themeController.isDarkMode.value ? 30 : 0,
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Center(
-                      child: Icon(
-                        themeController.isDarkMode.value
-                            ? Icons.dark_mode
-                            : Icons.light_mode,
-                        size: 20,
-                        color: themeController.isDarkMode.value
-                            ? AppTheme.primaryColor
-                            : Colors.orange,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ));
-  }
-
-  Widget _buildHomeCard(BotType botType) {
-    return Card(
-      color: AppTheme.surfaceColor(context),
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(15),
-        onTap: botType.onTap,
+  Widget _buildFeaturedCard() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
+      child: Card(
+        color: AppTheme.primaryColor.withOpacity(0.1),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          padding: const EdgeInsets.all(20),
+          child: Row(
             children: [
-              _buildLottieAnimation(botType),
-              const SizedBox(height: 12),
-              _buildTitle(botType),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Try our new Trendbased Newsletter Generator',
+                      style: AppTheme.headlineSmall
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Create engaging newsletters with the latest trends using AI.',
+                      style: AppTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        Get.to(() => TrendbasedNewsletterIntroduction());
+                      },
+                      child: Text('Get Started'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 20),
+              Lottie.asset(
+                'assets/lottie/lottie1.json',
+                width: size.width * 0.2,
+                height: size.width * 0.2,
+              ),
             ],
           ),
         ),
       ),
     )
         .animate()
+        .fadeIn(duration: 500.ms)
+        .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1));
+  }
+
+  Widget _buildGridView() {
+    return Padding(
+      padding: EdgeInsets.all(size.width * 0.06),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.85,
+          crossAxisSpacing: size.width * 0.06,
+          mainAxisSpacing: size.height * 0.03,
+        ),
+        itemCount: BotType.values.length,
+        itemBuilder: (context, index) {
+          return _buildHomeCard(BotType.values[index], index);
+        },
+      ),
+    );
+  }
+
+  Widget _buildHomeCard(BotType botType, int index) {
+    return Card(
+      color: AppTheme.surfaceColor(context),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: botType.onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildLottieAnimation(botType),
+              const SizedBox(height: 16),
+              _buildTitle(botType),
+              const SizedBox(height: 8),
+              _buildDescription(botType),
+            ],
+          ),
+        ),
+      ),
+    )
+        .animate(delay: (100 * index).ms)
         .fadeIn(duration: 300.ms)
         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1));
   }
 
   Widget _buildLottieAnimation(BotType botType) {
     return Container(
-      width: size.width * 0.15,
-      height: size.width * 0.15,
+      width: size.width * 0.2,
+      height: size.width * 0.2,
       padding: botType.padding,
+      decoration: BoxDecoration(
+        color: AppTheme.primaryColor.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
       child: Lottie.asset(
         'assets/lottie/${botType.lottie}',
         fit: BoxFit.contain,
@@ -204,9 +224,63 @@ class _HomeScreenState extends State<HomeScreen> {
     return Text(
       botType.title,
       style: AppTheme.bodyMedium.copyWith(
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.bold,
       ),
       textAlign: TextAlign.center,
     );
+  }
+
+  Widget _buildDescription(BotType botType) {
+    return Text(
+      botType.description,
+      style: AppTheme.bodySmall,
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  Widget _buildThemeToggle() {
+    return Obx(() => GestureDetector(
+          onTap: () {
+            themeController.toggleTheme();
+            _setStatusBarStyle();
+          },
+          child: Container(
+            width: 50,
+            height: 25,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: themeController.isDarkMode.value
+                  ? AppTheme.primaryColor
+                  : Colors.grey[300],
+            ),
+            child: AnimatedAlign(
+              duration: const Duration(milliseconds: 200),
+              alignment: themeController.isDarkMode.value
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: Container(
+                width: 25,
+                height: 25,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                ),
+                child: Center(
+                  child: Icon(
+                    themeController.isDarkMode.value
+                        ? Icons.dark_mode
+                        : Icons.light_mode,
+                    size: 16,
+                    color: themeController.isDarkMode.value
+                        ? AppTheme.primaryColor
+                        : Colors.orange,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
   }
 }

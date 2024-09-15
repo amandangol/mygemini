@@ -8,8 +8,7 @@ import 'package:mygemini/features/screens/email_gen/emailbot_assistant.dart';
 import 'package:mygemini/features/screens/trendbased_news_gen/trendbased_newsletter.dart';
 import 'package:mygemini/features/screens/learning_assistant/learning_assistant.dart';
 import 'package:mygemini/features/screens/translator/translator_screen.dart';
-
-import '../../features/screens/code_generator/codebot_assistant.dart';
+import 'package:mygemini/features/screens/code_generator/codebot_assistant.dart';
 
 enum BotType {
   aiChatBot,
@@ -34,15 +33,34 @@ extension MyBotType on BotType {
         BotType.aiImager => 'AI Trend Newsletter',
       };
 
+  String get description => switch (this) {
+        BotType.aiChatBot =>
+          'Engage in intelligent conversations on any topic with our AI-powered chat assistant.',
+        BotType.aiTranslator =>
+          'Break language barriers with our advanced AI translator, supporting multiple languages.',
+        BotType.aiEmailWriter =>
+          'Compose professional and personalized emails effortlessly with AI assistance.',
+        BotType.aiCodeBot =>
+          'Generate clean, efficient code snippets and get programming help from our AI code assistant.',
+        BotType.aiCreativeContent =>
+          'Spark your creativity with AI-generated content ideas, from blog posts to social media.',
+        BotType.aiDocumentAnalyzer =>
+          'Extract key insights and summarize lengthy documents with our AI-powered analyzer.',
+        BotType.aiLearningBot =>
+          'Enhance your learning experience with personalized AI tutoring on various subjects.',
+        BotType.aiImager =>
+          'Stay informed with AI-curated newsletters based on the latest trends and your interests.',
+      };
+
   String get lottie => switch (this) {
-        BotType.aiChatBot => 'ai_hand_waving.json',
+        BotType.aiChatBot => 'lottie2.json',
         BotType.aiTranslator => 'ai_ask_me.json',
         BotType.aiEmailWriter => 'ai_ask_me.json',
-        BotType.aiCodeBot => 'ai_play.json',
-        BotType.aiCreativeContent => 'ai_hand_waving.json',
-        BotType.aiDocumentAnalyzer => 'ai_ask_me.json',
-        BotType.aiLearningBot => 'ai_ask_me.json',
-        BotType.aiImager => 'ai_ask_me.json'
+        BotType.aiCodeBot => 'lottie2.json',
+        BotType.aiCreativeContent => 'lottie2.json',
+        BotType.aiDocumentAnalyzer => 'lottie3.json',
+        BotType.aiLearningBot => 'lottie3.json',
+        BotType.aiImager => 'lottie2.json',
       };
 
   bool get leftAlign => switch (this) {

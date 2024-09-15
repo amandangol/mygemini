@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mygemini/features/screens/home/home_screen.dart';
 import 'package:mygemini/features/screens/onboarding/onboading_screen.dart';
 import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/helper/pref.dart';
-import 'package:mygemini/widget/custom_loading.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
@@ -32,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
+      CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
     );
 
     _controller.forward();
@@ -58,15 +59,15 @@ class _SplashScreenState extends State<SplashScreen>
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.blue.shade100, Colors.blue.shade300],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color.fromARGB(255, 153, 149, 234), Color(0xFF3F3D9E)],
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Spacer(flex: 3),
+            const Spacer(flex: 2),
             AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
@@ -74,27 +75,52 @@ class _SplashScreenState extends State<SplashScreen>
                   opacity: _fadeAnimation,
                   child: ScaleTransition(
                     scale: _scaleAnimation,
-                    child: Card(
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(size.width * .05),
-                        child: Image.asset(
-                          'assets/images/logo-chatbot.png',
-                          width: size.width * .45,
-                        ),
-                      ),
+                    child: Lottie.asset(
+                      'assets/lottie/lottie1.json',
+                      width: size.width * 0.6,
+                      height: size.width * 0.6,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 );
               },
             ),
+            SizedBox(height: size.height * 0.05),
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Text(
+                'MyGemini',
+                style: GoogleFonts.poppins(
+                  textStyle: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: size.height * 0.02),
+            FadeTransition(
+              opacity: _fadeAnimation,
+              child: Text(
+                'Your intelligent companion',
+                style: GoogleFonts.poppins(
+                  textStyle: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.white.withOpacity(0.9),
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ),
             const Spacer(),
             FadeTransition(
               opacity: _fadeAnimation,
-              child: const CustomLoading(),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
             ),
             const Spacer(),
           ],

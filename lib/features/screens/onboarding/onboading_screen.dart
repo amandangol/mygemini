@@ -3,14 +3,6 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mygemini/features/screens/home/home_screen.dart';
 
-class Onboard {
-  final String title;
-  final String subtitle;
-  final String lottie;
-
-  Onboard({required this.title, required this.subtitle, required this.lottie});
-}
-
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
 
@@ -22,42 +14,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<Onboard> _onboardItems = [
-    Onboard(
-      title: 'Welcome to AI Assistant',
-      subtitle: 'Your all-in-one AI companion for various tasks',
-      lottie: 'ai_hand_waving',
-    ),
-    Onboard(
-      title: 'Chat with AI',
-      subtitle: 'Get answers and assistance on any topic',
-      lottie: 'ai_play',
-    ),
-    Onboard(
-      title: 'Translate Languages',
-      subtitle: 'Break language barriers with our translation feature',
-      lottie: 'ai_ask_me',
-    ),
-    Onboard(
-      title: 'Email Assistant',
-      subtitle: 'Compose and manage emails effortlessly',
-      lottie: 'ai_play',
-    ),
-    Onboard(
-      title: 'Code Assistant',
-      subtitle: 'Get help with coding and debugging',
-      lottie: 'ai_hand_waving',
-    ),
-    Onboard(
-      title: 'Creative Assistant',
-      subtitle: 'Unleash your creativity with AI-powered tools',
-      lottie: 'ai_ask_me',
-    ),
-    Onboard(
-      title: 'Document Analyzer',
-      subtitle: 'Extract insights from your documents',
-      lottie: 'ai_hand_waving',
-    ),
+  final List<Map<String, dynamic>> _onboardItems = [
+    {
+      'title': 'AI Assistant',
+      'subtitle': 'Your all-in-one companion',
+      'lottie': 'lottie1',
+      'color': Color(0xFF6C63FF),
+      'features': ['Chat Assistant', 'Translator', 'Email Composer'],
+    },
+    {
+      'title': 'Boost Productivity',
+      'subtitle': 'Enhance your work with AI',
+      'lottie': 'lottie3',
+      'color': Color(0xFF00C853),
+      'features': ['Code Generator', 'Document Analyzer', 'Learning Assistant'],
+    },
+    {
+      'title': 'Unleash Creativity',
+      'subtitle': 'Create and stay updated',
+      'lottie': 'lottie2',
+      'color': Color.fromARGB(255, 34, 200, 255),
+      'features': ['Content Creator', 'Trend Newsletter'],
+    },
   ];
 
   @override
@@ -76,10 +54,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
+  void _onSkip() {
+    Get.off(() => const HomeScreen());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: Stack(
         children: [
@@ -87,8 +67,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             controller: _pageController,
             itemCount: _onboardItems.length,
             itemBuilder: (context, index) {
-              return _buildOnboardPage(_onboardItems[index], size);
+              return _buildOnboardPage(_onboardItems[index]);
             },
+          ),
+          Positioned(
+            top: 50,
+            right: 20,
+            child: TextButton(
+              onPressed: _onSkip,
+              child: Text(
+                'Skip',
+                style: TextStyle(
+                  color: _onboardItems[_currentPage]['color'],
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
           Positioned(
             bottom: 50,
@@ -97,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Column(
               children: [
                 _buildPageIndicator(),
-                SizedBox(height: size.height * 0.03),
+                SizedBox(height: 20),
                 _buildActionButton(),
               ],
             ),
@@ -107,36 +102,74 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildOnboardPage(Onboard item, Size size) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Lottie.asset(
-          'assets/lottie/${item.lottie}.json',
-          height: size.height * 0.4,
+  Widget _buildOnboardPage(Map<String, dynamic> item) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            item['color'].withOpacity(0.1),
+            Colors.white,
+          ],
         ),
-        SizedBox(height: size.height * 0.05),
-        Text(
-          item.title,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Lottie.asset(
+            'assets/lottie/${item['lottie']}.json',
+            height: MediaQuery.of(context).size.height * 0.35,
           ),
-        ),
-        SizedBox(height: size.height * 0.02),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Text(
-            item.subtitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black54,
+          SizedBox(height: 40),
+          Text(
+            item['title'],
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: item['color'],
             ),
           ),
-        ),
-      ],
+          SizedBox(height: 10),
+          Text(
+            item['subtitle'],
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey[600],
+            ),
+          ),
+          SizedBox(height: 30),
+          _buildFeatureList(item['features'], item['color']),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureList(List<String> features, Color color) {
+    return Column(
+      children:
+          features.map((feature) => _buildFeatureItem(feature, color)).toList(),
+    );
+  }
+
+  Widget _buildFeatureItem(String feature, Color color) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(Icons.check_circle_outline, color: color, size: 20),
+          SizedBox(width: 10),
+          Text(
+            feature,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[700],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -148,13 +181,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         (index) => AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: _currentPage == index ? 20 : 8,
-          height: 8,
+          width: _currentPage == index ? 30 : 10,
+          height: 10,
           decoration: BoxDecoration(
             color: _currentPage == index
-                ? Colors.blue
-                : Colors.blue.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(4),
+                ? _onboardItems[_currentPage]['color']
+                : _onboardItems[_currentPage]['color'].withOpacity(0.3),
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
       ),
@@ -167,11 +200,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        backgroundColor: Colors.blue,
+        backgroundColor: _onboardItems[_currentPage]['color'],
         padding: const EdgeInsets.symmetric(
-          horizontal: 40,
+          horizontal: 50,
           vertical: 15,
         ),
+        elevation: 0,
       ),
       onPressed: () {
         if (_currentPage == _onboardItems.length - 1) {
@@ -185,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       },
       child: Text(
         _currentPage == _onboardItems.length - 1 ? 'Get Started' : 'Next',
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),

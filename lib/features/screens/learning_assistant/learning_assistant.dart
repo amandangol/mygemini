@@ -210,12 +210,12 @@ class _LearningChatbotState extends State<LearningChatbot> {
     required VoidCallback onPressed,
   }) {
     return ElevatedButton.icon(
-      icon: Icon(icon, size: 18),
+      icon: Icon(icon, size: 12),
       label: Text(label),
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        textStyle: TextStyle(fontSize: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        textStyle: const TextStyle(fontSize: 12),
       ),
     );
   }
@@ -233,11 +233,11 @@ class _LearningChatbotState extends State<LearningChatbot> {
           ),
           actions: [
             TextButton(
-              child: Text("Cancel"),
+              child: const Text("Cancel"),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text("Submit"),
+              child: const Text("Submit"),
               onPressed: () {
                 if (topicController.text.isNotEmpty) {
                   onSubmit(topicController.text);

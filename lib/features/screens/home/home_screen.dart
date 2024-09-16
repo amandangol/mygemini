@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final themeController = Get.put(ThemeController());
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -26,6 +27,12 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _setStatusBarStyle();
     Pref.showOnboarding = false;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _setStatusBarStyle() {
@@ -42,35 +49,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWelcomeMessage(),
-            _buildFeaturedCard(),
-            _buildGridView(),
-          ],
-        ),
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          _buildSliverAppBar(),
+          SliverToBoxAdapter(child: _buildWelcomeMessage()),
+          SliverToBoxAdapter(child: _buildFeaturedCard()),
+          SliverPadding(
+            padding: EdgeInsets.all(size.width * 0.06),
+            sliver: _buildSliverGrid(),
+          ),
+        ],
       ),
+      floatingActionButton: _buildScrollToTopFAB(),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
+  Widget _buildSliverAppBar() {
+    return SliverAppBar(
+      floating: true,
       backgroundColor: AppTheme.surfaceColor(context),
       elevation: 0,
       title: Row(
         children: [
-          Hero(
-            tag: 'app_logo',
-            child: const CircleAvatar(
-              backgroundColor: Colors.transparent,
-              backgroundImage: AssetImage('assets/images/chatbot_logo.png'),
-              radius: 20,
-            ),
+          const CircleAvatar(
+            backgroundColor: Colors.transparent,
+            backgroundImage: AssetImage('assets/images/floating_robot.png'),
+            radius: 25,
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 5),
           Text('MyGemini', style: AppTheme.headlineMedium),
         ],
       ),
@@ -87,14 +94,23 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Hello, User!',
-            style: AppTheme.headlineLarge.copyWith(fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Text(
+                'Hello! ',
+                style: AppTheme.headlineMedium
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              Image.asset(
+                "assets/images/chatbot_icon.png",
+                height: 40,
+              )
+            ],
           ),
           const SizedBox(height: 8),
           Text(
             'What would you like to do today?',
-            style: AppTheme.bodyLarge,
+            style: AppTheme.bodyMedium,
           ),
         ],
       ),
@@ -128,17 +144,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Create engaging newsletters with the latest trends using AI.',
                       style: AppTheme.bodyMedium,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
-                        Get.to(() => TrendbasedNewsletterIntroduction());
+                        Get.to(() => const TrendbasedNewsletterIntroduction());
                       },
-                      child: Text('Get Started'),
+                      child: const Text('Get Started'),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 10),
               Lottie.asset(
                 'assets/lottie/lottie1.json',
                 width: size.width * 0.2,
@@ -154,22 +170,19 @@ class _HomeScreenState extends State<HomeScreen> {
         .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1));
   }
 
-  Widget _buildGridView() {
-    return Padding(
-      padding: EdgeInsets.all(size.width * 0.06),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.85,
-          crossAxisSpacing: size.width * 0.06,
-          mainAxisSpacing: size.height * 0.03,
-        ),
-        itemCount: BotType.values.length,
-        itemBuilder: (context, index) {
+  Widget _buildSliverGrid() {
+    return SliverGrid(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.9,
+        crossAxisSpacing: size.width * 0.06,
+        mainAxisSpacing: size.height * 0.03,
+      ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
           return _buildHomeCard(BotType.values[index], index);
         },
+        childCount: BotType.values.length,
       ),
     );
   }
@@ -190,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildLottieAnimation(botType),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               _buildTitle(botType),
               const SizedBox(height: 8),
               _buildDescription(botType),
@@ -263,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 width: 25,
                 height: 25,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
                 ),
@@ -282,5 +295,28 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ));
+  }
+
+  Widget _buildScrollToTopFAB() {
+    return AnimatedBuilder(
+      animation: _scrollController,
+      builder: (context, child) {
+        return AnimatedOpacity(
+          opacity: _scrollController.offset > 100 ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          child: FloatingActionButton(
+            mini: true,
+            onPressed: () {
+              _scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            },
+            child: const Icon(Icons.arrow_upward),
+          ),
+        );
+      },
+    );
   }
 }

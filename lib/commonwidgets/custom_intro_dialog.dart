@@ -39,10 +39,10 @@ class CustomIntroDialog extends StatelessWidget {
               .toList(),
         ),
       ),
-      actions: <Widget>[
+      actions: [
         TextButton(
-          child: const Text('Got it!'),
           onPressed: onClose,
+          child: const Text('Got it!'),
         ),
       ],
     );

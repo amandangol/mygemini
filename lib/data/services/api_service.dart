@@ -12,7 +12,7 @@ class APIs {
             'GEMINI_API_KEY is not set in the environment variables.');
       }
 
-      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
+      final model = GenerativeModel(model: 'gemini-1.5-pro', apiKey: apiKey);
 
       // Convert conversation context to Content objects
       final List<Content> history = conversationContext.map((message) {

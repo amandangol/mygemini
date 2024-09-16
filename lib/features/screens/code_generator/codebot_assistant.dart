@@ -104,11 +104,7 @@ class _AiCodeBotState extends State<AiCodeBot> {
         child: Column(
           children: [
             Expanded(
-              child: Stack(
-                children: [
-                  Obx(() => _buildChatMessages(context)),
-                ],
-              ),
+              child: Obx(() => _buildChatMessages(context)),
             ),
             _buildInputArea(context),
           ],
@@ -130,7 +126,6 @@ class _AiCodeBotState extends State<AiCodeBot> {
   Widget _buildChatMessages(BuildContext context) {
     return ListView.builder(
       controller: _scrollController,
-      reverse: true,
       padding: AppTheme.defaultPadding,
       itemCount: controller.chatMessages.length,
       itemBuilder: (context, index) {

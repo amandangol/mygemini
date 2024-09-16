@@ -18,7 +18,7 @@ enum BotType {
   aiCreativeContent,
   aiDocumentAnalyzer,
   aiLearningBot,
-  aiImager
+  aiTrendNewsLetter
 }
 
 extension MyBotType on BotType {
@@ -30,7 +30,7 @@ extension MyBotType on BotType {
         BotType.aiCreativeContent => 'AI Content Creator',
         BotType.aiDocumentAnalyzer => 'AI Document Analyzer',
         BotType.aiLearningBot => 'AI Learning Assistant',
-        BotType.aiImager => 'AI Trend Newsletter',
+        BotType.aiTrendNewsLetter => 'AI Trend Newsletter',
       };
 
   String get description => switch (this) {
@@ -48,7 +48,7 @@ extension MyBotType on BotType {
           'Extract key insights and summarize lengthy documents with our AI-powered analyzer.',
         BotType.aiLearningBot =>
           'Enhance your learning experience with personalized AI tutoring on various subjects.',
-        BotType.aiImager =>
+        BotType.aiTrendNewsLetter =>
           'Stay informed with AI-curated newsletters based on the latest trends and your interests.',
       };
 
@@ -60,7 +60,7 @@ extension MyBotType on BotType {
         BotType.aiCreativeContent => 'lottie2.json',
         BotType.aiDocumentAnalyzer => 'lottie3.json',
         BotType.aiLearningBot => 'lottie3.json',
-        BotType.aiImager => 'lottie2.json',
+        BotType.aiTrendNewsLetter => 'lottie2.json',
       };
 
   bool get leftAlign => switch (this) {
@@ -71,7 +71,7 @@ extension MyBotType on BotType {
         BotType.aiCreativeContent => true,
         BotType.aiDocumentAnalyzer => true,
         BotType.aiLearningBot => true,
-        BotType.aiImager => true,
+        BotType.aiTrendNewsLetter => true,
       };
 
   EdgeInsets get padding => switch (this) {
@@ -82,7 +82,7 @@ extension MyBotType on BotType {
         BotType.aiCreativeContent => EdgeInsets.zero,
         BotType.aiDocumentAnalyzer => EdgeInsets.zero,
         BotType.aiLearningBot => EdgeInsets.zero,
-        BotType.aiImager => EdgeInsets.zero,
+        BotType.aiTrendNewsLetter => EdgeInsets.zero,
       };
 
   VoidCallback get onTap => switch (this) {
@@ -99,6 +99,7 @@ extension MyBotType on BotType {
         BotType.aiDocumentAnalyzer => () =>
             Get.to(() => DocumentAnalyzerFeature()),
         BotType.aiLearningBot => () => Get.to(() => LearningChatbot()),
-        BotType.aiImager => () => Get.to(() => TrendNewsletterGenerator()),
+        BotType.aiTrendNewsLetter => () =>
+            Get.to(() => TrendNewsletterGenerator()),
       };
 }

@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
+import 'package:mygemini/commonwidgets/custom_intro_dialog.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/translator/controller/translator_controller.dart';
 import 'package:mygemini/features/screens/translator/model/translator_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AiTranslatorBot extends StatefulWidget {
   AiTranslatorBot({Key? key}) : super(key: key);
@@ -39,6 +41,63 @@ class _AiTranslatorBotState extends State<AiTranslatorBot> {
             duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
       }
     });
+    _checkFirstLaunch();
+  }
+
+  void _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch = prefs.getBool('isFirstLaunchTranslator') ?? true;
+    if (isFirstLaunch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showIntroDialog();
+      });
+      await prefs.setBool('isFirstLaunchTranslator', false);
+    }
+  }
+
+  void _showIntroDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CustomIntroDialog(
+          title: 'Welcome to AI Translator',
+          features: [
+            FeatureItem(
+              icon: Icons.translate,
+              title: 'AI-Powered Translation',
+              description:
+                  'Translate text between numerous languages with advanced AI.',
+            ),
+            FeatureItem(
+              icon: Icons.chat_bubble_outline,
+              title: 'Interactive Chat Interface',
+              description:
+                  'View your translation history in a user-friendly chat format.',
+            ),
+            FeatureItem(
+              icon: Icons.swap_horiz,
+              title: 'Quick Language Swap',
+              description: 'Easily switch between source and target languages.',
+            ),
+            FeatureItem(
+              icon: Icons.flag_outlined,
+              title: 'Visual Language Selection',
+              description:
+                  'Choose languages with country flag icons for easy recognition.',
+            ),
+            FeatureItem(
+              icon: Icons.share,
+              title: 'Easy Sharing',
+              description: 'Share your translated text directly from the app.',
+            ),
+          ],
+          onClose: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -66,6 +125,7 @@ class _AiTranslatorBotState extends State<AiTranslatorBot> {
       onResetConversation: () {
         controller.resetConversation();
       },
+      onInfoPressed: _showIntroDialog,
     );
   }
 

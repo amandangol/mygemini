@@ -4,10 +4,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_input_widget.dart';
+import 'package:mygemini/commonwidgets/custom_intro_dialog.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/email_gen/controller/email_controller.dart';
 import 'package:mygemini/features/screens/email_gen/model/emailmessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AiEmailBot extends StatefulWidget {
   const AiEmailBot({Key? key}) : super(key: key);
@@ -24,6 +26,7 @@ class _AiEmailBotState extends State<AiEmailBot> {
   void initState() {
     super.initState();
     controller.emailMessages.listen((_) => _scrollToBottom());
+    _checkFirstLaunch();
   }
 
   @override
@@ -44,6 +47,42 @@ class _AiEmailBotState extends State<AiEmailBot> {
     });
   }
 
+  void _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch = prefs.getBool('isFirstLaunchEmailBot') ?? true;
+    if (isFirstLaunch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showEmailComposerIntroDialog();
+      });
+      await prefs.setBool('isFirstLaunchEmailBot', false);
+    }
+  }
+
+  void _showEmailComposerIntroDialog() {
+    showIntroDialog(context, title: 'Welcome to AI Email Composer!', features: [
+      FeatureItem(
+        icon: Icons.email_outlined,
+        title: 'Guided Email Creation',
+        description: 'Step-by-step process for composing professional emails.',
+      ),
+      FeatureItem(
+        icon: Icons.auto_awesome_outlined,
+        title: 'AI-Powered Suggestions',
+        description: 'Get intelligent suggestions for your email content.',
+      ),
+      FeatureItem(
+        icon: Icons.style_outlined,
+        title: 'Multiple Email Styles',
+        description: 'Choose from various email styles to fit your needs.',
+      ),
+      FeatureItem(
+        icon: Icons.edit_outlined,
+        title: 'Easy Editing',
+        description: 'Refine your email with interactive AI assistance.',
+      ),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,9 +91,11 @@ class _AiEmailBotState extends State<AiEmailBot> {
       body: SafeArea(
         child: Column(
           children: [
+            _buildEmailProgress(),
             Expanded(
               child: Obx(() => _buildEmailMessages(context)),
             ),
+            _buildEmailStyleSelection(),
             _buildInputArea(context),
           ],
         ),
@@ -68,7 +109,17 @@ class _AiEmailBotState extends State<AiEmailBot> {
       onResetConversation: () {
         controller.resetConversation();
       },
+      onInfoPressed: _showEmailComposerIntroDialog,
     );
+  }
+
+  Widget _buildEmailProgress() {
+    return Obx(() => LinearProgressIndicator(
+          value: controller.emailProgress.value,
+          backgroundColor: Colors.grey[300],
+          valueColor:
+              const AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+        ));
   }
 
   Widget _buildEmailMessages(BuildContext context) {
@@ -127,7 +178,7 @@ class _AiEmailBotState extends State<AiEmailBot> {
                 padding: const EdgeInsets.only(top: 12),
                 child: CustomActionButtons(
                   text: message.content,
-                  shareSubject: 'Generated mail from EmailBot Assistant',
+                  shareSubject: 'Generated email from EmailBot Assistant',
                 ),
               ),
           ],
@@ -136,13 +187,40 @@ class _AiEmailBotState extends State<AiEmailBot> {
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
   }
 
+  Widget _buildEmailStyleSelection() {
+    return Obx(() {
+      if (!controller.showStyleSelection.value) {
+        return const SizedBox.shrink();
+      }
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 8,
+          children: EmailStyle.values.map((style) {
+            return ElevatedButton(
+              onPressed: controller.isLoading.value
+                  ? null // Disable buttons when loading
+                  : () => controller.selectEmailStyle(style),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+              ),
+              child: Text(style.toString().split('.').last),
+            );
+          }).toList(),
+        ),
+      );
+    });
+  }
+
   Widget _buildInputArea(BuildContext context) {
     return CustomInputWidget(
       userInputController: controller.userInputController,
       isLoading: controller.isLoading,
       sendMessage: controller.sendMessage,
       isMaxLengthReached: controller.isMaxLengthReached,
-      hintText: 'Ask EmailBot to compose email...',
+      hintText: 'Enter email details...',
     );
   }
 }

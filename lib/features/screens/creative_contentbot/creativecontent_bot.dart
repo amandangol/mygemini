@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_input_widget.dart';
+import 'package:mygemini/commonwidgets/custom_intro_dialog.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/creative_contentbot/controller/creativecontent_controller.dart';
 import 'package:mygemini/features/screens/creative_contentbot/model/creativemessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreativeBotView extends StatefulWidget {
   CreativeBotView({Key? key}) : super(key: key);
@@ -30,6 +31,7 @@ class _CreativeBotViewState extends State<CreativeBotView> {
         _scrollToBottom();
       });
     });
+    _checkFirstLaunch();
   }
 
   @override
@@ -42,10 +44,49 @@ class _CreativeBotViewState extends State<CreativeBotView> {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
     }
+  }
+
+  void _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch = prefs.getBool('isFirstLaunchCreativeBot') ?? true;
+    if (isFirstLaunch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showIntroDialog();
+      });
+      await prefs.setBool('isFirstLaunchCreativeBot', false);
+    }
+  }
+
+  void _showIntroDialog() {
+    showIntroDialog(context,
+        title: 'Welcome to AI Content Creator!',
+        features: [
+          FeatureItem(
+            icon: Icons.create_outlined,
+            title: 'Multiple Content Types',
+            description:
+                'Create stories, poems, scripts, marketing copy, and social media posts.',
+          ),
+          FeatureItem(
+            icon: Icons.chat_outlined,
+            title: 'Interactive Conversations',
+            description: 'Chat with the AI to refine and perfect your content',
+          ),
+          FeatureItem(
+            icon: Icons.refresh,
+            title: 'Easy Reset',
+            description: 'Start over anytime with a fresh conversation.',
+          ),
+          FeatureItem(
+            icon: Icons.share_outlined,
+            title: 'Share Your Creations',
+            description: 'Easily share or copy your generated content.',
+          ),
+        ]);
   }
 
   @override
@@ -69,21 +110,23 @@ class _CreativeBotViewState extends State<CreativeBotView> {
 
   Widget _buildContentTypeSelection(BuildContext context) {
     return Obx(() {
-      if (!controller.showContentTypeSelection.value) return SizedBox.shrink();
+      if (!controller.showContentTypeSelection.value) {
+        return const SizedBox.shrink();
+      }
 
       return Container(
-        padding: EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Wrap(
           alignment: WrapAlignment.center,
           spacing: 8,
           children: ContentType.values.map((type) {
             return ElevatedButton(
               onPressed: () => controller.selectContentType(type),
-              child: Text(type.toString().split('.').last),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.onSurface,
                 backgroundColor: Theme.of(context).colorScheme.surface,
               ),
+              child: Text(type.toString().split('.').last),
             );
           }).toList(),
         ),
@@ -97,6 +140,7 @@ class _CreativeBotViewState extends State<CreativeBotView> {
       onResetConversation: () {
         controller.resetConversation();
       },
+      onInfoPressed: _showIntroDialog,
     );
   }
 

@@ -4,10 +4,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_input_widget.dart';
+import 'package:mygemini/commonwidgets/custom_intro_dialog.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/code_generator/controller/codebot_controller.dart';
 import 'package:mygemini/features/screens/code_generator/model/codemessage_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AiCodeBot extends StatefulWidget {
   const AiCodeBot({Key? key}) : super(key: key);
@@ -19,50 +21,78 @@ class AiCodeBot extends StatefulWidget {
 class _AiCodeBotState extends State<AiCodeBot> {
   final CodeBotController controller = Get.put(CodeBotController());
   final ScrollController _scrollController = ScrollController();
-  final ValueNotifier<bool> _showScrollToBottomButton =
-      ValueNotifier<bool>(false);
 
   @override
   void initState() {
     super.initState();
-    controller.chatMessages.listen((_) => _scrollToBottomIfNeeded());
-    _scrollController.addListener(_toggleScrollToBottomButton);
+    controller.chatMessages.listen((_) => _scrollToBottom());
+    _checkFirstLaunch();
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_toggleScrollToBottomButton);
     _scrollController.dispose();
-    _showScrollToBottomButton.dispose();
     super.dispose();
-  }
-
-  void _toggleScrollToBottomButton() {
-    if (_scrollController.hasClients) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final currentScroll = _scrollController.offset;
-      _showScrollToBottomButton.value = currentScroll < (maxScroll - 200);
-    }
-  }
-
-  void _scrollToBottomIfNeeded() {
-    if (_scrollController.hasClients) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final currentScroll = _scrollController.offset;
-      if (maxScroll - currentScroll <= 200) {
-        _scrollToBottom();
-      }
-    }
   }
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
-        0,
+        _scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
     }
+  }
+
+  void _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch = prefs.getBool('isFirstLaunchCodeBot') ?? true;
+    if (isFirstLaunch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showIntroDialog();
+      });
+      await prefs.setBool('isFirstLaunchCodeBot', false);
+    }
+  }
+
+  void _showIntroDialog() {
+    showIntroDialog(
+      context,
+      title: 'Welcome to AI Code Generator!',
+      features: [
+        FeatureItem(
+          icon: Icons.code_outlined,
+          title: 'Polyglot Coding',
+          description:
+              'Generate code in languages like Python, JavaScript, Java, and more.',
+        ),
+        FeatureItem(
+          icon: Icons.psychology_outlined,
+          title: 'Smart Code Creation',
+          description:
+              'Describe functionality, and let AI craft tailored code solutions.',
+        ),
+        FeatureItem(
+          icon: Icons.chat_outlined,
+          title: 'Interactive Refinement',
+          description:
+              'Refine code through dialog, request modifications, and improvements.',
+        ),
+        FeatureItem(
+          icon: Icons.history_edu_outlined,
+          title: 'Learning Assistant',
+          description:
+              'Get explanations and deepen your programming knowledge.',
+        ),
+        FeatureItem(
+          icon: Icons.refresh_outlined,
+          title: 'Fresh Start',
+          description:
+              'Reset conversations to start new coding projects easily.',
+        ),
+      ],
+    );
   }
 
   @override
@@ -77,7 +107,6 @@ class _AiCodeBotState extends State<AiCodeBot> {
               child: Stack(
                 children: [
                   Obx(() => _buildChatMessages(context)),
-                  _buildScrollToBottomButton(),
                 ],
               ),
             ),
@@ -94,6 +123,7 @@ class _AiCodeBotState extends State<AiCodeBot> {
       onResetConversation: () {
         controller.resetConversation();
       },
+      onInfoPressed: _showIntroDialog,
     );
   }
 
@@ -107,31 +137,6 @@ class _AiCodeBotState extends State<AiCodeBot> {
         final message =
             controller.chatMessages[controller.chatMessages.length - 1 - index];
         return _buildMessageBubble(context, message);
-      },
-    );
-  }
-
-  Widget _buildScrollToBottomButton() {
-    return ValueListenableBuilder<bool>(
-      valueListenable: _showScrollToBottomButton,
-      builder: (context, show, child) {
-        return AnimatedOpacity(
-          opacity: show ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
-          child: show
-              ? Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: FloatingActionButton(
-                      mini: true,
-                      onPressed: _scrollToBottom,
-                      child: const Icon(Icons.arrow_downward),
-                    ),
-                  ),
-                )
-              : const SizedBox.shrink(),
-        );
       },
     );
   }

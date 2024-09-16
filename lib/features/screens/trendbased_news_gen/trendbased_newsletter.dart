@@ -9,6 +9,7 @@ import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/trendbased_news_gen/controller/newsletter_controller.dart';
 import 'package:mygemini/features/screens/trendbased_news_gen/model/newsletter_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TrendNewsletterGenerator extends StatefulWidget {
   const TrendNewsletterGenerator({Key? key}) : super(key: key);
@@ -45,47 +46,57 @@ class _TrendNewsletterGeneratorState extends State<TrendNewsletterGenerator> {
         );
       }
     });
+    _checkFirstLaunch();
+  }
+
+  void _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch = prefs.getBool('isFirstLaunchTrendNewsBot') ?? true;
+    if (isFirstLaunch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showIntroDialog();
+      });
+      await prefs.setBool('isFirstLaunchTrendNewsBot', false);
+    }
   }
 
   void _showIntroDialog() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return CustomIntroDialog(
-            title: 'Welcome to AI Trend Newsletter Generator!',
-            features: [
-              FeatureItem(
-                icon: Icons.trending_up,
-                title: 'Trend Analysis',
-                description: 'Get the latest trends in your chosen topic.',
-              ),
-              FeatureItem(
-                icon: Icons.article_outlined,
-                title: 'Content Generation',
-                description:
-                    'AI-powered newsletter content based on current news.',
-              ),
-              FeatureItem(
-                icon: Icons.chat_bubble_outline,
-                title: 'Interactive Chat',
-                description:
-                    'Refine and customize your newsletter through conversation.',
-              ),
-              FeatureItem(
-                icon: Icons.share,
-                title: 'Easy Sharing',
-                description: 'Share your generated newsletter with just a tap.',
-              ),
-            ],
-            onClose: () {
-              Navigator.of(context).pop();
-            },
-          );
-        },
-      );
-    });
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CustomIntroDialog(
+          title: 'Welcome to AI Trend Newsletter Generator!',
+          features: [
+            FeatureItem(
+              icon: Icons.trending_up_outlined,
+              title: 'Trend Analysis',
+              description: 'Get the latest trends in your chosen topic.',
+            ),
+            FeatureItem(
+              icon: Icons.article_outlined,
+              title: 'Content Generation',
+              description:
+                  'AI-powered newsletter content based on current news.',
+            ),
+            FeatureItem(
+              icon: Icons.chat_bubble_outline,
+              title: 'Interactive Chat',
+              description:
+                  'Refine and customize your newsletter through conversation.',
+            ),
+            FeatureItem(
+              icon: Icons.share_outlined,
+              title: 'Easy Sharing',
+              description: 'Share your generated newsletter with just a tap.',
+            ),
+          ],
+          onClose: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
   }
 
   @override

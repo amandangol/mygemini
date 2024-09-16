@@ -4,10 +4,12 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_input_widget.dart';
+import 'package:mygemini/commonwidgets/custom_intro_dialog.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/document_analyzer/controller/documentanalyzer_controller.dart';
 import 'package:mygemini/features/screens/document_analyzer/model/docbot_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DocumentAnalyzerFeature extends StatefulWidget {
   DocumentAnalyzerFeature({Key? key}) : super(key: key);
@@ -31,6 +33,7 @@ class _DocumentAnalyzerFeatureState extends State<DocumentAnalyzerFeature> {
         _scrollToBottom();
       });
     });
+    _checkFirstLaunch();
   }
 
   @override
@@ -43,10 +46,53 @@ class _DocumentAnalyzerFeatureState extends State<DocumentAnalyzerFeature> {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
     }
+  }
+
+  void _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch = prefs.getBool('isFirstLaunchDocumentAnalyzer') ?? true;
+    if (isFirstLaunch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showIntroDialog();
+      });
+      await prefs.setBool('isFirstLaunchDocumentAnalyzer', false);
+    }
+  }
+
+  void _showIntroDialog() {
+    showIntroDialog(
+      context,
+      title: 'Welcome to AI DocAnalyzer!',
+      features: [
+        FeatureItem(
+          icon: Icons.upload_file_outlined,
+          title: 'Document Upload',
+          description: 'Upload PDF, TXT, CSV, or MD files for analysis.',
+        ),
+        FeatureItem(
+          icon: Icons.analytics_outlined,
+          title: 'Customized Analysis',
+          description:
+              'Specify the type of analysis you need for your document. e.g, extract, summarize',
+        ),
+        FeatureItem(
+          icon: Icons.text_snippet_outlined,
+          title: 'Content Extraction',
+          description:
+              'Automatically extract content from supported file types.',
+        ),
+        FeatureItem(
+          icon: Icons.question_answer_outlined,
+          title: 'Interactive Q&A',
+          description:
+              'Ask questions about the analysis results for deeper understanding.',
+        ),
+      ],
+    );
   }
 
   @override
@@ -77,6 +123,7 @@ class _DocumentAnalyzerFeatureState extends State<DocumentAnalyzerFeature> {
       onResetConversation: () {
         _controller.resetConversation();
       },
+      onInfoPressed: _showIntroDialog,
     );
   }
 

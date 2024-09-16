@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/custom_appbar.dart';
 import 'package:mygemini/commonwidgets/custom_input_widget.dart';
+import 'package:mygemini/commonwidgets/custom_intro_dialog.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/learning_assistant/controller/learning_assistant_controller.dart';
 import 'package:mygemini/features/screens/learning_assistant/model/learning_asst_model.dart';
@@ -48,6 +49,37 @@ class _LearningChatbotState extends State<LearningChatbot> {
     }
   }
 
+  void _showIntroDialog() {
+    showIntroDialog(
+      context,
+      title: 'Welcome to AI Learning Assistant!',
+      features: [
+        FeatureItem(
+          icon: Icons.school_outlined,
+          title: 'Personalized Learning',
+          description:
+              'Get tailored explanations and answers to your questions.',
+        ),
+        FeatureItem(
+          icon: Icons.psychology_outlined,
+          title: 'Concept Exploration',
+          description: 'Dive deep into topics and explore new ideas.',
+        ),
+        FeatureItem(
+          icon: Icons.tips_and_updates_outlined,
+          title: 'Study Tips',
+          description:
+              'Receive effective study strategies and memory techniques.',
+        ),
+        FeatureItem(
+          icon: Icons.quiz_outlined,
+          title: 'Practice Questions',
+          description: 'Test your knowledge with interactive quizzes.',
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,6 +91,7 @@ class _LearningChatbotState extends State<LearningChatbot> {
             Expanded(
               child: Obx(() => _buildChatMessages(context)),
             ),
+            _buildFeatureButtons(context),
             _buildInputArea(context),
           ],
         ),
@@ -72,6 +105,7 @@ class _LearningChatbotState extends State<LearningChatbot> {
       onResetConversation: () {
         controller.resetConversation();
       },
+      onInfoPressed: _showIntroDialog, // Updated to call _showIntroDialog
     );
   }
 
@@ -139,6 +173,82 @@ class _LearningChatbotState extends State<LearningChatbot> {
         ),
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
+  }
+
+  Widget _buildFeatureButtons(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildFeatureButton(
+            icon: Icons.tips_and_updates,
+            label: 'Study Tips',
+            onPressed: () => _showTopicInputDialog(
+                'Study Tips', controller.provideStudyTips),
+          ),
+          _buildFeatureButton(
+            icon: Icons.psychology,
+            label: 'Explore Concept',
+            onPressed: () => _showTopicInputDialog(
+                'Explore Concept', controller.exploreConceptInDepth),
+          ),
+          _buildFeatureButton(
+            icon: Icons.quiz,
+            label: 'Practice Questions',
+            onPressed: () => _showTopicInputDialog(
+                'Practice Questions', controller.generatePracticeQuestions),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        textStyle: TextStyle(fontSize: 12),
+      ),
+    );
+  }
+
+  void _showTopicInputDialog(String title, Function(String) onSubmit) {
+    final TextEditingController topicController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: TextField(
+            controller: topicController,
+            decoration: InputDecoration(hintText: "Enter a topic"),
+          ),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: Text("Submit"),
+              onPressed: () {
+                if (topicController.text.isNotEmpty) {
+                  onSubmit(topicController.text);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildInputArea(BuildContext context) {

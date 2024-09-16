@@ -48,10 +48,11 @@ class LearningChatbotController extends GetxController {
         chatMessages.map((e) => json.encode(e.toJson())).toList());
   }
 
-  Future<void> sendMessage() async {
-    if (userInputController.text.isEmpty || isMaxLengthReached.value) return;
+  Future<void> sendMessage({String? specialRequest}) async {
+    if ((userInputController.text.isEmpty && specialRequest == null) ||
+        isMaxLengthReached.value) return;
 
-    final userMessage = userInputController.text;
+    final userMessage = specialRequest ?? userInputController.text;
     _addUserMessage(userMessage);
     userInputController.clear();
 
@@ -62,7 +63,7 @@ class LearningChatbotController extends GetxController {
         {
           "role": "system",
           "content":
-              "You are a personalized learning assistant. Your goal is to help users learn new topics, answer their questions, and provide explanations tailored to their level of understanding. Always be encouraging and supportive."
+              "You are a personalized learning assistant. Your goal is to help users learn new topics, answer their questions, and provide explanations tailored to their level of understanding. Offer study tips, explore concepts in depth, and provide practice questions when appropriate. Always be encouraging and supportive."
         },
         ...chatMessages
             .map((msg) => {
@@ -103,5 +104,22 @@ class LearningChatbotController extends GetxController {
 
   void _checkMaxLength() {
     isMaxLengthReached.value = chatMessages.length >= maxConversationLength;
+  }
+
+  void provideStudyTips(String topic) {
+    sendMessage(
+        specialRequest:
+            "Can you provide some study tips for learning about $topic?");
+  }
+
+  void exploreConceptInDepth(String concept) {
+    sendMessage(
+        specialRequest:
+            "Let's explore $concept in more depth. Can you provide a detailed explanation?");
+  }
+
+  void generatePracticeQuestions(String topic) {
+    sendMessage(
+        specialRequest: "Can you generate some practice questions on $topic?");
   }
 }

@@ -4,11 +4,13 @@ import 'package:mygemini/utils/theme/ThemeData.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onResetConversation;
+  final VoidCallback? onInfoPressed;
 
   const CustomAppBar({
     Key? key,
     required this.title,
     required this.onResetConversation,
+    this.onInfoPressed,
   }) : super(key: key);
 
   @override
@@ -36,10 +38,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-            color: Colors.white), // Updated back icon
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
         onPressed: () => Navigator.of(context).pop(),
-        tooltip: 'Back', // Tooltip for accessibility
       ),
       actions: [
         IconButton(
@@ -56,9 +56,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             );
           },
-          tooltip: 'Reset Conversation',
         ),
         const SizedBox(width: 8),
+        IconButton(
+          icon: const Icon(Icons.info_outline_rounded, color: Colors.white),
+          onPressed: () {
+            onInfoPressed!();
+          },
+        ),
       ],
     );
   }

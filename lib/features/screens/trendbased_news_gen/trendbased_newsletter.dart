@@ -22,13 +22,11 @@ class _TrendNewsletterGeneratorState extends State<TrendNewsletterGenerator> {
   final TrendNewsletterController controller =
       Get.put(TrendNewsletterController());
   final ScrollController _scrollController = ScrollController();
-  bool _showIntroduction = true;
 
   @override
   void initState() {
     super.initState();
     controller.messages.listen((_) => _scrollToBottom());
-    WidgetsBinding.instance.addPostFrameCallback((_) => _showIntroDialog());
   }
 
   @override
@@ -50,48 +48,44 @@ class _TrendNewsletterGeneratorState extends State<TrendNewsletterGenerator> {
   }
 
   void _showIntroDialog() {
-    if (_showIntroduction) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return CustomIntroDialog(
-              title: 'Welcome to AI Trend Newsletter Generator!',
-              features: [
-                FeatureItem(
-                  icon: Icons.trending_up,
-                  title: 'Trend Analysis',
-                  description: 'Get the latest trends in your chosen topic.',
-                ),
-                FeatureItem(
-                  icon: Icons.article_outlined,
-                  title: 'Content Generation',
-                  description:
-                      'AI-powered newsletter content based on current news.',
-                ),
-                FeatureItem(
-                  icon: Icons.chat_bubble_outline,
-                  title: 'Interactive Chat',
-                  description:
-                      'Refine and customize your newsletter through conversation.',
-                ),
-                FeatureItem(
-                  icon: Icons.share,
-                  title: 'Easy Sharing',
-                  description:
-                      'Share your generated newsletter with just a tap.',
-                ),
-              ],
-              onClose: () {
-                setState(() => _showIntroduction = false);
-                Navigator.of(context).pop();
-              },
-            );
-          },
-        );
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CustomIntroDialog(
+            title: 'Welcome to AI Trend Newsletter Generator!',
+            features: [
+              FeatureItem(
+                icon: Icons.trending_up,
+                title: 'Trend Analysis',
+                description: 'Get the latest trends in your chosen topic.',
+              ),
+              FeatureItem(
+                icon: Icons.article_outlined,
+                title: 'Content Generation',
+                description:
+                    'AI-powered newsletter content based on current news.',
+              ),
+              FeatureItem(
+                icon: Icons.chat_bubble_outline,
+                title: 'Interactive Chat',
+                description:
+                    'Refine and customize your newsletter through conversation.',
+              ),
+              FeatureItem(
+                icon: Icons.share,
+                title: 'Easy Sharing',
+                description: 'Share your generated newsletter with just a tap.',
+              ),
+            ],
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+          );
+        },
+      );
+    });
   }
 
   @override
@@ -117,6 +111,9 @@ class _TrendNewsletterGeneratorState extends State<TrendNewsletterGenerator> {
       title: 'AI Trend Newsletter',
       onResetConversation: () {
         controller.resetConversation();
+      },
+      onInfoPressed: () {
+        _showIntroDialog();
       },
     );
   }

@@ -11,8 +11,33 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Trendbased Newsletter Generator'),
-        backgroundColor: AppTheme.primaryColor,
+        title: Text(
+          "Trendbased Newsletter Generator",
+          style: AppTheme.headlineMedium.copyWith(
+            color: Theme.of(context).colorScheme.onPrimary,
+            fontWeight: FontWeight.w200,
+            fontSize: 20,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).colorScheme.secondary,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        leading: IconButton(
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -27,7 +52,7 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
                   height: 200,
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
                 'Create Engaging Newsletters with AI',
                 style: AppTheme.headlineMedium
@@ -37,8 +62,7 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
               _buildFeatureCard(
                 icon: Icons.trending_up,
                 title: 'Trend Analysis',
-                description:
-                    'Automatically identify and incorporate the latest trends in your industry.',
+                description: 'Get the latest trends in your chosen topic',
               ),
               _buildFeatureCard(
                 icon: Icons.article_outlined,
@@ -47,16 +71,15 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
                     'Generate engaging articles and summaries based on trending topics.',
               ),
               _buildFeatureCard(
-                icon: Icons.design_services,
-                title: 'Layout Suggestions',
+                icon: Icons.chat_bubble_outline,
+                title: 'Interactive Chat',
                 description:
-                    'Get AI-powered layout recommendations for visually appealing newsletters.',
+                    'Refine and customize your newsletter through conversation.',
               ),
               _buildFeatureCard(
                 icon: Icons.people_outline,
-                title: 'Audience Targeting',
-                description:
-                    'Tailor content to your specific audience demographics and interests.',
+                title: 'Easy Sharing',
+                description: 'Share your generated newsletter with just a tap.',
               ),
               SizedBox(height: 24),
               Center(

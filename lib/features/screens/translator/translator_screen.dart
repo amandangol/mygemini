@@ -9,10 +9,37 @@ import 'package:mygemini/features/screens/translator/model/translator_model.dart
 import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class AiTranslatorBot extends StatelessWidget {
+class AiTranslatorBot extends StatefulWidget {
   AiTranslatorBot({Key? key}) : super(key: key);
 
+  @override
+  State<AiTranslatorBot> createState() => _AiTranslatorBotState();
+}
+
+class _AiTranslatorBotState extends State<AiTranslatorBot> {
   final TranslatorController controller = Get.put(TranslatorController());
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    controller.chatMessages.listen((_) => _scrollToBottom());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +71,7 @@ class AiTranslatorBot extends StatelessWidget {
 
   Widget _buildTranslationMessages(BuildContext context) {
     return ListView.builder(
+      controller: _scrollController,
       padding: AppTheme.defaultPadding,
       itemCount: controller.chatMessages.length,
       itemBuilder: (context, index) {

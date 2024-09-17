@@ -43,7 +43,7 @@ class EmailBotController extends GetxController {
     super.onClose();
   }
 
-  void _loadConversation() {
+  Future<void> _loadConversation() async {
     final savedMessages = _prefs.getStringList('emailMessages');
     if (savedMessages != null) {
       emailMessages.value = savedMessages
@@ -208,13 +208,19 @@ class EmailBotController extends GetxController {
   }
 
   void _addUserMessage(String message) {
-    emailMessages.add(EmailMessage(content: message, isUser: true));
+    emailMessages.add(EmailMessage(
+      content: message,
+      isUser: true,
+    ));
     _saveConversation();
   }
 
   void _addBotMessage(String message, {bool isEmail = false}) {
-    emailMessages
-        .add(EmailMessage(content: message, isUser: false, isEmail: isEmail));
+    emailMessages.add(EmailMessage(
+      content: message,
+      isUser: false,
+      isEmail: isEmail,
+    ));
     _saveConversation();
   }
 }

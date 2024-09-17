@@ -17,7 +17,6 @@ class EmailMessage {
     };
   }
 
-  // Create a EmailMessage object from a Map
   factory EmailMessage.fromJson(Map<String, dynamic> json) {
     return EmailMessage(
       content: json['content'],

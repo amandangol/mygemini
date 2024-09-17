@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
 import 'package:mygemini/data/models/chathistory.dart';
 import 'package:mygemini/data/models/message.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chat_controller.dart';
-import 'package:mygemini/features/screens/onboarding/onboading_screen.dart';
 import 'package:mygemini/features/screens/splash/splash_screen.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
@@ -31,7 +29,7 @@ Future<void> main() async {
   Hive.registerAdapter(MessageTypeAdapter()); // Adapter for MessageType
 
   // Open Hive box for ChatHistory and clear it
-  var box = await Hive.openBox<ChatHistory>('chatHistory');
+  // var box = await Hive.openBox<ChatHistory>('chatHistory');
   // await box.clear(); // Clear existing data
 
   // Initialize preferences

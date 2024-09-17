@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mygemini/data/models/chathistory.dart';
 import 'package:mygemini/data/models/message.dart';
 import 'package:mygemini/data/services/api_service.dart';
@@ -10,11 +12,12 @@ class ChatController extends GetxController {
   final RxList<Message> messages = <Message>[].obs;
   final RxString currentChatTitle = RxString('');
   final RxBool isLoading = false.obs;
-
-  final RxList<Map<String, String>> conversationContext =
-      <Map<String, String>>[].obs;
-
+  final RxList<Map<String, dynamic>> conversationContext =
+      <Map<String, dynamic>>[].obs;
   late final ChatHistoryController chatHistoryController;
+  final ImagePicker _picker = ImagePicker();
+  final Rx<File?> selectedImage = Rx<File?>(null);
+  final RxList<String> smartSuggestions = <String>[].obs;
 
   @override
   void onInit() {
@@ -32,20 +35,18 @@ class ChatController extends GetxController {
   }
 
   Future<void> startNewChat() async {
-    await saveChatHistory(); // Save the current chat before starting a new one
+    await saveChatHistory();
     messages.clear();
     currentChatTitle.value = 'New Chat';
     conversationContext.clear();
+    selectedImage.value = null;
 
-    // Create and save a new empty chat history
     ChatHistory newChatHistory = ChatHistory(
       title: 'New Chat',
       messages: [],
       timestamp: DateTime.now(),
     );
     await chatHistoryController.saveChatHistory(newChatHistory);
-
-    // Reload chat histories to reflect the new chat
     chatHistoryController.loadChatHistories();
   }
 
@@ -61,24 +62,47 @@ class ChatController extends GetxController {
 
   Future<void> askQuestion() async {
     final userInput = textC.text.trim();
-    if (userInput.isNotEmpty) {
+    final File? imageFile = selectedImage.value;
+
+    if (userInput.isNotEmpty || imageFile != null) {
       if (currentChatTitle.value == 'New Chat') {
         currentChatTitle.value = _generateMeaningfulTitle();
       }
 
-      final userMsg = Message(msg: userInput, msgType: MessageType.user);
+      Message userMsg;
+      if (imageFile != null) {
+        userMsg = Message(
+            msg: userInput,
+            msgType: MessageType.userImage,
+            imagePath: imageFile.path);
+      } else {
+        userMsg = Message(msg: userInput, msgType: MessageType.user);
+      }
       messages.add(userMsg);
-      conversationContext.add({"role": "user", "content": userMsg.msg});
+
+      Map<String, dynamic> contextEntry = {
+        "role": "user",
+        "content": userMsg.msg
+      };
+      if (imageFile != null) {
+        contextEntry["image"] = imageFile.path;
+      }
+      conversationContext.add(contextEntry);
+
       textC.clear();
+      clearSelectedImage();
 
       isLoading.value = true;
       try {
-        String response = await APIs.geminiAPI(conversationContext);
+        List<Map<String, String>> apiContext = conversationContext.map((entry) {
+          return entry.map((key, value) => MapEntry(key, value.toString()));
+        }).toList();
+
+        String response = await APIs.geminiAPI(apiContext);
         final botMsg = Message(msg: response, msgType: MessageType.bot);
         messages.add(botMsg);
         conversationContext.add({"role": "assistant", "content": botMsg.msg});
 
-        // Save chat history after each message
         await saveChatHistory();
       } catch (e) {
         Get.snackbar('Error', 'Failed to get response: $e');
@@ -86,6 +110,17 @@ class ChatController extends GetxController {
         isLoading.value = false;
       }
     }
+  }
+
+  Future<void> pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      selectedImage.value = File(image.path);
+    }
+  }
+
+  void clearSelectedImage() {
+    selectedImage.value = null;
   }
 
   Future<void> saveChatHistory() async {
@@ -97,7 +132,7 @@ class ChatController extends GetxController {
       );
 
       await chatHistoryController.saveChatHistory(chatHistory);
-      chatHistoryController.loadChatHistories(); // Reload to update the list
+      chatHistoryController.loadChatHistories();
     }
   }
 
@@ -105,19 +140,28 @@ class ChatController extends GetxController {
     messages.clear();
     currentChatTitle.value = chatHistory.title;
     conversationContext.clear();
+    selectedImage.value = null;
 
     for (var message in chatHistory.messages) {
       messages.add(message);
-      conversationContext.add({
-        "role": message.msgType == MessageType.user ? "user" : "assistant",
+      Map<String, dynamic> contextEntry = {
+        "role": message.msgType == MessageType.user ||
+                message.msgType == MessageType.userImage
+            ? "user"
+            : "assistant",
         "content": message.msg
-      });
+      };
+      if (message.msgType == MessageType.userImage &&
+          message.imageFile != null) {
+        contextEntry["image"] = message.imageFile!.path;
+      }
+      conversationContext.add(contextEntry);
     }
   }
 
   @override
   void onClose() {
-    saveChatHistory(); // Save the chat when the controller is closed
+    saveChatHistory();
     textC.dispose();
     super.onClose();
   }

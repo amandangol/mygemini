@@ -11,43 +11,43 @@ import 'package:mygemini/features/screens/translator/translator_screen.dart';
 import 'package:mygemini/features/screens/code_generator/codebot_assistant.dart';
 
 enum BotType {
-  aiChatBot,
-  aiTranslator,
-  aiEmailWriter,
-  aiCodeBot,
-  aiCreativeContent,
-  aiDocumentAnalyzer,
-  aiLearningBot,
-  aiTrendNewsLetter
+  aiChatBot, // Most versatile and commonly used
+  aiLearningBot, // High impact for education
+  aiCodeBot, // Essential for developers
+  aiDocumentAnalyzer, // Important for productivity
+  aiCreativeContent, // Valuable for content creators
+  aiEmailWriter, // Useful for professional communication
+  aiTranslator, // Important but might be less frequently used
+  aiTrendNewsLetter, // Useful but might be considered less critical
 }
 
 extension MyBotType on BotType {
   String get title => switch (this) {
         BotType.aiChatBot => 'AI Chat Assistant',
-        BotType.aiTranslator => 'AI Translator',
-        BotType.aiEmailWriter => 'AI Email Composer',
-        BotType.aiCodeBot => 'AI Code Generator',
-        BotType.aiCreativeContent => 'AI Content Creator',
-        BotType.aiDocumentAnalyzer => 'AI Document Analyzer',
         BotType.aiLearningBot => 'AI Learning Assistant',
+        BotType.aiCodeBot => 'AI Code Generator',
+        BotType.aiDocumentAnalyzer => 'AI Document Analyzer',
+        BotType.aiCreativeContent => 'AI Content Creator',
+        BotType.aiEmailWriter => 'AI Email Composer',
+        BotType.aiTranslator => 'AI Translator',
         BotType.aiTrendNewsLetter => 'AI Trend Newsletter',
       };
 
   String get description => switch (this) {
         BotType.aiChatBot =>
           'Engage in intelligent conversations on any topic with our AI-powered chat assistant.',
-        BotType.aiTranslator =>
-          'Break language barriers with our advanced AI translator, supporting multiple languages.',
-        BotType.aiEmailWriter =>
-          'Compose professional and personalized emails effortlessly with AI assistance.',
-        BotType.aiCodeBot =>
-          'Generate clean, efficient code snippets and get programming help from our AI code assistant.',
-        BotType.aiCreativeContent =>
-          'Spark your creativity with AI-generated content ideas, from blog posts to social media.',
-        BotType.aiDocumentAnalyzer =>
-          'Extract key insights and summarize lengthy documents with our AI-powered analyzer.',
         BotType.aiLearningBot =>
           'Enhance your learning experience with personalized AI tutoring on various subjects.',
+        BotType.aiCodeBot =>
+          'Generate clean, efficient code snippets and get programming help from our AI code assistant.',
+        BotType.aiDocumentAnalyzer =>
+          'Extract key insights and summarize lengthy documents with our AI-powered analyzer.',
+        BotType.aiCreativeContent =>
+          'Spark your creativity with AI-generated content ideas, from blog posts to social media.',
+        BotType.aiEmailWriter =>
+          'Compose professional and personalized emails effortlessly with AI assistance.',
+        BotType.aiTranslator =>
+          'Break language barriers with our advanced AI translator, supporting multiple languages.',
         BotType.aiTrendNewsLetter =>
           'Stay informed with AI-curated newsletters based on the latest trends and your interests.',
       };
@@ -93,13 +93,13 @@ extension MyBotType on BotType {
               }),
             ),
         BotType.aiTranslator => () => Get.to(() => AiTranslatorBot()),
-        BotType.aiEmailWriter => () => Get.to(() => AiEmailBot()),
-        BotType.aiCodeBot => () => Get.to(() => AiCodeBot()),
+        BotType.aiEmailWriter => () => Get.to(() => const AiEmailBot()),
+        BotType.aiCodeBot => () => Get.to(() => const AiCodeBot()),
         BotType.aiCreativeContent => () => Get.to(() => CreativeBotView()),
         BotType.aiDocumentAnalyzer => () =>
             Get.to(() => DocumentAnalyzerFeature()),
         BotType.aiLearningBot => () => Get.to(() => LearningChatbot()),
         BotType.aiTrendNewsLetter => () =>
-            Get.to(() => TrendNewsletterGenerator()),
+            Get.to(() => const TrendNewsletterGenerator()),
       };
 }

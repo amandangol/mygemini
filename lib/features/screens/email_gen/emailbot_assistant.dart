@@ -183,8 +183,8 @@ class _AiEmailBotState extends State<AiEmailBot> {
               ),
           ],
         ),
-      ),
-    ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0);
+      ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+    );
   }
 
   Widget _buildEmailStyleSelection() {

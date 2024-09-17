@@ -128,7 +128,7 @@ class DocumentAnalyzerController extends GetxController {
       selectedFile.value = result.files.first;
       _addUserMessage("Uploaded file: ${selectedFile.value!.name}");
       _addBotMessage(
-          "Great! I've received your file. What type of analysis would you like me to perform?");
+          "Great! I've received your file. What type of analysis would you like me to perform? I can extract, summarize, and many more.");
       currentState.value = AnalyzerState.askingAnalysisType;
     } else {
       _addBotMessage(

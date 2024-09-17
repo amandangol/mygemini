@@ -1,10 +1,11 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 class APIs {
   static Future<String> geminiAPI(
-      List<Map<String, String>> conversationContext) async {
+      List<Map<String, dynamic>> conversationContext) async {
     try {
       final apiKey = dotenv.env['GEMINI_API_KEY'];
       if (apiKey == null || apiKey.isEmpty) {
@@ -12,12 +13,22 @@ class APIs {
             'GEMINI_API_KEY is not set in the environment variables.');
       }
 
-      final model = GenerativeModel(model: 'gemini-1.5-pro', apiKey: apiKey);
+      final model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: apiKey);
 
       // Convert conversation context to Content objects
-      final List<Content> history = conversationContext.map((message) {
-        return Content.text(message['content'] ?? '');
-      }).toList();
+      final List<Content> history =
+          await Future.wait(conversationContext.map((message) async {
+        if (message['image'] != null) {
+          final File imageFile = File(message['image']);
+          final bytes = await imageFile.readAsBytes();
+          return Content.multi([
+            TextPart(message['content'] ?? ''),
+            DataPart('image/jpeg', bytes),
+          ]);
+        } else {
+          return Content.text(message['content'] ?? '');
+        }
+      }));
 
       // Generate content with history
       final response = await model.generateContent(history);
@@ -28,13 +39,13 @@ class APIs {
       print('Loaded API Key: ${dotenv.env['GEMINI_API_KEY']}');
       print('Full response from Gemini AI: $e');
       if (e is GenerativeAIException) {
-        print('An internal error has occured');
-        return 'An internal error has occured';
+        print('An internal error has occurred: ${e.message}');
+        return 'An internal error has occurred: ${e.message}';
       }
 
       log('Error communicating with Gemini AI: $e',
           error: e, stackTrace: stackTrace);
-      return 'Error communicating with Gemini AI';
+      return 'Error communicating with Gemini AI: $e';
     }
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/commonwidgets/custom_intro_dialog.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chat_controller.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
+import 'package:mygemini/features/screens/chatbot/widgets/message_card.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
-import 'package:mygemini/widget/message_card.dart';
 import 'package:mygemini/data/models/chathistory.dart';
 import 'package:intl/intl.dart';
 
@@ -23,15 +24,11 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     historyController.loadChatHistories();
-
-    // Add listener to messages
     ever(chatController.messages, (_) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollToBottom();
       });
     });
-
-    // Add this line to scroll to bottom when the page is first loaded
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
@@ -218,7 +215,46 @@ class _ChatScreenState extends State<ChatScreen> {
           tooltip: 'Start New Chat',
         ),
         const SizedBox(width: 8),
+        IconButton(
+          icon: const Icon(Icons.info_outline, color: Colors.white),
+          onPressed: () => _showIntroDialog(context),
+        ),
+        const SizedBox(width: 8),
       ],
+    );
+  }
+
+  void _showIntroDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CustomIntroDialog(
+          title: 'Welcome to AI Chatbot',
+          features: [
+            FeatureItem(
+              icon: Icons.chat_bubble_outline,
+              title: 'AI-Powered Conversations',
+              description:
+                  'Engage in intelligent conversations with our advanced AI chatbot.',
+            ),
+            FeatureItem(
+              icon: Icons.image_outlined,
+              title: 'Image Recognition',
+              description: 'Upload images for the AI to analyze and discuss.',
+            ),
+            FeatureItem(
+              icon: Icons.history_outlined,
+              title: 'Chat History',
+              description:
+                  'Access and continue your previous conversations easily.',
+            ),
+          ],
+          onClose: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
     );
   }
 
@@ -275,78 +311,138 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildInputSection(BuildContext context, bool isDarkMode) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: isDarkMode ? AppTheme.surfaceColor(context) : Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, -5),
+    return Column(
+      children: [
+        Obx(() => _buildImagePreview(isDarkMode)),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isDarkMode ? AppTheme.surfaceColor(context) : Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: Offset(0, -5),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextFormField(
-              controller: chatController.textC,
-              decoration: InputDecoration(
-                fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-                filled: true,
-                hintText: 'Type a message...',
-                hintStyle: TextStyle(
-                    color: isDarkMode ? Colors.white60 : Colors.black45),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.image, color: AppTheme.primaryColor),
+                onPressed: chatController.pickImage,
               ),
-              minLines: 1,
-              maxLines: 5,
-              keyboardType: TextInputType.multiline,
-            ),
+              Expanded(
+                child: TextFormField(
+                  controller: chatController.textC,
+                  decoration: InputDecoration(
+                    fillColor: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                    filled: true,
+                    hintText: 'Type a message...',
+                    hintStyle: TextStyle(
+                        color: isDarkMode ? Colors.white60 : Colors.black45),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  ),
+                  minLines: 1,
+                  maxLines: 5,
+                  keyboardType: TextInputType.multiline,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Obx(() => Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.primaryColor,
+                              AppTheme.primaryColorLight(context)
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryColor.withOpacity(0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          onPressed: chatController.isLoading.value
+                              ? null
+                              : () => chatController.askQuestion(),
+                          icon: chatController.isLoading.value
+                              ? SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : Icon(Icons.send_rounded, color: Colors.white),
+                        ),
+                      ))
+                  .animate(onPlay: (controller) => controller.repeat())
+                  .shimmer(
+                      duration: 1500.ms, color: Colors.white.withOpacity(0.5))
+                  .shake(hz: 4, curve: Curves.easeInOutCubic),
+            ],
           ),
-          const SizedBox(width: 12),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppTheme.primaryColor,
-                  AppTheme.primaryColorLight(context)
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primaryColor.withOpacity(0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () {
-                chatController.askQuestion();
-                // Remove this line as we now have a listener
-                // _scrollToBottom();
-              },
-              icon: Icon(
-                Icons.send_rounded,
-                color: Colors.white,
-              ),
-            ),
-          )
-              .animate(onPlay: (controller) => controller.repeat())
-              .shimmer(duration: 1500.ms, color: Colors.white.withOpacity(0.5))
-              .shake(hz: 4, curve: Curves.easeInOutCubic),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Widget _buildImagePreview(bool isDarkMode) {
+    if (chatController.selectedImage.value == null) {
+      return const SizedBox.shrink();
+    }
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.file(
+              chatController.selectedImage.value!,
+              height: 150,
+              // width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Positioned(
+            top: 8,
+            right: 8,
+            child: GestureDetector(
+              onTap: chatController.clearSelectedImage,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black.withOpacity(0.5),
+                ),
+                child: const Icon(
+                  Icons.close,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ).animate().fadeIn(duration: 300.ms).scale();
   }
 
   void _showNewChatDialog(BuildContext context) {

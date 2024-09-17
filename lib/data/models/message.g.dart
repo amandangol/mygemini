@@ -19,17 +19,20 @@ class MessageAdapter extends TypeAdapter<Message> {
     return Message(
       msg: fields[0] as String,
       msgType: fields[1] as MessageType,
+      imagePath: fields[2] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Message obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.msg)
       ..writeByte(1)
-      ..write(obj.msgType);
+      ..write(obj.msgType)
+      ..writeByte(2)
+      ..write(obj.imagePath);
   }
 
   @override
@@ -54,6 +57,8 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         return MessageType.user;
       case 1:
         return MessageType.bot;
+      case 2:
+        return MessageType.userImage;
       default:
         return MessageType.user;
     }
@@ -67,6 +72,9 @@ class MessageTypeAdapter extends TypeAdapter<MessageType> {
         break;
       case MessageType.bot:
         writer.writeByte(1);
+        break;
+      case MessageType.userImage:
+        writer.writeByte(2);
         break;
     }
   }

@@ -20,11 +20,12 @@ class AiCodeBot extends StatefulWidget {
 
 class _AiCodeBotState extends State<AiCodeBot> {
   final CodeBotController controller = Get.put(CodeBotController());
-  final ScrollController _scrollController = ScrollController();
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     controller.chatMessages.listen((_) => _scrollToBottom());
     _checkFirstLaunch();
   }
@@ -36,16 +37,18 @@ class _AiCodeBotState extends State<AiCodeBot> {
   }
 
   void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
-  void _checkFirstLaunch() async {
+  Future<void> _checkFirstLaunch() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool isFirstLaunch = prefs.getBool('isFirstLaunchCodeBot') ?? true;
     if (isFirstLaunch) {
@@ -99,44 +102,41 @@ class _AiCodeBotState extends State<AiCodeBot> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
-      appBar: _buildCustomAppBar(context),
+      appBar: _buildCustomAppBar(),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
-              child: Obx(() => _buildChatMessages(context)),
+              child: Obx(() => _buildChatMessages()),
             ),
-            _buildInputArea(context),
+            _buildInputArea(),
           ],
         ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
+  PreferredSizeWidget _buildCustomAppBar() {
     return CustomAppBar(
       title: 'AI Code Generator',
-      onResetConversation: () {
-        controller.resetConversation();
-      },
+      onResetConversation: controller.resetConversation,
       onInfoPressed: _showIntroDialog,
     );
   }
 
-  Widget _buildChatMessages(BuildContext context) {
+  Widget _buildChatMessages() {
     return ListView.builder(
       controller: _scrollController,
       padding: AppTheme.defaultPadding,
       itemCount: controller.chatMessages.length,
       itemBuilder: (context, index) {
-        final message =
-            controller.chatMessages[controller.chatMessages.length - 1 - index];
-        return _buildMessageBubble(context, message);
+        final message = controller.chatMessages[index];
+        return _buildMessageBubble(message);
       },
     );
   }
 
-  Widget _buildMessageBubble(BuildContext context, CodeBotMessage message) {
+  Widget _buildMessageBubble(CodeBotMessage message) {
     final isUserMessage = message.isUser;
     final bubbleColor =
         isUserMessage ? AppTheme.primaryColor : AppTheme.surfaceColor(context);
@@ -193,12 +193,12 @@ class _AiCodeBotState extends State<AiCodeBot> {
         ElevatedButton(
           onPressed: () =>
               controller.handlePostGenerationInteraction("Refine this code"),
-          child: Text("Refine"),
+          child: const Text("Refine"),
         ),
         ElevatedButton(
           onPressed: () =>
               controller.handlePostGenerationInteraction("Explain this code"),
-          child: Text("Explain"),
+          child: const Text("Explain"),
         ),
         CustomActionButtons(
           text: codeContent,
@@ -208,7 +208,7 @@ class _AiCodeBotState extends State<AiCodeBot> {
     );
   }
 
-  Widget _buildInputArea(BuildContext context) {
+  Widget _buildInputArea() {
     return CustomInputWidget(
       userInputController: controller.userInputController,
       isLoading: controller.isLoading,

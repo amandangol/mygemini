@@ -119,55 +119,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildFeaturedCard() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
-      child: Card(
-        color: AppTheme.primaryColor.withOpacity(0.1),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Try our new Trendbased Newsletter Generator',
-                      style: AppTheme.headlineSmall
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Create engaging newsletters with the latest trends using AI.',
-                      style: AppTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        Get.to(() => const TrendbasedNewsletterIntroduction());
-                      },
-                      child: const Text('Get Started'),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Lottie.asset(
-                'assets/lottie/lottie1.json',
-                width: size.width * 0.2,
-                height: size.width * 0.2,
-              ),
-            ],
+        padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
+        child: Card(
+          color: AppTheme.primaryColor.withOpacity(0.1),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        ),
-      ),
-    )
-        .animate()
-        .fadeIn(duration: 500.ms)
-        .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1));
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Trendbased Newsletter Generator',
+                        style: AppTheme.headlineSmall
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Create engaging newsletters with the latest trends using AI.',
+                        style: AppTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: () => Get.to(
+                            () => const TrendbasedNewsletterIntroduction()),
+                        icon: const Icon(Icons.rocket_launch),
+                        label: const Text('Get Started'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Lottie.asset(
+                  'assets/lottie/lottie1.json',
+                  width: size.width * 0.25,
+                  height: size.width * 0.25,
+                ),
+              ],
+            ),
+          ),
+        )
+            .animate()
+            .fadeIn(duration: 500.ms)
+            .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1)));
   }
 
   Widget _buildSliverGrid() {

@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const CircleAvatar(
             backgroundColor: Colors.transparent,
-            backgroundImage: AssetImage('assets/images/floating_robot.png'),
+            backgroundImage: AssetImage('assets/images/ai_chatbot.png'),
             radius: 25,
           ),
           const SizedBox(width: 5),

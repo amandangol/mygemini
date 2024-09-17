@@ -26,8 +26,8 @@ class _LearningChatbotState extends State<LearningChatbot> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    controller.chatMessages.listen((_) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.chatMessages.listen((_) {
         _scrollToBottom();
       });
     });
@@ -89,23 +89,17 @@ class _LearningChatbotState extends State<LearningChatbot> {
         child: Column(
           children: [
             Expanded(
-              child: Obx(() => _buildChatMessages(context)),
+              child: Obx(() {
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) => _scrollToBottom());
+                return _buildChatMessages(context);
+              }),
             ),
             _buildFeatureButtons(context),
             _buildInputArea(context),
           ],
         ),
       ),
-    );
-  }
-
-  PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
-    return CustomAppBar(
-      title: 'AI Learning Assistant',
-      onResetConversation: () {
-        controller.resetConversation();
-      },
-      onInfoPressed: _showIntroDialog, // Updated to call _showIntroDialog
     );
   }
 
@@ -118,6 +112,16 @@ class _LearningChatbotState extends State<LearningChatbot> {
         final message = controller.chatMessages[index];
         return _buildMessageBubble(context, message);
       },
+    );
+  }
+
+  PreferredSizeWidget _buildCustomAppBar(BuildContext context) {
+    return CustomAppBar(
+      title: 'AI Learning Assistant',
+      onResetConversation: () {
+        controller.resetConversation();
+      },
+      onInfoPressed: _showIntroDialog,
     );
   }
 

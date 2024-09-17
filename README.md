@@ -1,4 +1,4 @@
-## WORK IN PROGRESS
+## WORK IN PROGRESS (September Coding Challenge - Gemini 1.5 pro Hackathon)
 
 ## AI-Powered Assistant Tool
 

@@ -10,6 +10,8 @@ import 'package:mygemini/data/models/chathistory.dart';
 import 'package:intl/intl.dart';
 
 class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
+
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
@@ -76,7 +78,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildDrawerHeader(BuildContext context, bool isDarkMode) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 48, 16, 16),
-      decoration: BoxDecoration(color: Colors.transparent),
+      decoration: const BoxDecoration(color: Colors.transparent),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -322,14 +324,14 @@ class _ChatScreenState extends State<ChatScreen> {
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
                 blurRadius: 10,
-                offset: Offset(0, -5),
+                offset: const Offset(0, -5),
               ),
             ],
           ),
           child: Row(
             children: [
               IconButton(
-                icon: Icon(Icons.image, color: AppTheme.primaryColor),
+                icon: const Icon(Icons.image, color: AppTheme.primaryColor),
                 onPressed: chatController.pickImage,
               ),
               Expanded(
@@ -377,7 +379,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               ? null
                               : () => chatController.askQuestion(),
                           icon: chatController.isLoading.value
-                              ? SizedBox(
+                              ? const SizedBox(
                                   width: 24,
                                   height: 24,
                                   child: CircularProgressIndicator(
@@ -386,7 +388,8 @@ class _ChatScreenState extends State<ChatScreen> {
                                         Colors.white),
                                   ),
                                 )
-                              : Icon(Icons.send_rounded, color: Colors.white),
+                              : const Icon(Icons.send_rounded,
+                                  color: Colors.white),
                         ),
                       ))
                   .animate(onPlay: (controller) => controller.repeat())
@@ -471,8 +474,6 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () => Navigator.of(context).pop(),
             ),
             ElevatedButton(
-              child: Text('Start New Chat',
-                  style: AppTheme.bodyMedium.copyWith(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryColor,
                 shape: RoundedRectangleBorder(
@@ -482,6 +483,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.of(context).pop();
                 chatController.startNewChat();
               },
+              child: Text('Start New Chat',
+                  style: AppTheme.bodyMedium.copyWith(color: Colors.white)),
             ),
           ],
           shape:

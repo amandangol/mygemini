@@ -181,7 +181,7 @@ class CodeBotController extends GetxController {
           {
             "role": "user",
             "content":
-                'The user asked: "${userMessage}" in response to this code:\n\n${lastGeneratedCode.value}\n\nProvide a helpful response:'
+                'The user asked: "$userMessage" in response to this code:\n\n${lastGeneratedCode.value}\n\nProvide a helpful response:'
           }
         ];
         String response = await APIs.geminiAPI(conversationContext);

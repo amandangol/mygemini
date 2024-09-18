@@ -6,10 +6,10 @@ class SelectableMarkdown extends StatelessWidget {
   final Color textColor;
 
   const SelectableMarkdown({
-    Key? key,
+    super.key,
     required this.data,
     required this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class SelectableMarkdown extends StatelessWidget {
             fontSize: baseFontSize,
             height: 1.3),
         code: TextStyle(
-          color: theme.colorScheme.secondary,
+          color: textColor,
           backgroundColor: theme.colorScheme.secondary.withOpacity(0.1),
           fontSize: baseFontSize * 0.9,
           fontFamily: 'monospace',

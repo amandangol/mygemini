@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mygemini/features/screens/home/home_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({Key? key}) : super(key: key);
+  const OnboardingScreen({super.key});
 
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
@@ -19,21 +19,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'title': 'AI Assistant',
       'subtitle': 'Your all-in-one companion',
       'lottie': 'lottie1',
-      'color': Color(0xFF6C63FF),
+      'color': const Color(0xFF6C63FF),
       'features': ['Chat Assistant', 'Translator', 'Email Composer'],
     },
     {
       'title': 'Boost Productivity',
       'subtitle': 'Enhance your work with AI',
       'lottie': 'lottie3',
-      'color': Color(0xFF00C853),
+      'color': const Color(0xFF00C853),
       'features': ['Code Generator', 'Document Analyzer', 'Learning Assistant'],
     },
     {
       'title': 'Unleash Creativity',
       'subtitle': 'Create and stay updated',
       'lottie': 'lottie2',
-      'color': Color.fromARGB(255, 34, 200, 255),
+      'color': const Color.fromARGB(255, 34, 200, 255),
       'features': ['Content Creator', 'Trend Newsletter'],
     },
   ];
@@ -92,7 +92,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Column(
               children: [
                 _buildPageIndicator(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildActionButton(),
               ],
             ),
@@ -104,7 +104,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildOnboardPage(Map<String, dynamic> item) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -122,7 +122,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             'assets/lottie/${item['lottie']}.json',
             height: MediaQuery.of(context).size.height * 0.35,
           ),
-          SizedBox(height: 40),
+          const SizedBox(height: 40),
           Text(
             item['title'],
             style: TextStyle(
@@ -131,7 +131,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: item['color'],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             item['subtitle'],
             textAlign: TextAlign.center,
@@ -140,7 +140,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: Colors.grey[600],
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           _buildFeatureList(item['features'], item['color']),
         ],
       ),
@@ -160,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Row(
         children: [
           Icon(Icons.check_circle_outline, color: color, size: 20),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Text(
             feature,
             style: TextStyle(
@@ -219,7 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       },
       child: Text(
         _currentPage == _onboardItems.length - 1 ? 'Get Started' : 'Next',
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),

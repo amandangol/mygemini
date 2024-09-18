@@ -12,7 +12,7 @@ import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DocumentAnalyzerFeature extends StatefulWidget {
-  DocumentAnalyzerFeature({Key? key}) : super(key: key);
+  const DocumentAnalyzerFeature({super.key});
 
   @override
   _DocumentAnalyzerFeatureState createState() =>
@@ -204,8 +204,11 @@ class _DocumentAnalyzerFeatureState extends State<DocumentAnalyzerFeature> {
   Widget _buildFileUploadButton(BuildContext context) {
     return ElevatedButton.icon(
       onPressed: () => _controller.pickFile(),
-      icon: const Icon(Icons.upload_file),
-      label: const Text('Upload Document'),
+      icon: const Icon(Icons.upload_file, color: Colors.white),
+      label: const Text(
+        'Upload Document',
+        style: TextStyle(color: Colors.white),
+      ),
       style: ElevatedButton.styleFrom(
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         backgroundColor: Theme.of(context).colorScheme.secondary,

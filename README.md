@@ -1,16 +1,22 @@
 # MyGemini: AI-Powered Assistant Suite
 
-MyGemini is a versatile Flutter application that combines multiple AI-powered assistants into a single, user-friendly interface. With specialized AI tools, users can access a wide range of features for content creation, coding, learning, document analysis, email composition, and more.
+MyGemini is a versatile Flutter application that combines multiple AI-powered assistants into a single, user-friendly interface. With specialized AI tools, users can access a wide range of features for various tasks and purposes.
+
+## Video Demo
+
+[Insert video demo link or embed here]
 
 ## Key Features
 
-1. **AI Chatbot**: Engage in intelligent conversations and analyze images.
+MyGemini offers eight AI-powered assistants, each designed for specific tasks:
+
+1. **AI Chat Assistant**: Engage in intelligent conversations on any topic.
 2. **AI Learning Assistant**: Enhance your learning with personalized AI tutoring.
 3. **AI Code Generator**: Create code snippets and get programming help.
 4. **AI Document Analyzer**: Extract insights and analyze documents efficiently.
 5. **AI Content Creator**: Generate creative content for various purposes.
 6. **AI Email Composer**: Craft professional emails with AI assistance.
-7. **AI Translator**: Translate text between numerous languages.
+7. **AI Translator**: Translate text between multiple languages.
 8. **AI Trend Newsletter Generator**: Create newsletters based on current trends.
 
 ## Why Choose MyGemini?
@@ -18,51 +24,15 @@ MyGemini is a versatile Flutter application that combines multiple AI-powered as
 - **All-in-One Solution**: Access multiple AI tools in a single app.
 - **User-Friendly Interface**: Intuitive design with easy navigation between features.
 - **Productivity Boost**: Streamline tasks from coding to content creation.
-- **Customizable Experience**: Personalized interactions with each AI assistant.
+- **Customizable Experience**: Each assistant is tailored for specific needs.
 - **Continuous Learning**: Improve skills across various domains.
-
-## Features Overview
-
-### AI Trend Newsletter Generator
-
-- Generate newsletters based on current trends.
-- Interactive chat interface for refining content.
-- Easy sharing of generated newsletters.
-
-### AI Translator
-
-- Translate text between numerous languages.
-- Visual language selection with country flag icons.
-- Quick language swap feature.
-
-### AI Chatbot
-
-- Engage in intelligent conversations with advanced AI.
-- Image recognition and analysis capabilities.
-- Access and continue previous conversations easily.
-
-## Common Features
-
-- Reset conversations to start fresh.
-- Dark mode support for comfortable usage.
-- Markdown support for formatted text display.
-- Custom action buttons for sharing and copying content.
-- Introductory dialogs for new users of each feature.
-- Chat history management.
-
-## Development Notes
-
-- Built with Flutter and GetX for state management and navigation.
-- Utilizes packages like `flutter_animate` for smooth animations.
-- Implements a responsive design adapting to different screen sizes.
-- Modular architecture with separate controllers for each AI assistant.
 
 ## Installation and Setup
 
 1. Clone the repository:
 
    ```
-   git clone https://github.com/amandangol/mygemini.git
+   git clone https://github.com/yourusername/mygemini.git
    ```
 
 2. Install dependencies:
@@ -72,15 +42,43 @@ MyGemini is a versatile Flutter application that combines multiple AI-powered as
    flutter pub get
    ```
 
-3. Run the application:
+3. Set Up API Keys:
+   Create a .env file in the root directory and add your API keys, for Google Generative AI:
+
+   ```
+   GEMINI_API_KEY=your-api-key
+   ```
+
+4. Run the application:
    ```
    flutter run
    ```
 
-## Future Enhancements
+## Usage
 
-- Integration with more AI models to expand functionality.
-- Implementation of user accounts for personalized experiences.
-- Enhanced offline capabilities for certain features.
+1. Launch the app to see the main menu with all available AI assistants.
+2. Select the desired assistant by tapping on its card.
+3. Each assistant has a dedicated screen for interaction.
+4. Use the chat interface or specific tools provided by each assistant.
 
-MyGemini is designed to improve productivity and creativity for professionals, developers, and content creators. By integrating multiple AI assistants into one tool, users can access a variety of intelligent services at their fingertips.
+## Development Notes
+
+- Built with Flutter and GetX for state management and navigation.
+- Uses a modular architecture with separate controllers for each AI assistant.
+- Implements custom enums and extensions for efficient feature management.
+- Utilizes Lottie animations for an engaging user interface.
+
+## Project Structure
+
+The app is organized into feature-specific screens, including:
+
+- `chatbot`
+- `learning_assistant`
+- `code_generator`
+- `document_analyzer`
+- `creative_contentbot`
+- `email_gen`
+- `translator`
+- `trendbased_news_gen`
+
+Each feature has its own screen and controller, promoting a clean and maintainable codebase.

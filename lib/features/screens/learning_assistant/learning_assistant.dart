@@ -11,7 +11,7 @@ import 'package:mygemini/features/screens/learning_assistant/model/learning_asst
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class LearningChatbot extends StatefulWidget {
-  LearningChatbot({Key? key}) : super(key: key);
+  const LearningChatbot({super.key});
 
   @override
   _LearningChatbotState createState() => _LearningChatbotState();
@@ -43,7 +43,7 @@ class _LearningChatbotState extends State<LearningChatbot> {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
     }
@@ -233,7 +233,7 @@ class _LearningChatbotState extends State<LearningChatbot> {
           title: Text(title),
           content: TextField(
             controller: topicController,
-            decoration: InputDecoration(hintText: "Enter a topic"),
+            decoration: const InputDecoration(hintText: "Enter a topic"),
           ),
           actions: [
             TextButton(

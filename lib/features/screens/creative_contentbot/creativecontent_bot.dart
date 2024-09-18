@@ -12,7 +12,7 @@ import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreativeBotView extends StatefulWidget {
-  CreativeBotView({Key? key}) : super(key: key);
+  const CreativeBotView({super.key});
 
   @override
   _CreativeBotViewState createState() => _CreativeBotViewState();

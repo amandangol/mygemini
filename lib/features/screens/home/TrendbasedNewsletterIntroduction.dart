@@ -5,7 +5,7 @@ import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:mygemini/features/screens/trendbased_news_gen/trendbased_newsletter.dart';
 
 class TrendbasedNewsletterIntroduction extends StatelessWidget {
-  const TrendbasedNewsletterIntroduction({Key? key}) : super(key: key);
+  const TrendbasedNewsletterIntroduction({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
                 style: AppTheme.headlineMedium
                     .copyWith(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildFeatureCard(
                 icon: Icons.trending_up,
                 title: 'Trend Analysis',
@@ -81,16 +81,17 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
                 title: 'Easy Sharing',
                 description: 'Share your generated newsletter with just a tap.',
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.to(() => TrendNewsletterGenerator());
+                    Get.to(() => const TrendNewsletterGenerator());
                   },
-                  child: Text('Start Creating Newsletters'),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                   ),
+                  child: const Text('Start Creating Newsletters'),
                 ),
               ),
             ],
@@ -106,13 +107,13 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
     required String description,
   }) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
             Icon(icon, size: 48, color: AppTheme.primaryColor),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +121,7 @@ class TrendbasedNewsletterIntroduction extends StatelessWidget {
                   Text(title,
                       style: AppTheme.bodyMedium
                           .copyWith(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(description, style: AppTheme.bodyMedium),
                 ],
               ),

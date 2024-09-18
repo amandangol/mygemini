@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mygemini/data/models/message.dart';
@@ -9,8 +7,8 @@ class MessageCard extends StatelessWidget {
   final Message message;
   final bool isDarkMode;
 
-  const MessageCard({Key? key, required this.message, required this.isDarkMode})
-      : super(key: key);
+  const MessageCard(
+      {super.key, required this.message, required this.isDarkMode});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +34,7 @@ class MessageCard extends StatelessWidget {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 5,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
@@ -49,7 +47,7 @@ class MessageCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.file(
                         message.imageFile!,
-                        width: 200,
+                        width: 500,
                         height: 200,
                         fit: BoxFit.cover,
                       ),
@@ -84,8 +82,7 @@ class MessageCard extends StatelessWidget {
     if (message.msgType == MessageType.bot) {
       return isDarkMode ? Colors.grey[800]! : Colors.grey[200]!;
     } else {
-      return Colors.blue
-          .withOpacity(0.8); // Placeholder for AppTheme.secondaryColor
+      return Colors.blue.withOpacity(0.8);
     }
   }
 

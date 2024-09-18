@@ -12,7 +12,7 @@ import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AiEmailBot extends StatefulWidget {
-  const AiEmailBot({Key? key}) : super(key: key);
+  const AiEmailBot({super.key});
 
   @override
   _AiEmailBotState createState() => _AiEmailBotState();

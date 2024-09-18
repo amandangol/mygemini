@@ -11,14 +11,14 @@ class CustomInputWidget extends StatelessWidget {
   final RxBool? isMaxLengthReached;
 
   CustomInputWidget({
-    Key? key,
+    super.key,
     required this.userInputController,
     required this.isLoading,
     required this.sendMessage,
     this.isMaxLengthReached,
     this.hintText,
     // this.enabled,
-  }) : super(key: key);
+  });
 
   final ScrollController _scrollController = ScrollController();
 

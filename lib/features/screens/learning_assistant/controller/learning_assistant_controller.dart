@@ -65,12 +65,10 @@ class LearningChatbotController extends GetxController {
           "content":
               "You are a personalized learning assistant. Your goal is to help users learn new topics, answer their questions, and provide explanations tailored to their level of understanding. Offer study tips, explore concepts in depth, and provide practice questions when appropriate. Always be encouraging and supportive."
         },
-        ...chatMessages
-            .map((msg) => {
-                  "role": msg.isUser ? "user" : "assistant",
-                  "content": msg.content
-                })
-            .toList(),
+        ...chatMessages.map((msg) => {
+              "role": msg.isUser ? "user" : "assistant",
+              "content": msg.content
+            }),
         {"role": "user", "content": userMessage}
       ];
 

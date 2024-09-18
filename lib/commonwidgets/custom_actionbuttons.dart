@@ -8,10 +8,10 @@ class CustomActionButtons extends StatelessWidget {
   final String shareSubject;
 
   const CustomActionButtons({
-    Key? key,
+    super.key,
     required this.text,
     this.shareSubject = 'Shared Text',
-  }) : super(key: key);
+  });
 
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: text));

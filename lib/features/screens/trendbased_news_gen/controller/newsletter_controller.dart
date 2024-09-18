@@ -175,7 +175,7 @@ Create sections for the most relevant and interesting stories along with date. I
         {
           "role": "user",
           "content":
-              'The user asked: "${userMessage}" in response to this newsletter:\n\n${lastGeneratedNewsletter.value}\n\nProvide a helpful response:'
+              'The user asked: "$userMessage" in response to this newsletter:\n\n${lastGeneratedNewsletter.value}\n\nProvide a helpful response:'
         }
       ];
       String response = await APIs.geminiAPI(prompt);

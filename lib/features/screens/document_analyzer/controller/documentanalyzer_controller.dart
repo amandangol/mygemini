@@ -178,7 +178,7 @@ class DocumentAnalyzerController extends GetxController {
         {
           "role": "user",
           "content":
-              'The user asked: "${userMessage}" in response to this document analysis:\n\n${lastAnalysisResult.value}\n\nProvide a helpful response:'
+              'The user asked: "$userMessage" in response to this document analysis:\n\n${lastAnalysisResult.value}\n\nProvide a helpful response:'
         }
       ];
       String response = await APIs.geminiAPI(prompt);

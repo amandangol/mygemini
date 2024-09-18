@@ -12,7 +12,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AiTranslatorBot extends StatefulWidget {
-  AiTranslatorBot({Key? key}) : super(key: key);
+  const AiTranslatorBot({super.key});
 
   @override
   State<AiTranslatorBot> createState() => _AiTranslatorBotState();
@@ -304,7 +304,7 @@ class _AiTranslatorBotState extends State<AiTranslatorBot> {
             language.value = newValue;
           }
         },
-        icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryColor),
+        icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryColor),
         dropdownColor: AppTheme.surfaceColor(context),
         isExpanded: true,
         style: AppTheme.bodyMedium,
@@ -339,7 +339,7 @@ class _AiTranslatorBotState extends State<AiTranslatorBot> {
 
   Widget _buildSwapButton(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.swap_horiz, color: AppTheme.primaryColor),
+      icon: const Icon(Icons.swap_horiz, color: AppTheme.primaryColor),
       onPressed: controller.swapLanguages,
     );
   }

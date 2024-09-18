@@ -182,7 +182,7 @@ class EmailBotController extends GetxController {
         {
           "role": "user",
           "content":
-              'The user asked: "${userMessage}" in response to this email:\n\n${lastGeneratedEmail.value}\n\nProvide a helpful response:'
+              'The user asked: "$userMessage" in response to this email:\n\n${lastGeneratedEmail.value}\n\nProvide a helpful response:'
         }
       ];
       String response = await APIs.geminiAPI(prompt);

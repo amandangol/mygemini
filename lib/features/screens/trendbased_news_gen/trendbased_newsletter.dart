@@ -12,7 +12,7 @@ import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TrendNewsletterGenerator extends StatefulWidget {
-  const TrendNewsletterGenerator({Key? key}) : super(key: key);
+  const TrendNewsletterGenerator({super.key});
 
   @override
   _TrendNewsletterGeneratorState createState() =>

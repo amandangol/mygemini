@@ -48,7 +48,7 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
 
   final themeController = Get.put(ThemeController());
   final chatHistoryController = Get.put(ChatHistoryController());

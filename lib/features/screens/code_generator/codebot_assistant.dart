@@ -12,7 +12,7 @@ import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AiCodeBot extends StatefulWidget {
-  const AiCodeBot({Key? key}) : super(key: key);
+  const AiCodeBot({super.key});
 
   @override
   _AiCodeBotState createState() => _AiCodeBotState();

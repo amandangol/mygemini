@@ -11,7 +11,7 @@ import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final themeController = Get.put(ThemeController());
   final ScrollController _scrollController = ScrollController();
+  final ValueNotifier<bool> _showFAB = ValueNotifier<bool>(false);
 
   @override
   void initState() {
@@ -27,12 +28,23 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _setStatusBarStyle();
     Pref.showOnboarding = false;
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _showFAB.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.offset > 100 && !_showFAB.value) {
+      _showFAB.value = true;
+    } else if (_scrollController.offset <= 100 && _showFAB.value) {
+      _showFAB.value = false;
+    }
   }
 
   void _setStatusBarStyle() {
@@ -67,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSliverAppBar() {
     return SliverAppBar(
+      pinned: true,
       floating: true,
       backgroundColor: AppTheme.surfaceColor(context),
       elevation: 0,
@@ -119,59 +132,60 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildFeaturedCard() {
     return Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
-        child: Card(
-          color: AppTheme.primaryColor.withOpacity(0.1),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Trendbased Newsletter Generator',
-                        style: AppTheme.headlineSmall
-                            .copyWith(fontWeight: FontWeight.bold),
+      padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
+      child: Card(
+        color: AppTheme.primaryColor.withOpacity(0.1),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Trendbased Newsletter Generator',
+                      style: AppTheme.headlineSmall
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Create engaging newsletters with the latest trends using AI.',
+                      style: AppTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () => Get.to(
+                          () => const TrendbasedNewsletterIntroduction()),
+                      icon: const Icon(Icons.rocket_launch),
+                      label: const Text('Get Started'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Create engaging newsletters with the latest trends using AI.',
-                        style: AppTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: () => Get.to(
-                            () => const TrendbasedNewsletterIntroduction()),
-                        icon: const Icon(Icons.rocket_launch),
-                        label: const Text('Get Started'),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                Lottie.asset(
-                  'assets/lottie/lottie1.json',
-                  width: size.width * 0.25,
-                  height: size.width * 0.25,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 10),
+              Lottie.asset(
+                'assets/lottie/lottie1.json',
+                width: size.width * 0.25,
+                height: size.width * 0.25,
+              ),
+            ],
           ),
-        )
-            .animate()
-            .fadeIn(duration: 500.ms)
-            .scale(begin: const Offset(0.9, 0.9), end: const Offset(1, 1)));
+        ),
+      ).animate().fadeIn(duration: 500.ms).scale(
+            begin: const Offset(0.9, 0.9),
+            end: const Offset(1, 1),
+          ),
+    );
   }
 
   Widget _buildSliverGrid() {
@@ -215,10 +229,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-    )
-        .animate(delay: (100 * index).ms)
-        .fadeIn(duration: 300.ms)
-        .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1));
+    ).animate(delay: (100 * index).ms).fadeIn(duration: 300.ms).scale(
+          begin: const Offset(0.8, 0.8),
+          end: const Offset(1, 1),
+        );
   }
 
   Widget _buildLottieAnimation(BotType botType) {
@@ -302,12 +316,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildScrollToTopFAB() {
-    return AnimatedBuilder(
-      animation: _scrollController,
-      builder: (context, child) {
-        return AnimatedOpacity(
-          opacity: _scrollController.offset > 100 ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 300),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _showFAB,
+      builder: (context, show, child) {
+        return AnimatedScale(
+          scale: show ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 200),
           child: FloatingActionButton(
             mini: true,
             onPressed: () {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF7F5AF0);
+  static const Color primaryColor = Color(0xFF8675EB);
   static const Color secondaryColor = Color(0xFF44475A);
 
   static ThemeData _baseTheme(Brightness brightness) {
@@ -28,7 +28,6 @@ class AppTheme {
       ).copyWith(
         secondary: secondaryColor,
         surface: isDark ? const Color(0xFF1E1E2E) : Colors.white,
-        background: isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF0F4F8),
       ),
       scaffoldBackgroundColor:
           isDark ? const Color(0xFF1E1E2E) : const Color(0xFFF0F4F8),
@@ -108,7 +107,7 @@ class AppTheme {
   static Color surfaceColor(BuildContext context) =>
       Theme.of(context).colorScheme.surface;
   static Color backgroundColor(BuildContext context) =>
-      Theme.of(context).colorScheme.background;
+      Theme.of(context).colorScheme.surface;
   static Color primaryColorLight(BuildContext context) =>
       Theme.of(context).colorScheme.primary.withOpacity(0.1);
 

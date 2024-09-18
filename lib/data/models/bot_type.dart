@@ -54,51 +54,52 @@ extension MyBotType on BotType {
 
   String get lottie => switch (this) {
         BotType.aiChatBot => 'lottie2.json',
-        BotType.aiTranslator => 'ai_ask_me.json',
-        BotType.aiEmailWriter => 'ai_ask_me.json',
-        BotType.aiCodeBot => 'lottie2.json',
-        BotType.aiCreativeContent => 'lottie2.json',
-        BotType.aiDocumentAnalyzer => 'lottie3.json',
         BotType.aiLearningBot => 'lottie3.json',
+        BotType.aiCodeBot => 'lottie3.json',
+        BotType.aiDocumentAnalyzer => 'ai_ask_me.json',
+        BotType.aiCreativeContent => 'ai_ask_me.json',
+        BotType.aiEmailWriter => 'lottie2.json',
+        BotType.aiTranslator => 'lottie3.json',
         BotType.aiTrendNewsLetter => 'lottie2.json',
       };
 
   bool get leftAlign => switch (this) {
         BotType.aiChatBot => true,
-        BotType.aiTranslator => true,
-        BotType.aiEmailWriter => false,
-        BotType.aiCodeBot => true,
-        BotType.aiCreativeContent => true,
-        BotType.aiDocumentAnalyzer => true,
         BotType.aiLearningBot => true,
+        BotType.aiCodeBot => true,
+        BotType.aiDocumentAnalyzer => true,
+        BotType.aiCreativeContent => true,
+        BotType.aiEmailWriter => false,
+        BotType.aiTranslator => true,
         BotType.aiTrendNewsLetter => true,
       };
 
   EdgeInsets get padding => switch (this) {
         BotType.aiChatBot => EdgeInsets.zero,
-        BotType.aiTranslator => EdgeInsets.zero,
-        BotType.aiEmailWriter => EdgeInsets.zero,
-        BotType.aiCodeBot => EdgeInsets.zero,
-        BotType.aiCreativeContent => EdgeInsets.zero,
-        BotType.aiDocumentAnalyzer => EdgeInsets.zero,
         BotType.aiLearningBot => EdgeInsets.zero,
+        BotType.aiCodeBot => EdgeInsets.zero,
+        BotType.aiDocumentAnalyzer => EdgeInsets.zero,
+        BotType.aiCreativeContent => EdgeInsets.zero,
+        BotType.aiEmailWriter => EdgeInsets.zero,
+        BotType.aiTranslator => EdgeInsets.zero,
         BotType.aiTrendNewsLetter => EdgeInsets.zero,
       };
 
   VoidCallback get onTap => switch (this) {
         BotType.aiChatBot => () => Get.to(
-              () => ChatScreen(),
+              () => const ChatScreen(),
               binding: BindingsBuilder(() {
                 Get.lazyPut(() => ChatHistoryController(), fenix: true);
               }),
             ),
-        BotType.aiTranslator => () => Get.to(() => AiTranslatorBot()),
-        BotType.aiEmailWriter => () => Get.to(() => const AiEmailBot()),
+        BotType.aiLearningBot => () => Get.to(() => const LearningChatbot()),
         BotType.aiCodeBot => () => Get.to(() => const AiCodeBot()),
-        BotType.aiCreativeContent => () => Get.to(() => CreativeBotView()),
         BotType.aiDocumentAnalyzer => () =>
-            Get.to(() => DocumentAnalyzerFeature()),
-        BotType.aiLearningBot => () => Get.to(() => LearningChatbot()),
+            Get.to(() => const DocumentAnalyzerFeature()),
+        BotType.aiCreativeContent => () =>
+            Get.to(() => const CreativeBotView()),
+        BotType.aiEmailWriter => () => Get.to(() => const AiEmailBot()),
+        BotType.aiTranslator => () => Get.to(() => const AiTranslatorBot()),
         BotType.aiTrendNewsLetter => () =>
             Get.to(() => const TrendNewsletterGenerator()),
       };

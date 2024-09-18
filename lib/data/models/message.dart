@@ -23,7 +23,7 @@ class Message {
     required this.msgType,
     this.imagePath,
     DateTime? timestamp,
-  }) : this.timestamp = timestamp ?? DateTime.now();
+  }) : timestamp = timestamp ?? DateTime.now();
 
   // Getter for image file
   File? get imageFile => imagePath != null ? File(imagePath!) : null;

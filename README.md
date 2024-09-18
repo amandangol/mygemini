@@ -4,11 +4,7 @@ MyGemini is a versatile Flutter application that combines multiple AI-powered as
 
 ## Video Demo
 
-[Insert video demo link or embed here]
-
-![homescreen_b](https://github.com/user-attachments/assets/e6fe79cc-263c-4c76-ad90-e3d5a32e5183)
-![homescreen_d](https://github.com/user-attachments/assets/0e185b79-64e3-4534-96fe-219056e31cd3)
-![homebots](https://github.com/user-attachments/assets/d5d3994a-76d1-4782-93ce-90a3e31805ab)
+[ video demo link or embed here]
 
 <img src="https://github.com/user-attachments/assets/e6fe79cc-263c-4c76-ad90-e3d5a32e5183" alt="homebright"  height="500">  <img src="https://github.com/user-attachments/assets/0e185b79-64e3-4534-96fe-219056e31cd3" alt="homedark"  height="500"> <img src="https://github.com/user-attachments/assets/d5d3994a-76d1-4782-93ce-90a3e31805ab" alt="homebots"  height="500">
 

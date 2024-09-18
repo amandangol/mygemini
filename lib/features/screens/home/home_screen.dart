@@ -11,14 +11,14 @@ import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final themeController = Get.put(ThemeController());
+  final ThemeController themeController = Get.find<ThemeController>();
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _showFAB = ValueNotifier<bool>(false);
 
@@ -57,19 +57,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
+    final Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor(context),
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(child: _buildWelcomeMessage()),
-          SliverToBoxAdapter(child: _buildFeaturedCard()),
+          _buildSliverAppBar(context),
+          SliverToBoxAdapter(child: _buildWelcomeSection(context)),
+          SliverToBoxAdapter(child: _buildFeaturedCard(context)),
           SliverPadding(
-            padding: EdgeInsets.all(size.width * 0.06),
-            sliver: _buildSliverGrid(),
+            padding: EdgeInsets.all(size.width * 0.04),
+            sliver: _buildSliverGrid(context),
           ),
         ],
       ),
@@ -77,154 +77,181 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SliverAppBar(
+      expandedHeight: 200,
+      floating: false,
       pinned: true,
-      floating: true,
-      backgroundColor: AppTheme.surfaceColor(context),
-      elevation: 0,
-      title: Row(
-        children: [
-          const CircleAvatar(
-            backgroundColor: Colors.transparent,
-            backgroundImage: AssetImage('assets/images/ai_chatbot.png'),
-            radius: 25,
+      stretch: true,
+      flexibleSpace: FlexibleSpaceBar(
+        title: Text(
+          'MyGemini',
+          style: AppTheme.headlineSmall.copyWith(
+            color: isDark ? Colors.white : Colors.black,
+            letterSpacing: 1.2,
           ),
-          const SizedBox(width: 5),
-          Text('MyGemini', style: AppTheme.headlineMedium),
-        ],
+        ),
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              'https://media.istockphoto.com/id/1488335095/vector/3d-vector-robot-chatbot-ai-in-science-and-business-technology-and-engineering-concept.jpg?s=612x612&w=0&k=20&c=MSxiR6V1gROmrUBe1GpylDXs0D5CHT-mn0Up8D50mr8=',
+              fit: BoxFit.cover,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    isDark
+                        ? Colors.black.withOpacity(0.8)
+                        : Colors.black.withOpacity(0.6),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         _buildThemeToggle(),
-        const SizedBox(width: 16),
       ],
     );
   }
 
-  Widget _buildWelcomeMessage() {
-    return Padding(
-      padding: EdgeInsets.all(size.width * 0.06),
+  Widget _buildWelcomeSection(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
+      decoration: AppTheme.cardDecoration(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                'Hello! ',
-                style: AppTheme.headlineMedium
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-              Image.asset(
-                "assets/images/chatbot_icon.png",
-                height: 40,
-              )
-            ],
+          Text(
+            'Welcome to Your AI Assistant Suite',
+            style: AppTheme.headlineMedium.copyWith(
+              color: Theme.of(context).primaryColor,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
-            'What would you like to do today?',
+            'Powered by Gemini-1.5-pro',
+            style: AppTheme.bodySmall.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Theme.of(context).hintColor,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'How can I assist you today?',
+            style: AppTheme.bodyLarge.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Get started by asking for assistance in daily tasks, language translation, or learning new concepts.',
             style: AppTheme.bodyMedium,
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2, end: 0);
-  }
-
-  Widget _buildFeaturedCard() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: size.width * 0.06),
-      child: Card(
-        color: AppTheme.primaryColor.withOpacity(0.1),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Trendbased Newsletter Generator',
-                      style: AppTheme.headlineSmall
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Create engaging newsletters with the latest trends using AI.',
-                      style: AppTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () => Get.to(
-                          () => const TrendbasedNewsletterIntroduction()),
-                      icon: const Icon(Icons.rocket_launch),
-                      label: const Text('Get Started'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Lottie.asset(
-                'assets/lottie/lottie1.json',
-                width: size.width * 0.25,
-                height: size.width * 0.25,
-              ),
-            ],
-          ),
-        ),
-      ).animate().fadeIn(duration: 500.ms).scale(
-            begin: const Offset(0.9, 0.9),
-            end: const Offset(1, 1),
-          ),
     );
   }
 
-  Widget _buildSliverGrid() {
+  Widget _buildFeaturedCard(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Trendbased Newsletter Generator',
+              style: AppTheme.headlineSmall.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Create engaging newsletters with the latest trends using AI.',
+              style: AppTheme.bodyMedium,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () =>
+                  Get.to(() => const TrendbasedNewsletterIntroduction()),
+              icon: const Icon(Icons.rocket_launch),
+              label: const Text('Get Started'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: AppTheme.primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).animate().fadeIn(duration: 600.ms).scale(
+          begin: const Offset(0.9, 0.9),
+          end: const Offset(1, 1),
+        );
+  }
+
+  Widget _buildSliverGrid(BuildContext context) {
     return SliverGrid(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.9,
-        crossAxisSpacing: size.width * 0.06,
-        mainAxisSpacing: size.height * 0.03,
+        childAspectRatio: 0.85,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
       ),
       delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          return _buildHomeCard(BotType.values[index], index);
-        },
+        (context, index) =>
+            _buildHomeCard(BotType.values[index], index, context),
         childCount: BotType.values.length,
       ),
     );
   }
 
-  Widget _buildHomeCard(BotType botType, int index) {
+  Widget _buildHomeCard(BotType botType, int index, BuildContext context) {
     return Card(
-      color: AppTheme.surfaceColor(context),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         onTap: botType.onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildLottieAnimation(botType),
+              const SizedBox(height: 12),
+              Text(
+                botType.title,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 8),
-              _buildTitle(botType),
-              const SizedBox(height: 8),
-              _buildDescription(botType),
+              Text(
+                botType.description,
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         ),
@@ -237,11 +264,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildLottieAnimation(BotType botType) {
     return Container(
-      width: size.width * 0.2,
-      height: size.width * 0.2,
+      width: 60,
+      height: 60,
       padding: botType.padding,
       decoration: BoxDecoration(
-        color: AppTheme.primaryColor.withOpacity(0.1),
+        color: Theme.of(context).primaryColor.withOpacity(0.1),
         shape: BoxShape.circle,
       ),
       child: Lottie.asset(
@@ -251,67 +278,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTitle(BotType botType) {
-    return Text(
-      botType.title,
-      style: AppTheme.bodyMedium.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
-  Widget _buildDescription(BotType botType) {
-    return Text(
-      botType.description,
-      style: AppTheme.bodySmall,
-      textAlign: TextAlign.center,
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-
   Widget _buildThemeToggle() {
-    return Obx(() => GestureDetector(
-          onTap: () {
+    return Obx(() => IconButton(
+          icon: Icon(themeController.isDarkMode.value
+              ? Icons.light_mode
+              : Icons.dark_mode),
+          onPressed: () {
             themeController.toggleTheme();
             _setStatusBarStyle();
           },
-          child: Container(
-            width: 50,
-            height: 25,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: themeController.isDarkMode.value
-                  ? AppTheme.primaryColor
-                  : Colors.grey[300],
-            ),
-            child: AnimatedAlign(
-              duration: const Duration(milliseconds: 200),
-              alignment: themeController.isDarkMode.value
-                  ? Alignment.centerRight
-                  : Alignment.centerLeft,
-              child: Container(
-                width: 25,
-                height: 25,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                ),
-                child: Center(
-                  child: Icon(
-                    themeController.isDarkMode.value
-                        ? Icons.dark_mode
-                        : Icons.light_mode,
-                    size: 16,
-                    color: themeController.isDarkMode.value
-                        ? AppTheme.primaryColor
-                        : Colors.orange,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ));
   }
 

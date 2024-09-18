@@ -10,7 +10,7 @@ MyGemini is a versatile Flutter application that combines multiple AI-powered as
 
 MyGemini offers eight AI-powered assistants, each designed for specific tasks:
 
-1. **AI Chat Assistant**: Engage in intelligent conversations on any topic.
+1. **AI Chat Assistant**: Engage in intelligent conversations on any topic with image and text.
 2. **AI Learning Assistant**: Enhance your learning with personalized AI tutoring.
 3. **AI Code Generator**: Create code snippets and get programming help.
 4. **AI Document Analyzer**: Extract insights and analyze documents efficiently.

@@ -1,4 +1,4 @@
-![homebots](https://github.com/user-attachments/assets/4213fe86-e220-467a-8284-21cc8da328c2)# MyGemini: AI-Powered Assistant Suite
+# MyGemini: AI-Powered Assistant Suite
 
 MyGemini is a versatile Flutter application that combines multiple AI-powered assistants into a single, user-friendly interface. With specialized AI tools, users can access a wide range of features for various tasks and purposes.
 

@@ -6,7 +6,6 @@ import 'package:lottie/lottie.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
 import 'package:mygemini/data/models/bot_type.dart';
 import 'package:mygemini/features/screens/home/TrendbasedNewsletterIntroduction.dart';
-import 'package:mygemini/utils/helper/global.dart';
 import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
@@ -57,23 +56,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor(context),
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          _buildSliverAppBar(context),
-          SliverToBoxAdapter(child: _buildWelcomeSection(context)),
-          SliverToBoxAdapter(child: _buildFeaturedCard(context)),
-          SliverPadding(
-            padding: EdgeInsets.all(size.width * 0.04),
-            sliver: _buildSliverGrid(context),
-          ),
-        ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppTheme.backgroundColor(context),
+        body: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            _buildSliverAppBar(context),
+            SliverToBoxAdapter(child: _buildWelcomeSection(context)),
+            SliverToBoxAdapter(child: _buildFeaturedCard(context)),
+            SliverPadding(
+              padding: const EdgeInsets.all(16),
+              sliver: _buildSliverGrid(context),
+            ),
+          ],
+        ),
+        floatingActionButton: _buildScrollToTopFAB(),
       ),
-      floatingActionButton: _buildScrollToTopFAB(),
     );
   }
 
@@ -81,16 +81,24 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 220,
       floating: false,
       pinned: true,
       stretch: true,
+      backgroundColor: AppTheme.primaryColor,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           'MyGemini',
           style: AppTheme.headlineSmall.copyWith(
-            color: isDark ? Colors.white : Colors.black,
+            color: Colors.white,
             letterSpacing: 1.2,
+            shadows: [
+              Shadow(
+                offset: const Offset(1.0, 1.0),
+                blurRadius: 3.0,
+                color: Colors.black.withOpacity(0.3),
+              ),
+            ],
           ),
         ),
         background: Stack(
@@ -108,8 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   colors: [
                     Colors.transparent,
                     isDark
-                        ? Colors.black.withOpacity(0.8)
-                        : Colors.black.withOpacity(0.6),
+                        ? AppTheme.primaryColor.withOpacity(0.8)
+                        : AppTheme.primaryColor.withOpacity(0.6),
                   ],
                 ),
               ),
@@ -125,16 +133,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildWelcomeSection(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(16),
-      decoration: AppTheme.cardDecoration(context),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: AppTheme.cardDecoration(context).copyWith(
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Welcome to Your AI Assistant Suite',
             style: AppTheme.headlineMedium.copyWith(
-              color: Theme.of(context).primaryColor,
+              color: AppTheme.primaryColor,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
@@ -145,30 +156,50 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Theme.of(context).hintColor,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             'How can I assist you today?',
             style: AppTheme.bodyLarge.copyWith(
               fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
-            'Get started by asking for assistance in daily tasks, language translation, or learning new concepts.',
+            'Get started by asking for assistance in daily tasks, document analyzing, or learning new concepts.',
             style: AppTheme.bodyMedium,
           ),
         ],
       ),
-    );
+    )
+        .animate()
+        .fadeIn(duration: 500.ms)
+        .slide(begin: const Offset(0, 0.1), end: Offset.zero);
   }
 
   Widget _buildFeaturedCard(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.primaryColor.withOpacity(0.8),
+            AppTheme.primaryColor.withOpacity(0.6),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -176,24 +207,31 @@ class _HomeScreenState extends State<HomeScreen> {
               'Trendbased Newsletter Generator',
               style: AppTheme.headlineSmall.copyWith(
                 fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               'Create engaging newsletters with the latest trends using AI.',
-              style: AppTheme.bodyMedium,
+              style: AppTheme.bodyMedium.copyWith(
+                color: Colors.white.withOpacity(0.9),
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () =>
                   Get.to(() => const TrendbasedNewsletterIntroduction()),
-              icon: const Icon(Icons.rocket_launch),
-              label: const Text('Get Started'),
+              icon:
+                  const Icon(Icons.rocket_launch, color: AppTheme.primaryColor),
+              label: const Text('Get Started',
+                  style: TextStyle(color: AppTheme.primaryColor)),
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: AppTheme.primaryColor,
+                backgroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
@@ -224,30 +262,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHomeCard(BotType botType, int index, BuildContext context) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         onTap: botType.onTap,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildLottieAnimation(botType),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Text(
                 botType.title,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: AppTheme.bodyLarge.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryColor,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 botType.description,
-                style: Theme.of(context).textTheme.bodySmall,
+                style: AppTheme.bodySmall,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -264,12 +302,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildLottieAnimation(BotType botType) {
     return Container(
-      width: 60,
-      height: 60,
+      width: 70,
+      height: 70,
       padding: botType.padding,
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.1),
+        color: AppTheme.primaryColorLight(context),
         shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryColor.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Lottie.asset(
         'assets/lottie/${botType.lottie}',
@@ -280,9 +325,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildThemeToggle() {
     return Obx(() => IconButton(
-          icon: Icon(themeController.isDarkMode.value
-              ? Icons.light_mode
-              : Icons.dark_mode),
+          icon: Icon(
+            themeController.isDarkMode.value
+                ? Icons.light_mode_outlined
+                : Icons.dark_mode_outlined,
+            color: Colors.white,
+          ),
           onPressed: () {
             themeController.toggleTheme();
             _setStatusBarStyle();
@@ -299,6 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
           duration: const Duration(milliseconds: 200),
           child: FloatingActionButton(
             mini: true,
+            backgroundColor: AppTheme.primaryColor,
             onPressed: () {
               _scrollController.animateTo(
                 0,
@@ -306,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 curve: Curves.easeInOut,
               );
             },
-            child: const Icon(Icons.arrow_upward),
+            child: const Icon(Icons.arrow_upward, color: Colors.white),
           ),
         );
       },

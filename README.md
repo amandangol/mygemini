@@ -16,13 +16,16 @@ MyGemini is a versatile Flutter application that combines multiple AI-powered as
 MyGemini offers eight AI-powered assistants, each designed for specific tasks:
 
 1. **AI Chat Assistant**: Engage in intelligent conversations on any topic with image and text.
-2. **AI Learning Assistant**: Enhance your learning with personalized AI tutoring.
-3. **AI Code Generator**: Create code snippets and get programming help.
-4. **AI Document Analyzer**: Extract insights and analyze documents efficiently.
-5. **AI Content Creator**: Generate creative content for various purposes.
-6. **AI Email Composer**: Craft professional emails with AI assistance.
-7. **AI Translator**: Translate text between multiple languages.
-8. **AI Trend Newsletter Generator**: Create newsletters based on current trends.
+   <img src="https://github.com/user-attachments/assets/8d020773-0823-465a-863d-21b6a3eb7a65" alt="homebright"  height="500">
+   <img src="https://github.com/user-attachments/assets/359b9fb1-60a1-4dcf-bb06-f85477d747e8" alt="homebright"  height="500">
+
+3. **AI Learning Assistant**: Enhance your learning with personalized AI tutoring.
+4. **AI Code Generator**: Create code snippets and get programming help.
+5. **AI Document Analyzer**: Extract insights and analyze documents efficiently.
+6. **AI Content Creator**: Generate creative content for various purposes.
+7. **AI Email Composer**: Craft professional emails with AI assistance.
+8. **AI Translator**: Translate text between multiple languages.
+9. **AI Trend Newsletter Generator**: Create newsletters based on current trends.
 
 ## Why Choose MyGemini?
 

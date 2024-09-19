@@ -9,12 +9,15 @@ MyGemini is a versatile Flutter application that combines multiple AI-powered as
 [Click HERE for a video demo](https://www.youtube.com/watch?v=N9KE1wjZd2M)
 
 ## APK Download
-[Drive Link](https://drive.google.com/drive/u/1/folders/1eA_RMvMAM1ZJzZ1bTkztEH-wACAFaT31)
-gemini-1.5-flash API - [Download APK for Android from here](https://drive.google.com/file/d/1CatK95MO_Syq18NB1rA_sxmlAWqrxj7v/view?usp=drive_link)
-gemini-1.5-pro-latest API - [Download APK for Android from here](https://drive.google.com/file/d/1vcoVptOK2heSGQZ_g3rXsD35c6ORxoGi/view?usp=drive_link)
+
+## Download APK for Android from here:
+
+ - [gemini-1.5-flash API](https://drive.google.com/file/d/1CatK95MO_Syq18NB1rA_sxmlAWqrxj7v/view?usp=drive_link)
+ - [gemini-1.5-pro-latest API](https://drive.google.com/file/d/1vcoVptOK2heSGQZ_g3rXsD35c6ORxoGi/view?usp=drive_link)
+
+[Drive Link for both](https://drive.google.com/drive/u/1/folders/1eA_RMvMAM1ZJzZ1bTkztEH-wACAFaT31)
 
 <img src="https://github.com/user-attachments/assets/e6fe79cc-263c-4c76-ad90-e3d5a32e5183" alt="homebright"  height="500">  <img src="https://github.com/user-attachments/assets/0e185b79-64e3-4534-96fe-219056e31cd3" alt="homedark"  height="500"> <img src="https://github.com/user-attachments/assets/d5d3994a-76d1-4782-93ce-90a3e31805ab" alt="homebots"  height="500">
-
 
 ## Key Features
 

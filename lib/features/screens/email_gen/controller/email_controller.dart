@@ -168,28 +168,33 @@ class EmailBotController extends GetxController {
   }
 
   Future<void> _handleEmailRefinement(String userMessage) async {
-    if (userMessage.toLowerCase().contains('explain')) {
+    String lowerCaseMessage = userMessage.toLowerCase();
+
+    if (lowerCaseMessage.contains('no') ||
+        lowerCaseMessage.contains('thank you') ||
+        lowerCaseMessage.contains('thanks') ||
+        lowerCaseMessage == 'ok' ||
+        lowerCaseMessage == 'good') {
+      _addBotMessage(
+          "Great! I'm glad you're satisfied with the email. Is there anything else I can help you with?");
+      return;
+    }
+
+    if (lowerCaseMessage.contains('explain')) {
       _addBotMessage(
           "Certainly! I'd be happy to explain the email. Which part would you like me to elaborate on?");
-    } else if (userMessage.toLowerCase().contains('modify') ||
-        userMessage.toLowerCase().contains('change') ||
-        userMessage.toLowerCase().contains('update')) {
+    } else if (lowerCaseMessage.contains('modify') ||
+        lowerCaseMessage.contains('change') ||
+        lowerCaseMessage.contains('update')) {
       await _modifyEmail(userMessage);
-    } else if (userMessage.toLowerCase().contains('new') ||
-        userMessage.toLowerCase().contains('start over')) {
+    } else if (lowerCaseMessage.contains('new') ||
+        lowerCaseMessage.contains('start over')) {
       resetConversation();
     } else {
-      List<Map<String, String>> prompt = [
-        {
-          "role": "user",
-          "content":
-              'The user asked: "$userMessage" in response to this email:\n\n${lastGeneratedEmail.value}\n\nProvide a helpful response:'
-        }
-      ];
-      String response = await APIs.geminiAPI(prompt);
-      _addBotMessage(response);
+      // If the user's message doesn't match any specific action,
+      // ask for clarification
       _addBotMessage(
-          "Is there anything else you'd like to know about the email, or would you like to modify it or start a new email?");
+          "I'm not sure what you'd like me to do with the email. Would you like to modify it, start a new email, or is there something specific you'd like me to explain?");
     }
   }
 
@@ -209,7 +214,9 @@ ${lastGeneratedEmail.value}
 
 The user wants to modify it with this request: "$userMessage"
 
-Please provide the updated email incorporating the requested changes:
+Please provide the updated email incorporating the requested changes. Maintain the original structure and content where possible, only modifying the parts relevant to the user's request. If the user's request is unclear, interpret it in the most reasonable way to improve the email.
+
+Return ONLY the modified email content, without any additional explanations or comments.
 """
         }
       ];
@@ -217,7 +224,7 @@ Please provide the updated email incorporating the requested changes:
       lastGeneratedEmail.value = modifiedEmail;
       _addBotMessage(modifiedEmail, isEmail: true);
       _addBotMessage(
-          "I've updated the email based on your request. How does this look? Would you like to make any further changes?");
+          "I've updated the email based on your request. How does this look? If you're satisfied, just say 'ok' or 'thank you'. If you want to make more changes, please let me know what you'd like to modify.");
     } catch (e) {
       _addBotMessage(
           "I'm sorry, I encountered an error while trying to modify the email. Can you please try again?");

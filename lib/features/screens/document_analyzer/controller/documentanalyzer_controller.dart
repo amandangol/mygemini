@@ -23,7 +23,6 @@ class DocumentAnalyzerController extends GetxController {
   var analysisType = ''.obs;
   var lastAnalysisResult = ''.obs;
   static const int chunkSize = 50000; // characters
-  final _fileContentStreamController = StreamController<String>();
   final RxDouble progress = 0.0.obs;
   final RxBool isCancelled = false.obs;
   late SharedPreferences _prefs;
@@ -168,7 +167,7 @@ class DocumentAnalyzerController extends GetxController {
         String analysisContent = await APIs.geminiAPI(prompt);
         lastAnalysisResult.value += analysisContent + '\n\n';
         _addBotMessage(
-            "Processed a chunk of the document due to document size. Continuing analysis...");
+            "Processed a chunk of the document. Continuing analysis...");
       }
 
       _addBotMessage(lastAnalysisResult.value, isAnalysis: true);

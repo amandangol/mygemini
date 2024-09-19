@@ -9,6 +9,7 @@ import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/features/screens/learning_assistant/controller/learning_assistant_controller.dart';
 import 'package:mygemini/features/screens/learning_assistant/model/learning_asst_model.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LearningChatbot extends StatefulWidget {
   const LearningChatbot({super.key});
@@ -31,6 +32,7 @@ class _LearningChatbotState extends State<LearningChatbot> {
         _scrollToBottom();
       });
     });
+    _checkFirstLaunch();
   }
 
   @override
@@ -46,6 +48,18 @@ class _LearningChatbotState extends State<LearningChatbot> {
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
+    }
+  }
+
+  void _checkFirstLaunch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstLaunch =
+        prefs.getBool('isFirstLaunchLearningAssistant') ?? true;
+    if (isFirstLaunch) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showIntroDialog();
+      });
+      await prefs.setBool('isFirstLaunchLearningAssistant', false);
     }
   }
 
@@ -230,6 +244,11 @@ class _LearningChatbotState extends State<LearningChatbot> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 0,
+          backgroundColor: Theme.of(context).cardColor,
           title: Text(title),
           content: TextField(
             controller: topicController,

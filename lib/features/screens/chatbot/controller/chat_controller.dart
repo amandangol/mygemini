@@ -24,6 +24,19 @@ class ChatController extends GetxController {
     super.onInit();
     chatHistoryController = Get.find<ChatHistoryController>();
     loadLastConversation();
+
+    ever(chatHistoryController.deletedChatTitle, (String deletedTitle) {
+      if (deletedTitle.isNotEmpty && deletedTitle == currentChatTitle.value) {
+        clearCurrentChat();
+      }
+    });
+  }
+
+  void clearCurrentChat() {
+    messages.clear();
+    currentChatTitle.value = 'New Chat';
+    conversationContext.clear();
+    selectedImage.value = null;
   }
 
   void loadLastConversation() {

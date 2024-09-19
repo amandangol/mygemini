@@ -6,6 +6,8 @@ MyGemini is a versatile Flutter application that combines multiple AI-powered as
 
 [Insert video demo link or embed here]
 
+<img src="https://github.com/user-attachments/assets/0358ffc3-b020-493e-814f-77d3c19a16c3" alt="splash"  height="500">
+
 ## Key Features
 
 MyGemini offers eight AI-powered assistants, each designed for specific tasks:

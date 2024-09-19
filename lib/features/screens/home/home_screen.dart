@@ -10,7 +10,7 @@ import 'package:mygemini/utils/helper/pref.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floating: false,
       pinned: true,
       stretch: true,
-      backgroundColor: AppTheme.primaryColor,
+      backgroundColor: isDark ? AppTheme.secondaryColor : AppTheme.primaryColor,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           'MyGemini',
@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
           fit: StackFit.expand,
           children: [
             Image.network(
-              'https://media.istockphoto.com/id/1488335095/vector/3d-vector-robot-chatbot-ai-in-science-and-business-technology-and-engineering-concept.jpg?s=612x612&w=0&k=20&c=MSxiR6V1gROmrUBe1GpylDXs0D5CHT-mn0Up8D50mr8=',
+              'https://static.vecteezy.com/system/resources/previews/021/835/780/original/artificial-intelligence-chatbot-assistance-background-free-vector.jpg',
               fit: BoxFit.cover,
             ),
             Container(
@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'How can I assist you today?',
             style: AppTheme.bodyLarge.copyWith(
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.secondary,
+              color: Theme.of(context).hintColor,
             ),
           ),
           const SizedBox(height: 12),
@@ -178,24 +178,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFeaturedCard(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [
-            AppTheme.primaryColor.withOpacity(0.8),
-            AppTheme.primaryColor.withOpacity(0.6),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.primaryColor.withOpacity(0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        color: isDark
+            ? AppTheme.secondaryColor.withOpacity(0.8)
+            : AppTheme.primaryColor.withOpacity(0.8),
       ),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Padding(
@@ -324,18 +314,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildThemeToggle() {
-    return Obx(() => IconButton(
-          icon: Icon(
-            themeController.isDarkMode.value
-                ? Icons.light_mode_outlined
-                : Icons.dark_mode_outlined,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            themeController.toggleTheme();
-            _setStatusBarStyle();
-          },
-        ));
+    return Obx(() {
+      final isDarkMode = themeController.isDarkMode.value;
+      return IconButton(
+        icon: Icon(
+          isDarkMode ? Icons.light_mode : Icons.dark_mode,
+          color: isDarkMode ? Colors.amber : Colors.black45,
+          size: 28,
+        ),
+        onPressed: () {
+          themeController.toggleTheme();
+          _setStatusBarStyle();
+        },
+      );
+    });
   }
 
   Widget _buildScrollToTopFAB() {

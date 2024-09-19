@@ -175,6 +175,24 @@ class _ChatScreenState extends State<ChatScreen> {
           color: isDarkMode ? Colors.white54 : Colors.black45,
         ),
       ),
+      trailing: IconButton(
+        icon: const Icon(
+          Icons.delete,
+          color: Color.fromARGB(255, 169, 37, 37),
+        ),
+        onPressed: () {
+          historyController.deleteChatHistory(chatHistory.title);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Chat history deleted successfully",
+                  style: AppTheme.bodyMedium),
+              backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          Navigator.pop(context);
+        },
+      ),
       onTap: () {
         chatController.loadChat(chatHistory);
         Navigator.pop(context);
@@ -196,19 +214,19 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           )),
       backgroundColor: Colors.transparent,
+      elevation: 0,
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              AppTheme.primaryColor,
-              AppTheme.primaryColorLight(context),
+              Theme.of(context).primaryColor,
+              Theme.of(context).colorScheme.secondary,
             ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
       ),
-      elevation: 0,
       centerTitle: true,
       actions: [
         IconButton(

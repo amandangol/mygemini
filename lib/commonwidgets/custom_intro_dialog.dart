@@ -18,11 +18,11 @@ class CustomIntroDialog extends StatelessWidget {
   final VoidCallback onClose;
 
   const CustomIntroDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.features,
     required this.onClose,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

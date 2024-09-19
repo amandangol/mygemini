@@ -171,9 +171,10 @@ class EmailBotController extends GetxController {
     if (userMessage.toLowerCase().contains('explain')) {
       _addBotMessage(
           "Certainly! I'd be happy to explain the email. Which part would you like me to elaborate on?");
-    } else if (userMessage.toLowerCase().contains('modify')) {
-      _addBotMessage(
-          "Sure, I can help you modify the email. What changes would you like to make?");
+    } else if (userMessage.toLowerCase().contains('modify') ||
+        userMessage.toLowerCase().contains('change') ||
+        userMessage.toLowerCase().contains('update')) {
+      await _modifyEmail(userMessage);
     } else if (userMessage.toLowerCase().contains('new') ||
         userMessage.toLowerCase().contains('start over')) {
       resetConversation();
@@ -188,7 +189,41 @@ class EmailBotController extends GetxController {
       String response = await APIs.geminiAPI(prompt);
       _addBotMessage(response);
       _addBotMessage(
-          "Is there anything else you'd like to know about the email, or would you like to start a new email?");
+          "Is there anything else you'd like to know about the email, or would you like to modify it or start a new email?");
+    }
+  }
+
+  Future<void> _modifyEmail(String userMessage) async {
+    isLoading.value = true;
+    _addBotMessage(
+        "I understand you want to modify the email. I'll work on that now...");
+
+    try {
+      List<Map<String, String>> prompt = [
+        {
+          "role": "user",
+          "content": """
+Here's the current email:
+
+${lastGeneratedEmail.value}
+
+The user wants to modify it with this request: "$userMessage"
+
+Please provide the updated email incorporating the requested changes:
+"""
+        }
+      ];
+      String modifiedEmail = await APIs.geminiAPI(prompt);
+      lastGeneratedEmail.value = modifiedEmail;
+      _addBotMessage(modifiedEmail, isEmail: true);
+      _addBotMessage(
+          "I've updated the email based on your request. How does this look? Would you like to make any further changes?");
+    } catch (e) {
+      _addBotMessage(
+          "I'm sorry, I encountered an error while trying to modify the email. Can you please try again?");
+    } finally {
+      isLoading.value = false;
+      await _saveConversation();
     }
   }
 

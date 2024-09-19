@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/data/models/message.dart';
+import 'package:mygemini/utils/theme/ThemeData.dart';
 import 'package:mygemini/utils/timestamp.dart';
 
 class MessageCard extends StatelessWidget {
@@ -12,23 +14,30 @@ class MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isUserMessage = message.msgType == MessageType.user;
+    final isBotMessage = message.msgType == MessageType.bot;
+    final isUserImage = message.msgType == MessageType.userImage;
+
+    final bubbleColor = isUserMessage || isUserImage
+        ? AppTheme.primaryColor
+        : AppTheme.surfaceColor(context);
+    final textColor = isUserMessage
+        ? Colors.white
+        : Theme.of(context).textTheme.bodyLarge!.color!;
     return Align(
-      alignment: message.msgType == MessageType.bot
-          ? Alignment.centerLeft
-          : Alignment.centerRight,
+      alignment: isBotMessage ? Alignment.centerLeft : Alignment.centerRight,
       child: Container(
         constraints:
             BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Column(
-          crossAxisAlignment: message.msgType == MessageType.bot
-              ? CrossAxisAlignment.start
-              : CrossAxisAlignment.end,
+          crossAxisAlignment:
+              isBotMessage ? CrossAxisAlignment.start : CrossAxisAlignment.end,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               decoration: BoxDecoration(
-                color: _getBackgroundColor(),
+                color: bubbleColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -41,25 +50,20 @@ class MessageCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (message.msgType == MessageType.userImage &&
-                      message.imageFile != null)
+                  if (isUserImage && message.imageFile != null)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.file(
                         message.imageFile!,
-                        width: 500,
-                        height: 200,
-                        fit: BoxFit.cover,
+                        width: 200,
+                        // height: 200,
+                        fit: BoxFit.contain,
                       ),
                     ).animate().fadeIn(duration: 300.ms).scale(),
-                  SizedBox(
-                      height: message.msgType == MessageType.userImage ? 8 : 0),
-                  Text(
-                    message.msg,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: _getTextColor(),
-                    ),
+                  SizedBox(height: isUserImage ? 8 : 0),
+                  SelectableMarkdown(
+                    data: message.msg,
+                    textColor: textColor,
                   ),
                 ],
               ),
@@ -76,21 +80,5 @@ class MessageCard extends StatelessWidget {
         ),
       ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
     );
-  }
-
-  Color _getBackgroundColor() {
-    if (message.msgType == MessageType.bot) {
-      return isDarkMode ? Colors.grey[800]! : Colors.grey[200]!;
-    } else {
-      return Colors.blue.withOpacity(0.8);
-    }
-  }
-
-  Color _getTextColor() {
-    if (message.msgType == MessageType.bot) {
-      return isDarkMode ? Colors.white : Colors.black87;
-    } else {
-      return Colors.white;
-    }
   }
 }

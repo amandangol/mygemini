@@ -106,15 +106,36 @@ class _DocumentAnalyzerFeatureState extends State<DocumentAnalyzerFeature> {
             Expanded(
               child: Obx(() => _buildAnalyzerMessages(context)),
             ),
+            _buildProgressIndicator(),
+            _buildCancelButton(),
             _buildFileUploadButton(context),
-            const SizedBox(
-              height: 8,
-            ),
+            const SizedBox(height: 8),
             _buildInputArea(context),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildProgressIndicator() {
+    return Obx(() {
+      if (_controller.progress.value > 0 && _controller.progress.value < 1) {
+        return LinearProgressIndicator(value: _controller.progress.value);
+      }
+      return const SizedBox.shrink();
+    });
+  }
+
+  Widget _buildCancelButton() {
+    return Obx(() {
+      if (_controller.progress.value > 0 && _controller.progress.value < 1) {
+        return ElevatedButton(
+          onPressed: _controller.cancelAnalysis,
+          child: const Text('Cancel Analysis'),
+        );
+      }
+      return const SizedBox.shrink();
+    });
   }
 
   PreferredSizeWidget _buildCustomAppBar(BuildContext context) {

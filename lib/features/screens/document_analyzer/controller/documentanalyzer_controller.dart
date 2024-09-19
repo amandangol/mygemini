@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:mygemini/data/services/api_service.dart';
@@ -20,7 +22,10 @@ class DocumentAnalyzerController extends GetxController {
   var selectedFile = Rx<PlatformFile?>(null);
   var analysisType = ''.obs;
   var lastAnalysisResult = ''.obs;
-
+  static const int chunkSize = 50000; // characters
+  final _fileContentStreamController = StreamController<String>();
+  final RxDouble progress = 0.0.obs;
+  final RxBool isCancelled = false.obs;
   late SharedPreferences _prefs;
 
   static const int maxConversationLength = 50;
@@ -137,25 +142,38 @@ class DocumentAnalyzerController extends GetxController {
     await _saveConversation();
   }
 
+  Future<void> cancelAnalysis() async {
+    isCancelled.value = true;
+    final service = FlutterBackgroundService();
+    service.invoke('stopService');
+    _addBotMessage(
+        "Analysis cancelled. You can start a new analysis or upload a different document.");
+  }
+
   Future<void> _analyzeDocument() async {
     _addBotMessage(
-        "Alright, I'm analyzing the document now. Please wait a moment...");
+        "Alright, I'm analyzing the document now. This may take a while for larger files...");
 
     try {
-      final String fileContent = await _extractFileContent(selectedFile.value!);
-      final List<Map<String, String>> prompt = [
-        {
-          "role": "user",
-          "content":
-              'Analyze the following document content and ${analysisType.value}. Provide a detailed response.\n\nDocument content:\n$fileContent'
-        }
-      ];
+      await for (String chunk
+          in _extractFileContentInChunks(selectedFile.value!)) {
+        final List<Map<String, String>> prompt = [
+          {
+            "role": "user",
+            "content":
+                'Analyze the following document chunk and ${analysisType.value}. Provide a concise response.\n\nDocument chunk:\n$chunk'
+          }
+        ];
 
-      String analysisContent = await APIs.geminiAPI(prompt);
-      lastAnalysisResult.value = analysisContent;
-      _addBotMessage(analysisContent, isAnalysis: true);
+        String analysisContent = await APIs.geminiAPI(prompt);
+        lastAnalysisResult.value += analysisContent + '\n\n';
+        _addBotMessage(
+            "Processed a chunk of the document due to document size. Continuing analysis...");
+      }
+
+      _addBotMessage(lastAnalysisResult.value, isAnalysis: true);
       _addBotMessage(
-          "Here's the analysis result. Would you like me to explain any part of it, perform a different type of analysis, or analyze a new document?");
+          "Here's the complete analysis result. Would you like me to explain any part of it, perform a different type of analysis, or analyze a new document?");
     } catch (e) {
       _addBotMessage(
           "I'm sorry, I couldn't analyze the document. The error was: ${e.toString()}");
@@ -203,28 +221,65 @@ class DocumentAnalyzerController extends GetxController {
     }
   }
 
-  Future<String> _extractFileContent(PlatformFile file) async {
+  Stream<String> _extractFileContentInChunks(PlatformFile file) async* {
     final String path = file.path!;
     final String extension = file.extension?.toLowerCase() ?? '';
 
     switch (extension) {
       case 'pdf':
-        final PdfDocument document =
-            PdfDocument(inputBytes: await File(path).readAsBytes());
-        PdfTextExtractor extractor = PdfTextExtractor(document);
-        String text = extractor.extractText();
-        document.dispose();
-        return text;
+        yield* _extractPdfInChunks(path);
       case 'txt':
       case 'csv':
       case 'md':
-        return await File(path).readAsString();
+        yield* _extractTextFileInChunks(path);
       case 'doc':
       case 'docx':
         throw UnimplementedError(
             'Word document parsing not implemented. Try .pdf, .txt, .csv and .md');
       default:
         throw UnsupportedError('Unsupported file type: $extension');
+    }
+  }
+
+  Stream<String> _extractPdfInChunks(String path) async* {
+    final PdfDocument document =
+        PdfDocument(inputBytes: await File(path).readAsBytes());
+    PdfTextExtractor extractor = PdfTextExtractor(document);
+
+    String buffer = '';
+    for (int i = 0; i < document.pages.count; i++) {
+      String pageText =
+          extractor.extractText(startPageIndex: i, endPageIndex: i);
+      buffer += pageText;
+
+      while (buffer.length >= chunkSize) {
+        yield buffer.substring(0, chunkSize);
+        buffer = buffer.substring(chunkSize);
+      }
+    }
+
+    if (buffer.isNotEmpty) {
+      yield buffer;
+    }
+
+    document.dispose();
+  }
+
+  Stream<String> _extractTextFileInChunks(String path) async* {
+    final file = File(path);
+    final reader = file.openRead();
+    String buffer = '';
+
+    await for (var data in reader.transform(utf8.decoder)) {
+      buffer += data;
+      while (buffer.length >= chunkSize) {
+        yield buffer.substring(0, chunkSize);
+        buffer = buffer.substring(chunkSize);
+      }
+    }
+
+    if (buffer.isNotEmpty) {
+      yield buffer;
     }
   }
 

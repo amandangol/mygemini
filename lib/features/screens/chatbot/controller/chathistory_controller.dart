@@ -5,6 +5,7 @@ import 'package:mygemini/data/models/chathistory.dart';
 class ChatHistoryController extends GetxController {
   final RxList<ChatHistory> chatHistories = <ChatHistory>[].obs;
   late Box<ChatHistory> _chatHistoryBox;
+  final RxString deletedChatTitle = RxString('');
 
   @override
   void onInit() {
@@ -58,14 +59,16 @@ class ChatHistoryController extends GetxController {
     chatHistories.sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
 
-  Future<void> deleteChatHistory(int index) async {
+  Future<void> deleteChatHistory(String title) async {
     try {
-      if (index >= 0 && index < chatHistories.length) {
-        String titleToDelete = chatHistories[index].title;
+      int index = chatHistories.indexWhere((ch) => ch.title == title);
+      if (index != -1) {
         chatHistories.removeAt(index);
-        await _chatHistoryBox.delete(titleToDelete);
+        await _chatHistoryBox.delete(title);
+
+        deletedChatTitle.value = title;
       } else {
-        throw RangeError('Invalid index for chat history deletion');
+        throw Exception('Chat history not found');
       }
     } catch (e) {
       print('Error deleting chat history: $e');

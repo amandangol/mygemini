@@ -37,7 +37,7 @@ MyGemini offers eight AI-powered assistants, each designed for specific tasks:
 <img src="https://github.com/user-attachments/assets/78bfcdcf-cae5-4791-9f15-5818115f12bd" alt="translator"  height="500">
 
 8. **AI Trend Newsletter Generator**: Create newsletters based on current trends.
-<img src="https://github.com/user-attachments/assets/f8be7f47-3bae-441b-9bde-65b8694c3cc1" alt="trendnewsletter generator" height="500">  <img src="https://github.com/user-attachments/assets/b29883f1-fe9e-4ef9-ae03-84cb3ce6fb84" alt="trendnewsletter" height="500"> 
+<img src="https://github.com/user-attachments/assets/f8be7f47-3bae-441b-9bde-65b8694c3cc1" alt="trendnewsletter"  height="500">  <img src="https://github.com/user-attachments/assets/b29883f1-fe9e-4ef9-ae03-84cb3ce6fb84" alt="trendnewsletter"  height="500">
 
 ## Why Choose MyGemini?
 

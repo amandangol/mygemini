@@ -4,9 +4,6 @@ MyGemini is a powerful Flutter application that brings together eight specialize
 
 <img src="https://github.com/user-attachments/assets/e6fe79cc-263c-4c76-ad90-e3d5a32e5183" alt="homebright" height="500"> <img src="https://github.com/user-attachments/assets/0e185b79-64e3-4534-96fe-219056e31cd3" alt="homedark" height="500"> <img src="https://github.com/user-attachments/assets/d5d3994a-76d1-4782-93ce-90a3e31805ab" alt="homebots" height="500">
 
-## Video Demo
-
-Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/watch?v=N9KE1wjZd2M)
 
 ## Key Features
 
@@ -44,6 +41,10 @@ Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/wat
 - **Continuous Learning**: Improve skills across various domains.
 
 ## Getting Started
+
+## Video Demo
+
+Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/watch?v=N9KE1wjZd2M)
 
 ### For Users
 

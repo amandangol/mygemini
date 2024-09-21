@@ -41,6 +41,10 @@ class APIs {
       // Generate content with history
       final response = await model.generateContent(history);
 
+      print(
+        'Response received from Gemini AI ($modelName): $response',
+      );
+
       log('Response received from Gemini AI ($modelName)', name: 'APIs');
       return response.text ?? 'No response text';
     } catch (e, stackTrace) {

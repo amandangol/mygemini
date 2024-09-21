@@ -56,10 +56,9 @@ Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/wat
 ### For Users
 
 1. Download the APK:
-   - [Gemini-1.5-flash API version](https://drive.google.com/file/d/1CatK95MO_Syq18NB1rA_sxmlAWqrxj7v/view?usp=drive_link)
-   - [Gemini-1.5-pro-latest API version](https://drive.google.com/file/d/1vcoVptOK2heSGQZ_g3rXsD35c6ORxoGi/view?usp=drive_link)
+   - [MyGemini APK](https://drive.google.com/file/d/1Vq2YPizhQdMvo5XNu1paF0VuPCnf_hF9/view?usp=drive_link)
 
-[Drive Link for both](https://drive.google.com/drive/u/1/folders/1eA_RMvMAM1ZJzZ1bTkztEH-wACAFaT31)
+[Drive Link](https://drive.google.com/drive/u/1/folders/1eA_RMvMAM1ZJzZ1bTkztEH-wACAFaT31)
 
 2. Install the APK on your Android device.
 3. Launch MyGemini and start exploring its features!

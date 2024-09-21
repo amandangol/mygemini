@@ -4,9 +4,6 @@ MyGemini is a powerful Flutter application that brings together eight specialize
 
 <img src="https://github.com/user-attachments/assets/e6fe79cc-263c-4c76-ad90-e3d5a32e5183" alt="homebright" height="500"> <img src="https://github.com/user-attachments/assets/0e185b79-64e3-4534-96fe-219056e31cd3" alt="homedark" height="500"> <img src="https://github.com/user-attachments/assets/d5d3994a-76d1-4782-93ce-90a3e31805ab" alt="homebots" height="500">
 
-## Video Demo
-
-Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/watch?v=N9KE1wjZd2M)
 
 ## Key Features
 
@@ -14,25 +11,25 @@ Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/wat
    <img src="https://github.com/user-attachments/assets/359b9fb1-60a1-4dcf-bb06-f85477d747e8" alt="chathistory" height="500"> <img src="https://github.com/user-attachments/assets/8d020773-0823-465a-863d-21b6a3eb7a65" alt="chatbot" height="500">
 
 2. **AI Learning Assistant**: Get personalized AI tutoring on various subjects.
-   <img src="https://github.com/user-attachments/assets/d99aacfa-3bcc-413c-ad5a-eaaff6d3efe2" alt="learning assistant" height="500">
+<img src="https://github.com/user-attachments/assets/d99aacfa-3bcc-413c-ad5a-eaaff6d3efe2" alt="learning assistant" height="500">
 
 3. **AI Code Generator**: Create code snippets and receive programming help.
-   <img src="https://github.com/user-attachments/assets/4c776359-f915-476b-8172-a41d95f6509f" alt="code generator" height="500">
+<img src="https://github.com/user-attachments/assets/4c776359-f915-476b-8172-a41d95f6509f" alt="code generator" height="500">
 
 4. **AI Document Analyzer**: Extract insights from documents efficiently.
-   <img src="https://github.com/user-attachments/assets/092f69bc-bcd1-4b28-99fc-fdf1ac78eaf1" alt="docanalyzer" height="500">
+<img src="https://github.com/user-attachments/assets/092f69bc-bcd1-4b28-99fc-fdf1ac78eaf1" alt="docanalyzer" height="500">
 
 5. **AI Content Creator**: Generate creative content for various purposes.
-   <img src="https://github.com/user-attachments/assets/ee4b8eef-d8f5-4408-897f-bb3e1c9e67ef" alt="content creator" height="500">
+<img src="https://github.com/user-attachments/assets/ee4b8eef-d8f5-4408-897f-bb3e1c9e67ef" alt="content creator" height="500">
 
 6. **AI Email Composer**: Craft professional emails with AI assistance.
-   <img src="https://github.com/user-attachments/assets/0e68b92f-3ac1-4ceb-b755-7d395557e3df" alt="email composer" height="500">
+<img src="https://github.com/user-attachments/assets/0e68b92f-3ac1-4ceb-b755-7d395557e3df" alt="email composer" height="500">
 
 7. **AI Translator**: Translate text between multiple languages.
-   <img src="https://github.com/user-attachments/assets/78bfcdcf-cae5-4791-9f15-5818115f12bd" alt="translator" height="500">
+<img src="https://github.com/user-attachments/assets/78bfcdcf-cae5-4791-9f15-5818115f12bd" alt="translator" height="500">
 
 8. **AI Trend Newsletter Generator**: Create newsletters based on current trends.
-   <img src="https://github.com/user-attachments/assets/f8be7f47-3bae-441b-9bde-65b8694c3cc1" alt="trendnewsletter" height="500">
+<img src="https://github.com/user-attachments/assets/f8be7f47-3bae-441b-9bde-65b8694c3cc1" alt="trendnewsletter" height="500">
 
 ## Why Choose MyGemini?
 
@@ -44,6 +41,10 @@ Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/wat
 - **Continuous Learning**: Improve skills across various domains.
 
 ## Getting Started
+
+## Video Demo
+
+Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/watch?v=N9KE1wjZd2M)
 
 ### For Users
 

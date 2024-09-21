@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mygemini/controllers/ApiVersionController.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
 import 'package:mygemini/data/models/chathistory.dart';
 import 'package:mygemini/data/models/message.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
   final themeController = Get.put(ThemeController());
   final chatHistoryController = Get.put(ChatHistoryController());
   final chatController = Get.put(ChatController());
+  final apiController = Get.put(ApiVersionController());
 
   @override
   Widget build(BuildContext context) {

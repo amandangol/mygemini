@@ -2,10 +2,17 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:get/get.dart';
+import 'package:mygemini/controllers/ApiVersionController.dart';
 
 class APIs {
   static Future<String> geminiAPI(
       List<Map<String, dynamic>> conversationContext) async {
+    final apiVersionController = Get.find<ApiVersionController>();
+    final modelName = apiVersionController.currentApiVersion;
+
+    log('Starting Gemini API request using $modelName', name: 'APIs');
+
     try {
       final apiKey = dotenv.env['GEMINI_API_KEY'];
       if (apiKey == null || apiKey.isEmpty) {
@@ -13,8 +20,7 @@ class APIs {
             'GEMINI_API_KEY is not set in the environment variables.');
       }
 
-      final model =
-          GenerativeModel(model: 'gemini-1.5-pro-latest', apiKey: apiKey);
+      final model = GenerativeModel(model: modelName, apiKey: apiKey);
 
       // Convert conversation context to Content objects
       final List<Content> history =
@@ -31,20 +37,15 @@ class APIs {
         }
       }));
 
+      log('Sending request to Gemini AI ($modelName)', name: 'APIs');
       // Generate content with history
       final response = await model.generateContent(history);
 
-      print('Response from Gemini AI: ${response.text}');
+      log('Response received from Gemini AI ($modelName)', name: 'APIs');
       return response.text ?? 'No response text';
     } catch (e, stackTrace) {
-      print('Loaded API Key: ${dotenv.env['GEMINI_API_KEY']}');
-      print('Full response from Gemini AI: $e');
-      if (e is GenerativeAIException) {
-        return 'An internal error has occurred: ${e.message}';
-      }
-
-      log('Error communicating with Gemini AI: $e',
-          error: e, stackTrace: stackTrace);
+      log('Error communicating with Gemini AI ($modelName): $e',
+          error: e, stackTrace: stackTrace, name: 'APIs');
       return 'Error communicating with Gemini AI: $e';
     }
   }

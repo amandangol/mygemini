@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mygemini/controllers/ApiVersionController.dart';
 import 'package:mygemini/controllers/theme_controller.dart';
 import 'package:mygemini/data/models/bot_type.dart';
 import 'package:mygemini/features/screens/home/TrendbasedNewsletterIntroduction.dart';
@@ -18,6 +19,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ThemeController themeController = Get.find<ThemeController>();
+  final ApiVersionController apiVersionController =
+      Get.find<ApiVersionController>();
+
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _showFAB = ValueNotifier<bool>(false);
 
@@ -126,8 +130,115 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       actions: [
-        _buildThemeToggle(),
+        IconButton(
+          icon: const Icon(Icons.settings, color: Colors.white),
+          onPressed: _showSettingsModal,
+        ),
       ],
+    );
+  }
+
+  void _showSettingsModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (_, controller) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(2.5),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text('Settings', style: AppTheme.headlineMedium),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: ListView(
+                      controller: controller,
+                      children: [
+                        _buildSettingsItem(
+                          title: 'Dark Mode',
+                          subtitle: 'Toggle dark mode on/off',
+                          trailing: Obx(() => Switch(
+                                value: themeController.isDarkMode.value,
+                                onChanged: (bool value) {
+                                  themeController.toggleTheme();
+                                  _setStatusBarStyle();
+                                },
+                                activeColor: AppTheme.primaryColor,
+                                inactiveThumbColor: Colors.grey[400],
+                                inactiveTrackColor: Colors.grey[300],
+                              )),
+                        ),
+                        const Divider(),
+                        _buildSettingsItem(
+                          title: 'API Model',
+                          subtitle:
+                              'Choose between gemini-1.5-flash model and gemini-1.5-pro-latest model',
+                          trailing: Obx(() => Switch(
+                                value: apiVersionController
+                                    .isUsingProVersion.value,
+                                onChanged: (bool value) {
+                                  apiVersionController.toggleApiVersion();
+                                  _showApiSwitchSnackbar();
+                                },
+                                activeColor: AppTheme.primaryColor,
+                                inactiveThumbColor: Colors.grey[400],
+                                inactiveTrackColor: Colors.grey[300],
+                              )),
+                        ),
+                        const Divider(),
+                        // Add more settings items here
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSettingsItem({
+    required String title,
+    required String subtitle,
+    required Widget trailing,
+  }) {
+    return ListTile(
+      title: Text(title, style: AppTheme.bodyLarge),
+      subtitle: Text(subtitle, style: AppTheme.bodySmall),
+      trailing: trailing,
+    );
+  }
+
+  void _showApiSwitchSnackbar() {
+    Get.snackbar(
+      'API Model Changed',
+      'Now using ${apiVersionController.currentApiVersion}',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 2),
+      backgroundColor: AppTheme.primaryColor,
+      colorText: Colors.white,
     );
   }
 
@@ -149,13 +260,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Powered by Gemini-1.5-pro',
-            style: AppTheme.bodySmall.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Theme.of(context).hintColor,
-            ),
-          ),
+          Obx(() => Text(
+                'Powered by ${apiVersionController.currentApiVersion}',
+                style: AppTheme.bodyMedium.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Theme.of(context).hintColor,
+                ),
+              )),
           const SizedBox(height: 20),
           Text(
             'How can I assist you today?',
@@ -311,23 +422,6 @@ class _HomeScreenState extends State<HomeScreen> {
         fit: BoxFit.contain,
       ),
     );
-  }
-
-  Widget _buildThemeToggle() {
-    return Obx(() {
-      final isDarkMode = themeController.isDarkMode.value;
-      return IconButton(
-        icon: Icon(
-          isDarkMode ? Icons.light_mode : Icons.dark_mode,
-          color: isDarkMode ? Colors.amber : Colors.black45,
-          size: 28,
-        ),
-        onPressed: () {
-          themeController.toggleTheme();
-          _setStatusBarStyle();
-        },
-      );
-    });
   }
 
   Widget _buildScrollToTopFAB() {

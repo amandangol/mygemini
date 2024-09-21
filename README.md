@@ -30,6 +30,13 @@ MyGemini is a powerful Flutter application that brings together eight specialize
 8. **AI Trend Newsletter Generator**: Create newsletters based on current trends.
    <img src="https://github.com/user-attachments/assets/f8be7f47-3bae-441b-9bde-65b8694c3cc1" alt="trendnewsletter" height="500">
 
+## Additional Feature
+
+**Settings Screen**: Customize your MyGemini experience with easy-to-use toggles.
+
+                     - Switch between Gemini-1.5-pro-latest and Gemini-1.5-flash models
+                     - Toggle between dark and light modes for comfortable viewing
+
 ## Why Choose MyGemini?
 
 - **Advanced AI Model**: Powered by the Gemini 1.5 Pro model API for state-of-the-art performance.
@@ -38,6 +45,7 @@ MyGemini is a powerful Flutter application that brings together eight specialize
 - **Productivity Boost**: Streamline tasks from coding to content creation.
 - **Customizable Experience**: Each assistant is tailored for specific needs.
 - **Continuous Learning**: Improve skills across various domains.
+- **Flexible Settings**: Easily switch between AI models and app themes.
 
 ## Getting Started
 
@@ -92,6 +100,7 @@ MyGemini harnesses the cutting-edge capabilities of the Gemini 1.5 Pro model API
 - Context-aware responses across various domains
 - High-quality code generation and analysis
 - Accurate language translation and content creation
+- Users can easily switch between the Gemini-1.5-pro-latest and Gemini-1.5-flash models in the Settings screen, allowing for flexibility in performance and response times based on their needs. The dark/light mode toggle enhances user comfort and accessibility across different lighting conditions.
 
 The Gemini 1.5 Pro model's extensive knowledge base and powerful reasoning capabilities allow MyGemini to provide intelligent assistance across a wide range of tasks, from casual conversations to complex problem-solving.
 

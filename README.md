@@ -34,8 +34,9 @@ MyGemini is a powerful Flutter application that brings together eight specialize
 
 **Settings Screen**: Customize your MyGemini experience with easy-to-use toggles.
 
-                     - Switch between Gemini-1.5-pro-latest and Gemini-1.5-flash models
-                     - Toggle between dark and light modes for comfortable viewing
+   - Switch between Gemini-1.5-pro-latest and Gemini-1.5-flash models
+   - Toggle between dark and light modes for comfortable viewing
+   <img src="https://github.com/user-attachments/assets/6243c003-e100-49b9-bda2-9a0c40857de5" alt="settings" height="500">
 
 ## Why Choose MyGemini?
 

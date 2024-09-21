@@ -165,7 +165,7 @@ class DocumentAnalyzerController extends GetxController {
         ];
 
         String analysisContent = await APIs.geminiAPI(prompt);
-        lastAnalysisResult.value += analysisContent + '\n\n';
+        lastAnalysisResult.value += '$analysisContent\n\n';
         _addBotMessage(
             "Processed a chunk of the document. Continuing analysis...");
       }

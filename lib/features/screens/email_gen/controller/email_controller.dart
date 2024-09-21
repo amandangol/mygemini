@@ -135,6 +135,7 @@ class EmailBotController extends GetxController {
   Future<void> selectEmailStyle(EmailStyle style) async {
     emailStyle.value = style;
     showStyleSelection.value = false;
+    _addUserMessage(style.toString().split('.').last);
     await _generateEmail(); // Directly generate the email after style selection
   }
 

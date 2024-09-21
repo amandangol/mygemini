@@ -40,7 +40,6 @@ class APIs {
       print('Loaded API Key: ${dotenv.env['GEMINI_API_KEY']}');
       print('Full response from Gemini AI: $e');
       if (e is GenerativeAIException) {
-        print('An internal error has occurred: ${e.message}');
         return 'An internal error has occurred: ${e.message}';
       }
 

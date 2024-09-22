@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mygemini/commonwidgets/custom_actionbuttons.dart';
 import 'package:mygemini/commonwidgets/selectable_markdown.dart';
 import 'package:mygemini/data/models/message.dart';
 import 'package:mygemini/utils/theme/ThemeData.dart';
@@ -68,6 +69,14 @@ class MessageCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (isBotMessage)
+              Padding(
+                padding: const EdgeInsets.only(top: 0.0),
+                child: CustomActionButtons(
+                  text: message.msg,
+                  shareSubject: 'Generated text from Chatbot Assistant',
+                ),
+              ),
             const SizedBox(height: 4),
             Text(
               getTimeAgo(message.timestamp),

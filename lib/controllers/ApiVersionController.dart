@@ -1,11 +1,15 @@
 import 'package:get/get.dart';
 import 'dart:developer' as developer;
 
+import 'package:mygemini/utils/helper/pref.dart';
+
 class ApiVersionController extends GetxController {
-  final RxBool isUsingProVersion = true.obs;
+  final RxBool isUsingProVersion = Pref.isUsingProVersion.obs;
 
   void toggleApiVersion() {
-    isUsingProVersion.toggle();
+    isUsingProVersion.value = !isUsingProVersion.value;
+    Pref.toggleApiVersion = isUsingProVersion.value;
+
     developer.log('API version switched to: $currentApiVersion',
         name: 'ApiVersionController');
   }

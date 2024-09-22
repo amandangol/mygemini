@@ -19,12 +19,15 @@ class AiCodeBot extends StatefulWidget {
 }
 
 class _AiCodeBotState extends State<AiCodeBot> {
-  final CodeBotController controller = Get.put(CodeBotController());
+  late CodeBotController controller;
   late ScrollController _scrollController;
+  final String _controllerTag =
+      'CodeBotController${DateTime.now().millisecondsSinceEpoch}';
 
   @override
   void initState() {
     super.initState();
+    controller = Get.put(CodeBotController(), tag: _controllerTag);
     _scrollController = ScrollController();
     controller.chatMessages.listen((_) => _scrollToBottom());
     _checkFirstLaunch();
@@ -33,6 +36,7 @@ class _AiCodeBotState extends State<AiCodeBot> {
   @override
   void dispose() {
     _scrollController.dispose();
+    Get.delete<CodeBotController>(tag: _controllerTag);
     super.dispose();
   }
 
@@ -215,12 +219,7 @@ class _AiCodeBotState extends State<AiCodeBot> {
       sendMessage: () {
         final userInput = controller.userInputController.text;
         if (userInput.isNotEmpty) {
-          if (controller.currentState.value ==
-              ConversationState.generatingCode) {
-            controller.handlePostGenerationInteraction(userInput);
-          } else {
-            controller.sendMessage();
-          }
+          controller.sendMessage();
         }
       },
       isMaxLengthReached: controller.isMaxLengthReached,

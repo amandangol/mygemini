@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mygemini/features/screens/chatbot/controller/chathistory_controller.dart';
 import 'package:mygemini/features/screens/chatbot/chatbot.dart';
+import 'package:mygemini/features/screens/code_generator/controller/codebot_controller.dart';
 import 'package:mygemini/features/screens/creative_contentbot/creativecontent_bot.dart';
 import 'package:mygemini/features/screens/document_analyzer/document_analyzer.dart';
 import 'package:mygemini/features/screens/email_gen/emailbot_assistant.dart';
@@ -93,7 +94,12 @@ extension MyBotType on BotType {
               }),
             ),
         BotType.aiLearningBot => () => Get.to(() => const LearningChatbot()),
-        BotType.aiCodeBot => () => Get.to(() => const AiCodeBot()),
+        BotType.aiCodeBot => () => Get.to(
+              () => const AiCodeBot(),
+              binding: BindingsBuilder(() {
+                Get.lazyPut(() => CodeBotController(), fenix: true);
+              }),
+            ),
         BotType.aiDocumentAnalyzer => () =>
             Get.to(() => const DocumentAnalyzerFeature()),
         BotType.aiCreativeContent => () =>

@@ -22,4 +22,9 @@ class Pref {
   // Dark mode preference
   static bool get isDarkMode => _box.get('isDarkMode', defaultValue: false);
   static set isDarkMode(bool v) => _box.put('isDarkMode', v);
+
+//API model preference
+  static bool get isUsingProVersion =>
+      _box.get('isUsingProVersion', defaultValue: true);
+  static set toggleApiVersion(bool v) => _box.put('isUsingProVersion', v);
 }

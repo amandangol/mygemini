@@ -57,7 +57,7 @@ Check out MyGemini in action: [Watch the demo video](https://www.youtube.com/wat
 ### For Users
 
 1. Download the APK:
-   - [MyGemini APK](https://drive.google.com/file/d/1s3l0jULjgYz441LUAmFuJK6eggLjgsyp/view?usp=drive_link)
+   - [MyGemini APK](https://drive.google.com/file/d/1t2EQs4P9JXC4dWP5OfBwsbiFkXyAorBd/view?usp=sharing)
 
 [Drive Link](https://drive.google.com/drive/u/1/folders/1eA_RMvMAM1ZJzZ1bTkztEH-wACAFaT31)
 

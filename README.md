@@ -1,4 +1,5 @@
 # MyGemini: Your All-in-One AI Assistant Suite
+**Winning App of the September Hackathon Challenge**
 
 MyGemini is a powerful Flutter application that brings together eight specialized AI assistants in one user-friendly interface. Powered by Google's Gemini 1.5 Pro model API, MyGemini offers intelligent assistance for various tasks, from coding to content creation.
 
